@@ -21,6 +21,7 @@ datasets summary virus genome taxon "Dengue Virus" --as-json-lines | dataformat 
 
 unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
 ```
+
 - Here we downloaded both the fasta  and metadata for all sequences
 
 ## Step 2: Process and clean metadata and output fasta
@@ -30,6 +31,7 @@ unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
 ```
 Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta.R --metadata /Users/rhysinward/Documents/Dengue_anaysis/metadata.tsv --fasta /Users/rhysinward/Documents/Dengue_anaysis/virus/ncbi_dataset/data/genomic.fna
 ```
+
 - It also splits serotypes into Dengue 1,2,3,4 and Unknown
 - This code can also be used to select the required dates of the data
 
