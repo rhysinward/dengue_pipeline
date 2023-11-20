@@ -39,7 +39,7 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
 ## Step 3: Checking serotypes and Genotypes 
 
 - Here we would ideally have a command line tool to double check and designte serotypes and genotypes independantly to GenBank due to errors in naming and number of Unknown Sequences
-- At the moment to confirm serotype we are using using [Genome Detective](http://krisp.ukzn.ac.za/app/typingtool/dengue/))
+- At the moment to confirm serotype we are using using [Dengue Typing Tool](http://krisp.ukzn.ac.za/app/typingtool/dengue/)
   - Note that the typing tool as a maximum of 100,000 sequences it can run for free (should be enough for all runs pretty much)
   - Code to process the outputs of Genomic Detective and produce the final datasets can be found at xxxxxx
 - This is the final processing step
