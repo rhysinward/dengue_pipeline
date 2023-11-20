@@ -8,7 +8,7 @@ This respoitory contains all the code and data used in routinely processing and 
 
 - Download data for serotypes from GenBank
 
-'''
+```
 conda create -n ncbi_datasets
 conda activate ncbi_datasets
 conda install -c conda-forge ncbi-datasets-cli
@@ -20,16 +20,16 @@ datasets download virus genome taxon "Dengue Virus"  --filename virus.zip
 datasets summary virus genome taxon "Dengue Virus" --as-json-lines | dataformat tsv virus-genome > metadata.tsv
 
 unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
-'''
+```
 - Here we downloaded both the fasta  and metadata for all sequences
 
 ## Step 2: Process and clean metadata and output fasta
 
 - Load the sequences and metadata and using the R script xxxx to clean the metadata and output fasta sequences with correct naming
 
-'''
+```
 Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta.R --metadata /Users/rhysinward/Documents/Dengue_anaysis/metadata.tsv --fasta /Users/rhysinward/Documents/Dengue_anaysis/virus/ncbi_dataset/data/genomic.fna
-'''
+```
 - It also splits serotypes into Dengue 1,2,3,4 and Unknown
 - This code can also be used to select the required dates of the data
 
