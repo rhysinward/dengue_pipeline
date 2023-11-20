@@ -34,6 +34,7 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
 
 - It also splits serotypes into Dengue 1,2,3,4 and Unknown
 - This code can also be used to select the required dates of the data
+- Need to add arguments to set date within the terminal wasn't currently working and not sure why so date in set in the rscript for now
 
 ## Step 3: Checking serotypes and Genotypes 
 
