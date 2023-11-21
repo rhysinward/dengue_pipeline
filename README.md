@@ -64,6 +64,7 @@ bash bash/align_sequences.sh
 ```
 rscript Code/Seperate_EG_and_WG.R
 ```
+
 ## Step 6: Sub-sampler 
 
 - Part of this will be creating the metadata needed for Treetime
