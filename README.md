@@ -17,7 +17,7 @@ conda activate ncbi_datasets
 
 datasets download virus genome taxon "Dengue Virus"  --filename virus.zip
 
-datasets summary virus genome taxon "Dengue Virus" --as-json-lines | dataformat tsv virus-genome > metadata.tsv
+datasets summary virus genome taxon "Dengue Virus" --released-after 2000-01-01 --as-json-lines | dataformat tsv virus-genome > metadata.tsv
 
 unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
 ```
