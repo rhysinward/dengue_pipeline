@@ -55,6 +55,15 @@ bash bash/align_sequences.sh
 
 ## Step 5: Seperating E gene and Whole Genomes (WG)
 
+- Here we are splitting the aligned genomes into E gene (EG) segments and Whole genomes (WG)
+- We say that if more than 30% of a WG bases (ATCG) are missing then we remove (70% set due to Yale sequencing thresholds)
+- We say that is more the 5% of an EG bases are missing then we remove (stricter criteria is arbitrary can be changed)
+- The EG position for each serotype is based on the genemap
+- To run this please use the rscript found here xxxx (N.b code is slightly cluncky but works)
+
+```
+rscript Code/Seperate_EG_and_WG.R
+```
 ## Step 6: Sub-sampler 
 
 - Part of this will be creating the metadata needed for Treetime
