@@ -45,7 +45,7 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
  
 ## Step 4: Alignment
 
-- Here we are aligning our sequences uses MAFFT which is wrapped in the nextstrain pipeline
+- Here we are aligning our sequences using nextalign which is wrapped in the nextstrain pipeline
 - Please see here about installing [nextstrain](https://docs.nextstrain.org/en/latest/install.html). N.b we are using nextstrain within docker
 - To run this please use the bash script found here xxxx
 
