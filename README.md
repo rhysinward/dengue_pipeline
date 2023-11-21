@@ -42,7 +42,33 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
 - At the moment to confirm serotype we are using using [Dengue Typing Tool](http://krisp.ukzn.ac.za/app/typingtool/dengue/)
   - Note that the typing tool as a maximum of 100,000 sequences it can run for free (should be enough for all runs pretty much)
   - Code to process the outputs of Genomic Detective and produce the final datasets can be found at xxxxxx
-- This is the final processing step
+ 
+## Step 4: Alignment
+
+- Here we are aligning our sequences uses MAFFT which is wrapped in the nextstrain pipeline
+- Please see here about installing [nextstrain](https://docs.nextstrain.org/en/latest/install.html). N.b we are using nextstrain within docker
+- To run this please use the bash script found here xxxx
+
+```
+bash bash/align_sequences.sh
+```
+
+## Step 5: Seperating E gene and Whole Genomes (WG)
+
+## Step 6: Sub-sampler 
+
+- Part of this will be creating the metadata needed for Treetime
+- 
+
+## Step 7: Tree Building
+
+## Step 8: Time-Scaling 
+
+## Step 9: Mugration Anaysis 
+
+## Step 10: Visulisation within Nextstrain 
+
+## Step 11: Transmission Lineages
 
 
 
