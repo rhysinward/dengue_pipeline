@@ -26,7 +26,7 @@ unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
 
 ## Step 2: Process and clean metadata and output fasta
 
-- Load the sequences and metadata and using the R script xxxx to clean the metadata and output fasta sequences with correct naming
+- Load the sequences and metadata and using the R script code/Clean_metadata_and_fasta.R to clean the metadata and output fasta sequences with correct naming
 
 ```
 Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta.R --metadata /Users/rhysinward/Documents/Dengue_anaysis/metadata.tsv --fasta /Users/rhysinward/Documents/Dengue_anaysis/virus/ncbi_dataset/data/genomic.fna
@@ -47,7 +47,7 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
 
 - Here we are aligning our sequences using nextalign which is wrapped in the nextstrain pipeline
 - Please see here about installing [nextstrain](https://docs.nextstrain.org/en/latest/install.html). N.b we are using nextstrain within docker
-- To run this please use the bash script found here xxxx
+- To run this please use the bash script found here bash/align_sequences.sh
 
 ```
 bash bash/align_sequences.sh
@@ -59,20 +59,24 @@ bash bash/align_sequences.sh
 - We say that if more than 30% of a WG bases (ATCG) are missing then we remove (70% set due to Yale sequencing thresholds)
 - We say that is more the 5% of an EG bases are missing then we remove (stricter criteria is arbitrary can be changed)
 - The EG position for each serotype is based on the genemap
-- To run this please use the rscript found here xxxx (N.b code is slightly cluncky but works)
+- To run this please use the rscript found here Code/Seperate_EG_and_WG.R (N.b code is slightly cluncky but works)
 
 ```
 rscript Code/Seperate_EG_and_WG.R
 ```
 
-## Step 6: Sub-sampler 
+## Step 6: Sub-sampler (WORK IN PROGRESS INTERIM SUB-SAMPLER INCLUDED)
 
 - Part of this will be creating the metadata needed for Treetime
-- 
+[Sampling Pipeline (1).pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
 
-## Step 7: Tree Building
 
-## Step 8: Time-Scaling 
+
+## Step 7: Tree Building - classic iqtree command
+
+
+
+## Step 8: Time-Scaling - Problem keeps infering into the future
 
 ## Step 9: Mugration Anaysis 
 
