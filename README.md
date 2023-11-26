@@ -68,7 +68,9 @@ rscript Code/Seperate_EG_and_WG.R
 ## Step 6: Sub-sampler (WORK IN PROGRESS INTERIM SUB-SAMPLER INCLUDED)
 
 - Part of this will be creating the metadata needed for Treetime
-[Sampling Pipeline (1).pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
+
+
+[Sampling_Pipeline.pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
 
 
 
