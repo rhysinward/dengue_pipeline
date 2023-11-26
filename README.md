@@ -53,7 +53,7 @@ Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta
 bash bash/align_sequences.sh
 ```
 
-## Step 5: Seperating E gene and Whole Genomes (WG)
+## Step 5: Seperating E gene and Whole Genomes (WG) - Edit code to be able to set custom thresholds
 
 - Here we are splitting the aligned genomes into E gene (EG) segments and Whole genomes (WG)
 - We say that if more than 30% of a WG bases (ATCG) are missing then we remove (70% set due to Yale sequencing thresholds)
