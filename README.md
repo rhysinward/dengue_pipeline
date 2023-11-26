@@ -70,8 +70,8 @@ rscript Code/Seperate_EG_and_WG.R
 - Part of this will be creating the metadata needed for Treetime
 
 
-[Sampling_Pipeline.pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
-
+![Sampling_Pipeline.pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
+**Figure 1.** Subsampler pipeline.
 
 
 ## Step 7: Tree Building - classic iqtree command
