@@ -69,8 +69,7 @@ rscript Code/Seperate_EG_and_WG.R
 
 - Part of this will be creating the metadata needed for Treetime
 
-
-![Sampling_Pipeline.pdf](https://github.com/rhysinward/dengue_pipeline/files/13468186/Sampling.Pipeline.1.pdf)
+![Sampling Pipeline (1)_page-0001](https://github.com/rhysinward/dengue_pipeline/assets/67955642/06b5a02e-9b14-4324-91e1-79b54d8a1682)
 **Figure 1.** Subsampler pipeline.
 
 
