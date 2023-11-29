@@ -72,17 +72,27 @@ rscript Code/Seperate_EG_and_WG.R
 **Figure 1.** Subsampler pipeline.
 
 
-## Step 7: Tree Building - classic iqtree command
+## Step 7: Tree Building
 
+```
+nohup iqtree2 -m TIM2+F+R4 -s x.fasta
+```
 
+## Step 8: Time-Scaling
 
-## Step 8: Time-Scaling - Problem keeps infering into the future
+```
+treetime --tree x.treefile --aln x.fasta --dates x.csv  --clock-filter 4 --confidence
+```
 
 ## Step 9: Mugration Anaysis 
 
-## Step 10: Visulisation within Nextstrain 
+```
+treetime mugration --tree x.treefile --states x.csv --attribute country
+```
 
-## Step 11: Transmission Lineages
+## Step 10: Visulisation within Nextstrain - to come
+
+## Step 11: Transmission Lineages - to come
 
 
 
