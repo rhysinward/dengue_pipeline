@@ -108,7 +108,7 @@ Implementation Details:
 - To exucute this process please use the Rscript - Seperate_EG_and_WG.R
 
 ```
-rscript Code/Seperate_EG_and_WG.R
+rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
 ```
 
 ## Step 6: Sub-sampler (WORK IN PROGRESS INTERIM SUB-SAMPLER INCLUDED)
