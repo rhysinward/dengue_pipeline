@@ -94,7 +94,7 @@ bash bash/align_sequences.sh
 
 Purpose:
 
--This step involves dividing aligned genomes into Envelope gene (EG) segments and Whole Genomes (WG).
+- This step involves dividing aligned genomes into Envelope gene (EG) segments and Whole Genomes (WG).
 
 Criteria (default):
 
