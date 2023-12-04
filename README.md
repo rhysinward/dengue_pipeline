@@ -98,7 +98,7 @@ Purpose:
 
 Criteria (default):
 
-- Whole Genomes (WG) with more than 30% missing bases are excluded. This threshold is set considering Yale's sequencing criteria (70% completeness).
+- Whole Genomes (WG) with more than 30% missing bases are excluded. This threshold is set considering the [Grubaugh Lab](https://grubaughlab.com/) in Yale's sequencing criteria (69% completeness).
 - For the Envelope gene (EG) segments, a stricter criterion is applied: sequences with more than 5% missing bases are removed. This percentage is adjustable based on project requirements.
 
 Implementation Details:
