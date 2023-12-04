@@ -111,12 +111,10 @@ Implementation Details:
 rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
 ```
 
-## Step 6: Sub-sampler (WORK IN PROGRESS INTERIM SUB-SAMPLER INCLUDED)
-
+## Step 6: Sub-sampler
 
 ![Sampling Pipeline (1)_page-0001](https://github.com/rhysinward/dengue_pipeline/assets/67955642/06b5a02e-9b14-4324-91e1-79b54d8a1682)
 **Figure 1.** Subsampler pipeline.
-
 
 ## Step 7: Tree Building
 
