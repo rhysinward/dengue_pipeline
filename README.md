@@ -116,6 +116,12 @@ rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
 ![Sampling Pipeline (1)_page-0001](https://github.com/rhysinward/dengue_pipeline/assets/67955642/06b5a02e-9b14-4324-91e1-79b54d8a1682)
 **Figure 1.** Subsampler pipeline.
 
+To use subsampler please use the following line of code:
+
+```
+rscript Code/subsampler.R --metadata results/Dengue_1_infoTbl.csv --fasta results/Dengue_1_EG.fasta --country Mexico --number_sequences 400
+```
+
 ## Step 7: Tree Building
 
 ```
