@@ -119,7 +119,7 @@ rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
 To use subsampler please use the following line of code:
 
 ```
-rscript Code/subsampler.R --metadata results/Dengue_1_infoTbl.csv --fasta results/Dengue_1_EG.fasta --country Mexico --number_sequences 400
+rscript Code/subsampler.R --metadata results/Dengue_1_infoTbl.csv --fasta results/Dengue_1_EG.fasta --country Colombia  --number_sequences 3000 --prop_rd 0.8 --prop_or 0.2
 ```
 
 ## Step 7: Tree Building
