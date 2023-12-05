@@ -122,7 +122,15 @@ To use subsampler please use the following line of code:
 rscript Code/subsampler.R --metadata results/Dengue_1_infoTbl.csv --fasta results/Dengue_1_EG.fasta --country Colombia  --number_sequences 3000 --prop_rd 0.8 --prop_or 0.2
 ```
 
-## Step 6b (Optional): Add rooting sequences to sub-sampled datasets
+## Step 6b (Optional): Add Rooting Sequences to Sub-sampled Datasets
+
+Objective:
+
+To enhance phylogenetic analysis, this optional step involves appending specific rooting sequences to each sub-sampled Dengue virus serotype dataset.
+
+```
+rscript Code/add_rooting_sequence.R
+```
 
 ## Step 7: Tree Building
 
