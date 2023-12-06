@@ -15,8 +15,8 @@ opt_parser <- OptionParser(
   option_list = list(
     make_option(c("-m", "--metadata"), type="character", help="Input tsv file containing metadata from GenBank, with sequence identifiers matching those in the input fasta file."),
     make_option(c("-f", "--fasta"), type="character", help="Input fasta file, with sequence identifiers matching those in the metadata file."),
-    make_option(c("-x", "--extra-metadata"), type="character", help="Option to add a csv file containing metadata from sequencing but not on Genbank"),
-    make_option(c("-z", "--extra-fasta"), type="character", help="Option to add a fasta file containing metadata from sequencing but not on Genbank"),
+    make_option(c("-x", "--extra_metadata"), type="character", help="Option to add a csv file containing metadata from sequencing but not on Genbank"),
+    make_option(c("-z", "--extra_fasta"), type="character", help="Option to add a fasta file containing metadata from sequencing but not on Genbank"),
     make_option(c("-o", "--outfile"), type="character", default=NULL, help="Output filename which contains cleaned metadata"),
     make_option(c("-s", "--start-date"), type="character", default="2010-01-01", help="Start date for filtering (format YYYY-MM-DD)"),
     make_option(c("-e", "--end-date"), type="character", default="2020-12-31", help="End date for filtering (format YYYY-MM-DD)")
@@ -28,19 +28,22 @@ opt = parse_args(opt_parser)
 ## main
 ########################################################################
 
-## read in input metadata file
+## read in input metadata file from GenBank
 if (!is.null(opt$metadata)) {
   metadata.df <- read_tsv(opt$metadata)
-} else {
+  } else {
   cat("Input metadata file. Exiting now...")
   quit()
 }
 
-if (!is.null(opt$metadata)) {
-  metadata.extra <- read_csv(opt$metadata)
-} else {
-  cat("Input metadata file. Exiting now...")
-  quit()
+# metadata.df <- read_tsv("/Users/rhysinward/Documents/Dengue_anaysis/metadata.tsv")
+
+## read in extra metadata from sequencing
+## Nb will need to be in a specific format to match GenBank metadata
+## See Github for specific formatting requirements
+
+if (!is.null(opt$extra_metadata)) {
+  metadata.extra <- read.csv(opt$extra_metadata)
 }
 
 #Process dates
@@ -59,41 +62,20 @@ metadata.df <- process_date(metadata.df)
 
 metadata.df <- metadata.df %>%
   filter(`Host Name` == 'Homo sapiens') %>%
-  filter(Date >= as.Date('2000-01-01') & Date <= as.Date("2023-11-16"))
+  filter(Date >= as.Date(opt[["start-date"]]) & Date <= as.Date(opt[["end-date"]]))
 
 #extract state level information
+
 metadata.df <- metadata.df %>%
   separate(`Geographic Location`, c("Country", "State"), sep = ":", extra = "merge", fill = "right") %>%
   separate(State, c("State", "City"), sep = ",", extra = "merge", fill = "right") %>%
   mutate(State = trimws(State, which = "both"), City = trimws(City, which = "both"))
 
-#Classifying dengue genomes as WG/PG/E gene
-
-metadata.df$Sequence.Type <- NA
-
-for (i in 1:nrow(metadata.df)) {
-  if(metadata.df$Length[i] <= 3000){
-    metadata.df$Sequence.Type[i] <- "E"
-  } else if (metadata.df$Length[i] > 3000 & metadata.df$Length[i] <= 8500){
-    metadata.df$Sequence.Type[i] <-"Partial"
-  } else{
-    metadata.df$Sequence.Type[i] <-"WG"
-  }
-}
-
 #select desired columns and remove any with NA in Date and Country
 
 metadata.df <- metadata.df %>%
-  select(Accession, `Virus Name`,Sequence.Type, Date, Country, State, City) %>% # Select columns
+  select(Accession, `Virus Name`, Date, Country, State, City) %>% # Select columns
   filter(!is.na(Date) & !is.na(Country)) # Remove rows with NA in Date and Country
-
-## read in input fasta file
-if (!is.null(opt$fasta)) {
-  seqs <- read.fasta(opt$fasta)
-} else {
-  cat("Input fasta file. Exiting now...")
-  quit()
-}
 
 #merge different serotype naming schemes
 
@@ -103,11 +85,14 @@ metadata.df <- metadata.df %>%
     grepl("dengue virus 3|Dengue virus 3|dengue virus type 3", `Virus Name`, ignore.case = TRUE) ~ "Dengue_3",
     grepl("dengue virus 4|Dengue virus 4|dengue virus type 4", `Virus Name`, ignore.case = TRUE) ~ "Dengue_4",
     grepl("dengue virus 1|Dengue virus 1|dengue virus type 1|dengue virus type I|Dengue virus", `Virus Name`, ignore.case = TRUE) ~ "Dengue_1"))
-    
+
 table(metadata.df$serotype)
 
-#all seem to be DENV1    
-#    grepl("Dengue virus", `Virus Name`, ignore.case = TRUE) ~ "Unknown"))
+#combine with metadata with extra metadata if present
+
+if (!is.null(opt$extra_metadata)) {
+  metadata.df <- rbind(metadata.df,metadata.extra)
+}
 
 #functions
 
@@ -292,7 +277,30 @@ invertDecimalDate <- function( decDate, formatAsTxt=FALSE, ddmmyy=FALSE ) {
   
 }
 
-#match metadata to fasta file 
+#match metadata to fasta file and rename sequences
+
+## read in input fasta file
+if (!is.null(opt$fasta)) {
+  seqs <- read.fasta(opt$fasta)
+  } else {
+  cat("Input fasta file. Exiting now...")
+  quit()
+  }
+
+if (!is.null(opt$extra_fasta)) {
+  seqs_extra <- read.fasta(opt$extra_fasta)
+} 
+
+merge_fasta <- function(fasta1, fasta2) {
+  seqs_merged <- c(fasta1, fasta2)
+  return(seqs)
+}
+
+if (!is.null(opt$extra_fasta)) {
+  seqs <- merge_fasta(seqs,seqs_extra)
+} 
+
+#  seqs <- read.fasta("/Users/rhysinward/Documents/Dengue_anaysis/virus/ncbi_dataset/data/genomic.fna")
 
 taxa <- as.matrix(attributes(seqs)$names)
 genbank_ID <- apply(taxa, 1, getEl, ind=1, sep=" ")
@@ -302,18 +310,15 @@ for (serotype in c("Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4")) {
   
   # Subset the metadata for the current serotype
   serotype_metadata <- metadata.df %>% filter(serotype == !!serotype)
-  
   minds  <- match(genbank_ID, serotype_metadata$Accession)
-  
   dateTxt <- as.matrix(as.character(serotype_metadata$Date[minds]))
-  sequence_type <- as.matrix(serotype_metadata$Sequence.Type[minds])
   Virus <- serotype
   decDate <- as.numeric(apply(as.matrix(dateTxt), 1, calcDecimalDate_fromTxt, dayFirst=FALSE, namedMonth=FALSE, sep="-"))
   country <- as.matrix(serotype_metadata$Country[minds])
   state   <- as.matrix(serotype_metadata$State[minds])
   city   <- as.matrix(serotype_metadata$City[minds])
   
-  newTaxa <- paste(genbank_ID,country,state,city,Virus,sequence_type,dateTxt,decDate,sep="|")
+  newTaxa <- paste(genbank_ID,country,state,city,Virus,dateTxt,decDate,sep="|")
   newTaxa <- gsub(" ","_",newTaxa)
   attributes(seqs)$names <- newTaxa
   
@@ -334,7 +339,7 @@ for (serotype in c("Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4")) {
   taxa_split <- data.frame(do.call('rbind',strsplit(as.character(seq_name_kept$V1),'|',fixed = TRUE)))
   taxa_split$name <- seq_name_kept$V1
   colnames(taxa_split) <- c('GenBank_ID', "Country", "State",
-                                             "City", "Serotype", "Sequence_Type", "Date","Decimal_Date","Sequence_name")
+                                             "City", "Serotype", "Date","Decimal_Date","Sequence_name")
   
   write.table(taxa_split,
               file = paste0("results/",serotype,'_infoTbl.txt'),

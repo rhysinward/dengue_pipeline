@@ -10,7 +10,15 @@ suppressMessages(
   }
 )
 
+# Define and parse command-line options
+opt_parser <- OptionParser(
+  option_list = list(
+    make_option(c("-w", "--WG_threshold"), type="numeric", default = 0.29,  help="Set threshold for proportion of unknown bases in whole genome."),
+    make_option(c("-e", "--EG_threshold"), type="numeric", default = 0.05,  help="Set threshold for proportion of unknown bases in E-gene.")
+  )
+)
 
+opt = parse_args(opt_parser)
 ########################################################################
 ## main
 ########################################################################
@@ -27,15 +35,21 @@ for (fasta_file in fasta_files) {
   serotype <- gsub("results/Aligned_Dengue_([0-9]+)/nextalign.aligned.fasta", "\\1", fasta_file)
   
 #get WG gene
-seqs_wg <- rapply(fasta.df,function(x) ifelse(0.70*sum(table(x)) > sum(x == '-'),'good',x), how = "unlist")
+seqs_wg <- rapply(fasta.df,function(x) ifelse(opt[["WG_threshold"]]*sum(table(x)) > sum(x == '-'),'good',x), how = "unlist")
+
 vec.tokeep <-which(seqs_wg ==  'good')
+
+length(vec.tokeep)
+
 outfile_wg <- paste0("results/Dengue_", serotype, "_WG.fasta")
+
 write.fasta(sequences = fasta.df[vec.tokeep], names = names(fasta.df)[vec.tokeep], file = outfile_wg)
 
 #get EG gene
 fasta.df <- read.dna(fasta_file, format = "fasta", as.matrix = TRUE)
 
 # Map serotypes to their respective column ranges for the gene wanted
+
 gene_ranges <- list(
   "1" = c(935, 2419),
   "2" = c(937, 2421), # example ranges, change to the correct ones
@@ -59,7 +73,12 @@ write.dna(gene_wanted, file=outfile_eg, format="fasta", nbcol=-1, colsep="")
   #Need to reload the data as different file format needed to remove those with a lot of - 
 
 fasta.df <- read.fasta(outfile_eg)
-seqs <- rapply(fasta.df,function(x) ifelse(0.05*sum(table(x)) > sum(x == '-'),'good',x), how = "unlist")
+seqs <- rapply(fasta.df,function(x) ifelse(opt[["EG_threshold"]]*sum(table(x)) > sum(x == '-'),'good',x), how = "unlist")
+vec.tokeep <-which(seqs ==  'good')
+outfile_eg <- paste0("results/Dengue_", serotype, "_EG.fasta")
+write.fasta(sequences = fasta.df[vec.tokeep], names = names(fasta.df)[vec.tokeep], file = outfile_eg)
+fasta.df <- read.fasta(outfile_eg)
+seqs <- rapply(fasta.df,function(x) ifelse(opt[["EG_threshold"]]*sum(table(x)) > sum(x == 'n'),'good',x), how = "unlist")
 vec.tokeep <-which(seqs ==  'good')
 outfile_eg <- paste0("results/Dengue_", serotype, "_EG.fasta")
 write.fasta(sequences = fasta.df[vec.tokeep], names = names(fasta.df)[vec.tokeep], file = outfile_eg)
