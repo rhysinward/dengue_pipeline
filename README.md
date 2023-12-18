@@ -141,7 +141,47 @@ nohup iqtree2 -m TIM2+F+R4 -s x.fasta
 ## Step 8: Time-Scaling
 
 ```
-treetime --tree x.treefile --aln x.fasta --dates x.csv  --clock-filter 4 --confidence
+treetime \
+  --tree Dengue_1_combined.fasta.treefile \
+  --aln Dengue_1_combined.fasta \
+  --dates Dengue_1_combined_metadata.csv \
+  --clock-filter 4 \
+  --stochastic-resolve \
+  --reroot EF457905.1_Dengue_virus_type1_isolate_P72-1244_complete_genome \
+  --outdir dengue_1
+```
+
+```
+treetime \
+  --tree Dengue_2_combined.fasta.treefile \
+  --aln Dengue_2_combined.fasta \
+  --dates Dengue_2_combined_metadata.csv \
+  --clock-filter 4 \
+  --stochastic-resolve \
+  --reroot EU003591.1_Dengue_virus_type_2_isolate_IBH11234_polyprotein_gene_complete_cds \
+  --outdir dengue_2
+```
+
+```
+treetime \
+  --tree Dengue_3_combined.fasta.treefile \
+  --aln Dengue_3_combined.fasta \
+  --dates Dengue_3_combined_metadata.csv \
+  --clock-filter 4 \
+  --stochastic-resolve \
+  --reroot KU050695.1_Dengue_virus_3_complete_genome \
+  --outdir dengue_3
+```
+
+```
+treetime \
+  --tree Dengue_4_combined.fasta.treefile \
+  --aln Dengue_4_combined.fasta \
+  --dates Dengue_4_combined_metadata.csv \
+  --clock-filter 4 \
+  --stochastic-resolve \
+  --reroot JF262780.1_Dengue_virus_4_isolate_P73-1120,_complete_genome \
+  --outdir dengue_4
 ```
 
 ## Step 9: Mugration Anaysis 
