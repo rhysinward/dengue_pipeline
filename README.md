@@ -216,6 +216,9 @@ example command (can't get it to run outside docker atm):
 docker run --platform linux/amd64 -v $PWD:$PWD -w $PWD -i -t evolbioinfo/gotree:v0.2.8b prune -f dengue_1/outliers.tsv -i Dengue_1_combined_trimmed.newick --format newick > Dengue_1_combined_trimmed.newick
 ```
 
+## Step 9b: Extract upto date meta data from tree tip name 
+
+
 ## Step 10: Mugration Anaysis 
 
 ```
