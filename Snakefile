@@ -62,7 +62,7 @@ rule sequence_alignment:
     input:
         fasta_files = expand("results/Unaligned_{serotype}.fasta", serotype=serotype)
     output:
-        align_dir = directory(expand("results/Aligned_{serotype}", serotype=serotype))
+        align_dir = expand("results/Aligned_{serotype}/nextalign.aligned.fasta", serotype=serotype)
     log:
         "logs/sequence_alignment.log"
     conda:
