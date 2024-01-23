@@ -22,7 +22,7 @@ Before proceeding, ensure you have the following prerequisites installed:
 First, clone this repository to your local machine:
 
 ```
-git clone https://github.com/rhysinward/dengue_pipeline/tree/main
+git clone git@github.com:rhysinward/dengue_pipeline.git
 ```
 
 ### Step 2: Install Mambaforge
