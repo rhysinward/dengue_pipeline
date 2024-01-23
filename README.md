@@ -2,6 +2,77 @@
 
 This repository hosts the comprehensive suite of code and datasets utilized for the routine processing and analysis of Dengue virus data sourced from GenBank.
 
+# Unified Pipeline for Dengue Sequence Analysis Using Snakemake
+
+## Overview
+
+This pipeline is designed for the retrieval, processing, subsampling, and phylogenetic analysis of the latest dengue virus sequences. It leverages Snakemake, a powerful workflow management system, to ensure reproducibility and efficiency in bioinformatics analyses.
+
+## Prerequisites
+
+Before proceeding, ensure you have the following prerequisites installed:
+
+- Git (for cloning this repository)
+- Mambaforge (for managing environments and dependencies)
+
+## Installation
+
+### Step 1: Clone the Repository
+
+First, clone this repository to your local machine:
+
+```
+git clone https://github.com/rhysinward/dengue_pipeline/tree/main
+```
+
+### Step 2: Install Mambaforge
+
+If Mambaforge is not already installed, execute the following commands:
+
+```
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3-$(uname)-$(uname -m).sh
+```
+
+### Step 3: Install Snakemake
+
+Install Snakemake using Mamba, which facilitates the installation in an isolated environment:
+
+```
+mamba create -c conda-forge -c bioconda -n snakemake snakemake
+```
+
+### Step 4: Activate Snakemake Environment
+
+Activate the Snakemake environment and verify the installation:
+
+```
+mamba activate snakemake
+snakemake --help
+```
+
+## Usage
+
+### Running the Pipeline
+
+Within the cloned repository, execute the following command to run the pipeline:
+
+```
+CONDA_SUBDIR=osx-64 snakemake --use-conda --cores 4
+```
+
+Adjust the --cores parameter based on your system's capabilities.
+
+### Visualizing Outputs
+
+The pipeline outputs can be visualized locally or online using [Auspice](https://auspice.us/):
+
+```
+nextstrain view auspice/
+```
+
+# Step by step of the pipeline
+
 # Pipeline Workflow 
 
 ## Step 1: Acquisition of Genomic Data and Metadata from GenBank
