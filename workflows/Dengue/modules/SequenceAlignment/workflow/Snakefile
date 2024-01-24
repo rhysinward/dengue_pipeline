@@ -1,0 +1,34 @@
+# Step 3: Sequence alignment
+configfile: "config/config.yaml"
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
+
+rule sequence_alignment:
+    input:
+        fasta_files = expand(
+            "results/{indir}/Unaligned_{serotype}.fasta",
+            indir=indir,
+            serotype=serotype,
+        ),
+        script = "resources/scripts/align_sequences.sh",
+    output:
+        align_dir = expand(
+            "results/{outdir}/Aligned_{serotype}/nextalign.aligned.fasta",
+            outdir=outdir,
+            serotype=serotype,
+        ),
+    log:
+        "logs/sequence_alignment.log"
+    conda:
+        "envs/alignment.yaml"
+    message:
+        "Running sequence alignment for Dengue serotypes"
+    params:
+        seq_dir = expand("results/{indir}", indir=indir),
+        out_dir = expand("results/{outdir}", outdir=outdir),
+    shell:
+        """
+        bash {input.script} {params.seq_dir} {params.out_dir}
+        """

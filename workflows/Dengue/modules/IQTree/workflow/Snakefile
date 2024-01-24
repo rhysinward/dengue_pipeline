@@ -1,0 +1,34 @@
+# Step 6: Treebuilding
+configfile: "config/config.yaml"
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
+
+rule all:
+    input:
+        expand("results/{outdir}/subsampled_{serotype}.fasta.treefile", outdir=outdir, serotype=serotype)
+
+for serotype in serotype:
+    rule:
+        name:
+            f"iqtree_{serotype}"
+        input:
+            aln = expand("results/{indir}/subsampled_{serotype}.fasta", indir=indir, serotype=serotype),
+        output:
+            tree = expand("results/{outdir}/subsampled_{serotype}.fasta.treefile", outdir=outdir, serotype=serotype),
+        conda:
+            "envs/iqtree.yaml"
+        params:
+            model = "GTR+F+I",
+            outdir = f"results/{outdir}",
+        log:
+            "logs/iqtree.log"
+        message:
+            "Inferring maximum likelihood phylogenetic trees for {serotype} using IQ-TREE."
+        shell:
+            """
+            mkdir -p {params.outdir}
+            iqtree2 -s {input.aln} -m {params.model} -redo
+            mv {input.aln}.* {params.outdir}
+            """

@@ -1,0 +1,8 @@
+# Rule for creating necessary directories
+rule create_directories:
+    output:
+        directory("logs"),
+        directory("data"),
+        directory("results")
+    shell:
+        "mkdir -p logs data results"

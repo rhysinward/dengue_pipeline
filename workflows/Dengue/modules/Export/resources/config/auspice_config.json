@@ -1,0 +1,40 @@
+{
+  "title": "Dengue Analysis",
+  "color_options": {
+    "gt": {
+      "menuItem": "genotype",
+      "legendTitle": "Genotype",
+      "type": "discrete",
+      "key": "genotype"
+    },
+    "Country": {
+      "type": "discrete"
+    },
+    "State": {
+      "type": "discrete"
+    },
+    "num_date": {
+      "menuItem": "date",
+      "legendTitle": "Sampling date",
+      "type": "continuous"
+    }
+  },
+  "geo": [
+    "strain",
+    "Country"
+  ],
+  "defaults": {
+    "mapTriplicate": false,
+    "distanceMeasure": "num_date",
+    "geoResolution": "strain",
+    "colorBy": "num_date"
+  },  
+  "maintainer": [
+    "Rhys Inward",
+    "https://github.com/rhysinward"
+  ],
+  "filters": [
+    "Country",
+    "State"
+  ]
+}
