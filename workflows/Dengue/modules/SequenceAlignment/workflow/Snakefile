@@ -5,6 +5,14 @@ outdir = config["output_namespace"]
 
 serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
+def resource(name = ""):
+    from snakemake.remote import AUTO
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return srcdir(filename)
+
 rule sequence_alignment:
     input:
         fasta_files = expand(
@@ -12,7 +20,7 @@ rule sequence_alignment:
             indir=indir,
             serotype=serotype,
         ),
-        script = srcdir("../resources/scripts/align_sequences.sh"),
+        script = resource("scripts/align_sequences.sh"),
     output:
         align_dir = expand(
             "results/{outdir}/Aligned_{serotype}/nextalign.aligned.fasta",
@@ -28,7 +36,7 @@ rule sequence_alignment:
     params:
         seq_dir = expand("results/{indir}", indir=indir),
         out_dir = expand("results/{outdir}", outdir=outdir),
-        resources_dir = srcdir("../resources"),
+        resources_dir = resource(),
     shell:
         """
         bash {input.script} {params.seq_dir} {params.out_dir} {params.resources_dir}

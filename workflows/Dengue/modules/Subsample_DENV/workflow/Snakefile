@@ -5,6 +5,14 @@ outdir = config["output_namespace"]
 
 DENV = ["1", "2", "3", "4"]
 
+def resource(name = ""):
+    from snakemake.remote import AUTO
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return srcdir(filename)
+
 rule all:
     input:
         subsample_fasta = expand(
@@ -39,7 +47,7 @@ for DENV in DENV:
                 indir=indir["metadata"],
                 DENV=DENV,
             ),
-            script = srcdir("../resources/scripts/subsampler.R")
+            script = resource("scripts/subsampler.R")
         output:
             subsample_fasta = expand(
                 "results/{outdir}/subsampled_Dengue_{DENV}.fasta",

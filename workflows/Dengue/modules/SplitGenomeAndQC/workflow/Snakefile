@@ -5,10 +5,18 @@ outdir = config["output_namespace"]
 
 serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
+def resource(name = ""):
+    from snakemake.remote import AUTO
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return srcdir(filename)
+
 rule split_genome_and_QC:
     input:
         fasta_files = expand("results/{indir}/Aligned_{serotype}/nextalign.aligned.fasta", indir=indir, serotype=serotype),
-        script = srcdir("../resources/scripts/Seperate_EG_and_WG.R"),
+        script = resource("scripts/Seperate_EG_and_WG.R"),
     output:
         E_gene_dir = expand("results/{outdir}/{serotype}_EG.fasta", outdir=outdir, serotype=serotype),
         WG_gene_dir = expand("results/{outdir}/{serotype}_WG.fasta", outdir=outdir, serotype=serotype),
