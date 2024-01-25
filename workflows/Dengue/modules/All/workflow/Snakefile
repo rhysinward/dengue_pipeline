@@ -1,6 +1,0 @@
-# Serotypes
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
-
-rule all:
-    input:
-       expand("auspice/dengue_{serotype}.json", serotype=serotype)
