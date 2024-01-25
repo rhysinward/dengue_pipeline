@@ -4,6 +4,7 @@ indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
 serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
+reference_serotype=("1" "2" "3" "4")
 
 def resource(name = ""):
     from snakemake.remote import AUTO
@@ -13,31 +14,38 @@ def resource(name = ""):
     except TypeError:
         return srcdir(filename)
 
-rule sequence_alignment:
+rule all:
     input:
-        fasta_files = expand(
-            "results/{indir}/Unaligned_{serotype}.fasta",
-            indir=indir,
-            serotype=serotype,
-        ),
-        script = resource("scripts/align_sequences.sh"),
-    output:
-        align_dir = expand(
+        expand(
             "results/{outdir}/Aligned_{serotype}/nextalign.aligned.fasta",
             outdir=outdir,
             serotype=serotype,
-        ),
-    log:
-        "logs/sequence_alignment.log"
-    conda:
-        "envs/alignment.yaml"
-    message:
-        "Running sequence alignment for Dengue serotypes"
-    params:
-        seq_dir = expand("results/{indir}", indir=indir),
-        out_dir = expand("results/{outdir}", outdir=outdir),
-        resources_dir = resource(),
-    shell:
-        """
-        bash {input.script} {params.seq_dir} {params.out_dir} {params.resources_dir}
-        """
+        )
+
+for serotype, reference_serotype in zip(serotype, reference_serotype):
+    rule:
+        name:
+            f"sequence_alignment_{serotype}"
+        input:
+            sequences = f"results/{indir}/Unaligned_{serotype}.fasta",
+            reference = resource(f"reference_genomes/reference_denv{reference_serotype}.fasta"),
+            genemap = resource(f"genemap/genemap_denv{reference_serotype}.gff"),
+        output:
+            align_dir = f"results/{outdir}/Aligned_{serotype}/nextalign.aligned.fasta",
+        log:
+            "logs/sequence_alignment.log"
+        conda:
+            "envs/alignment.yaml"
+        message:
+            "Running sequence alignment for Dengue serotypes"
+        params:
+            output_serotype = f"results/{outdir}/Aligned_{serotype}",
+            resources_dir = resource(),
+        shell:
+            """
+            nextalign run \
+                --reference={input.reference} \
+                --genemap={input.genemap} \
+                --output-all={params.output_serotype} \
+                {input.sequences}
+            """
