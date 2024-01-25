@@ -25,7 +25,7 @@ for serotype in serotype:
         log:
             "logs/iqtree.log"
         message:
-            "Inferring maximum likelihood phylogenetic trees for {serotype} using IQ-TREE."
+            "Inferring maximum likelihood phylogenetic trees for using IQ-TREE."
         shell:
             """
             mkdir -p {params.outdir}

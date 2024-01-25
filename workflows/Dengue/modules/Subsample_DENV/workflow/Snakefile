@@ -65,7 +65,7 @@ for DENV in DENV:
         log:
             "logs/subsample.log"
         message:
-            "Subsampling Dengue {DENV} virus E gene sequences based on specified criteria."
+            "Subsampling Dengue virus E gene sequences based on specified criteria."
         shell:
             """
             rscript {input.script} \
