@@ -9,7 +9,7 @@ def download(filename):
     from snakemake.remote import AUTO
     try:
         return AUTO.remote(filename)
-    except MissingInputException:
+    except TypeError:
         return filename
 
 rule process_dengue_data:

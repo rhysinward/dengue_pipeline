@@ -1,0 +1,124 @@
+configfile: "config/config.yaml"
+import configutil
+config = configutil.remap_params(config)
+
+module dengue_acquiredata:
+    snakefile:
+        eval(
+            f'{config["dengue_acquiredata"]["snakefile"]["function"]}'
+            '(*config["dengue_acquiredata"]["snakefile"]["args"],'
+            '**config["dengue_acquiredata"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_acquiredata"]["config"]
+use rule * from dengue_acquiredata as dengue_acquiredata_*
+
+module dengue_processdenguedata:
+    snakefile:
+        eval(
+            f'{config["dengue_processdenguedata"]["snakefile"]["function"]}'
+            '(*config["dengue_processdenguedata"]["snakefile"]["args"],'
+            '**config["dengue_processdenguedata"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_processdenguedata"]["config"]
+use rule * from dengue_processdenguedata as dengue_processdenguedata_*
+
+module dengue_sequencealignment:
+    snakefile:
+        eval(
+            f'{config["dengue_sequencealignment"]["snakefile"]["function"]}'
+            '(*config["dengue_sequencealignment"]["snakefile"]["args"],'
+            '**config["dengue_sequencealignment"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_sequencealignment"]["config"]
+use rule * from dengue_sequencealignment as dengue_sequencealignment_*
+
+module dengue_splitgenomeandqc:
+    snakefile:
+        eval(
+            f'{config["dengue_splitgenomeandqc"]["snakefile"]["function"]}'
+            '(*config["dengue_splitgenomeandqc"]["snakefile"]["args"],'
+            '**config["dengue_splitgenomeandqc"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_splitgenomeandqc"]["config"]
+use rule * from dengue_splitgenomeandqc as dengue_splitgenomeandqc_*
+
+module dengue_subsample_denv:
+    snakefile:
+        eval(
+            f'{config["dengue_subsample_denv"]["snakefile"]["function"]}'
+            '(*config["dengue_subsample_denv"]["snakefile"]["args"],'
+            '**config["dengue_subsample_denv"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_subsample_denv"]["config"]
+use rule * from dengue_subsample_denv as dengue_subsample_denv_*
+
+module dengue_iqtree:
+    snakefile:
+        eval(
+            f'{config["dengue_iqtree"]["snakefile"]["function"]}'
+            '(*config["dengue_iqtree"]["snakefile"]["args"],'
+            '**config["dengue_iqtree"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_iqtree"]["config"]
+use rule * from dengue_iqtree as dengue_iqtree_*
+
+module dengue_treetime:
+    snakefile:
+        eval(
+            f'{config["dengue_treetime"]["snakefile"]["function"]}'
+            '(*config["dengue_treetime"]["snakefile"]["args"],'
+            '**config["dengue_treetime"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_treetime"]["config"]
+use rule * from dengue_treetime as dengue_treetime_*
+
+module dengue_mutations:
+    snakefile:
+        eval(
+            f'{config["dengue_mutations"]["snakefile"]["function"]}'
+            '(*config["dengue_mutations"]["snakefile"]["args"],'
+            '**config["dengue_mutations"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_mutations"]["config"]
+use rule * from dengue_mutations as dengue_mutations_*
+
+module dengue_translation:
+    snakefile:
+        eval(
+            f'{config["dengue_translation"]["snakefile"]["function"]}'
+            '(*config["dengue_translation"]["snakefile"]["args"],'
+            '**config["dengue_translation"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_translation"]["config"]
+use rule * from dengue_translation as dengue_translation_*
+
+module dengue_mugration:
+    snakefile:
+        eval(
+            f'{config["dengue_mugration"]["snakefile"]["function"]}'
+            '(*config["dengue_mugration"]["snakefile"]["args"],'
+            '**config["dengue_mugration"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_mugration"]["config"]
+use rule * from dengue_mugration as dengue_mugration_*
+
+module dengue_export:
+    snakefile:
+        eval(
+            f'{config["dengue_export"]["snakefile"]["function"]}'
+            '(*config["dengue_export"]["snakefile"]["args"],'
+            '**config["dengue_export"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["dengue_export"]["config"]
+use rule * from dengue_export as dengue_export_*
