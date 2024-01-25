@@ -1,35 +1,29 @@
 # Step 9: Discrete trait reconstruction
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
-rule all:
+rule mugration:
     input:
-        expand("results/{outdir}/traits_{serotype}.json", outdir=outdir, serotype=serotype)
-
-for serotype in serotype:
-    rule:
-        name:
-            f"mugration_{serotype}"
-        input:
-            time_tree = expand("results/{indir}/timetrees/timetree_{serotype}.nwk", indir=indir["treetime"], serotype=serotype),
-            metadata = expand("results/{indir}/subsampled_{serotype}_infoTbl.csv", indir=indir["subsample"], serotype=serotype),
-        output:
-            traits = expand("results/{outdir}/traits_{serotype}.json", outdir=outdir, serotype=serotype),
-        conda:
-            "envs/nextstrain_all.yaml"
-        log:
-            "logs/mugration.log"
-        message:
-            "Use Discrete Trait Reconstruction for country and state"
-        shell:
-            """
-            augur traits \
-                --tree {input.time_tree} \
-                --metadata {input.metadata} \
-                --columns Country State \
-                --confidence \
-                --output {output.traits} 
-            """
+        time_tree=f"results/{indir['treetime']}/timetrees/timetree_{{serotype}}.nwk",
+        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
+    output:
+        traits=f"results/{outdir}/traits_{{serotype}}.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/mugration_{serotype}.log",
+    message:
+        "Use Discrete Trait Reconstruction for country and state"
+    shell:
+        """
+        augur traits \
+            --tree {input.time_tree} \
+            --metadata {input.metadata} \
+            --columns Country State \
+            --confidence \
+            --output {output.traits} 
+        """
