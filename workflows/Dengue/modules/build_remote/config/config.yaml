@@ -1,0 +1,160 @@
+input_namespace: null
+output_namespace: dengue_export
+dengue_acquiredata:
+  name: (Dengue) AcquireData
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/AcquireData/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace: null
+    output_namespace: dengue_acquiredata
+dengue_processdenguedata:
+  name: (Dengue) ProcessDengueData
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/ProcessDengueData/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace: dengue_acquiredata
+    output_namespace: dengue_processdenguedata
+dengue_sequencealignment:
+  name: (Dengue) SequenceAlignment
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/SequenceAlignment/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace: dengue_processdenguedata
+    output_namespace: dengue_sequencealignment
+dengue_splitgenomeandqc:
+  name: (Dengue) SplitGenomeAndQC
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/SplitGenomeAndQC/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace: dengue_sequencealignment
+    output_namespace: dengue_splitgenomeandqc
+dengue_subsample_denv:
+  name: (Dengue) Subsample_DENV
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/Subsample_DENV/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      metadata: dengue_processdenguedata
+      fasta: dengue_splitgenomeandqc
+    output_namespace: dengue_subsample_denv
+dengue_iqtree:
+  name: (Dengue) IQTree
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/IQTree/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace: dengue_subsample_denv
+    output_namespace: dengue_iqtree
+dengue_treetime:
+  name: (Dengue) TreeTime
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/TreeTime/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      fasta: dengue_iqtree
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_treetime
+dengue_mutations:
+  name: (Dengue) Mutations
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/Mutations/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      fasta: dengue_treetime
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_mutations
+dengue_translation:
+  name: (Dengue) Translation
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/Translation/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      mutations: dengue_mutations
+    output_namespace: dengue_translation
+dengue_mugration:
+  name: (Dengue) Mugration
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/Mugration/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      subsample: dengue_subsample_denv
+    output_namespace: dengue_mugration
+dengue_export:
+  name: (Dengue) Export
+  type: module
+  snakefile:
+    function: github
+    args:
+    - jsbrittain/dengue_pipeline
+    kwargs:
+      path: workflows/Dengue/modules/Export/workflow/Snakefile
+      branch: main
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      translation: dengue_translation
+      subsample: dengue_subsample_denv
+      mutations: dengue_mutations
+      mugrations: dengue_mugration
+    output_namespace: dengue_export
