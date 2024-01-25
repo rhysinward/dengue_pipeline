@@ -1,87 +1,54 @@
 # Step 5a: Subsampler DENV
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
-DENV = ["1", "2", "3", "4"]
 
-def resource(name = ""):
+def resource(name=""):
     from snakemake.remote import AUTO
+
     filename = srcdir(f"../resources/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
         return srcdir(filename)
 
-rule all:
+
+rule subsample:
     input:
-        subsample_fasta = expand(
-            "results/{outdir}/subsampled_Dengue_{DENV}.fasta",
-            outdir=outdir,
-            DENV=DENV,
+        fasta_files=expand(
+            "results/{indir}/{{name}}_EG.fasta",
+            indir=indir["fasta"],
         ),
-        subsample_csv = expand(
-            "results/{outdir}/subsampled_Dengue_{DENV}_infoTbl.csv",
-            outdir=outdir,
-            DENV=DENV,
+        metadata_files=expand(
+            "results/{indir}/{{name}}_infoTbl.csv",
+            indir=indir["metadata"],
         ),
-        subsample_txt = expand(
-            "results/{outdir}/subsampled_Dengue_{DENV}_infoTbl.tsv",
-            outdir=outdir,
-            DENV=DENV,
-        ),
-
-
-for DENV in DENV:
-    rule:
-        name:
-            f"subsample_DENV_{DENV}"
-        input:
-            fasta_files = expand(
-                "results/{indir}/Dengue_{DENV}_EG.fasta",
-                indir=indir["fasta"],
-                DENV=DENV,
-            ),
-            metadata_files = expand(
-                "results/{indir}/Dengue_{DENV}_infoTbl.csv",
-                indir=indir["metadata"],
-                DENV=DENV,
-            ),
-            script = resource("scripts/subsampler.R")
-        output:
-            subsample_fasta = expand(
-                "results/{outdir}/subsampled_Dengue_{DENV}.fasta",
-                outdir=outdir,
-                DENV=DENV,
-            ),
-            subsample_csv = expand(
-                "results/{outdir}/subsampled_Dengue_{DENV}_infoTbl.csv",
-                outdir=outdir,
-                DENV=DENV,
-            ),
-            subsample_txt = expand(
-                "results/{outdir}/subsampled_Dengue_{DENV}_infoTbl.tsv",
-                outdir=outdir,
-                DENV=DENV,
-            ),
-        params:
-            country = "Colombia",
-            number_sequences = 500,
-            prop_rd = 0.8,
-            prop_or = 0.2,
-            outdir = expand("results/{outdir}", outdir=outdir),
-        log:
-            "logs/subsample.log"
-        message:
-            "Subsampling Dengue virus E gene sequences based on specified criteria."
-        shell:
-            """
-            rscript {input.script} \
-                --metadata {input.metadata_files} \
-                --fasta {input.fasta_files} \
-                --country {params.country} \
-                --number_sequences {params.number_sequences} \
-                --prop_rd {params.prop_rd} \
-                --prop_or {params.prop_or} \
-                --output_dir {params.outdir}
-            """
+        script=resource("scripts/subsampler.R"),
+    output:
+        subsample_fasta=f"results/{outdir}/subsampled_{{name}}.fasta",
+        subsample_csv=f"results/{outdir}/subsampled_{{name}}_infoTbl.csv",
+        subsample_tsv=f"results/{outdir}/subsampled_{{name}}_infoTbl.tsv",
+    params:
+        country="Colombia",
+        number_sequences=500,
+        prop_rd=0.8,
+        prop_or=0.2,
+        outdir=f"results/{outdir}",
+    log:
+        "logs/subsample_{name}.log",
+    message:
+        "Subsampling Dengue virus E gene sequences based on specified criteria."
+    shell:
+        """
+        rscript {input.script} \
+            --metadata {input.metadata_files} \
+            --fasta {input.fasta_files} \
+            --country {params.country} \
+            --number_sequences {params.number_sequences} \
+            --prop_rd {params.prop_rd} \
+            --prop_or {params.prop_or} \
+            --output_dir {params.outdir}
+        """

@@ -1,46 +1,48 @@
 # Step 8: Translate sequences
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
-def resource(name = ""):
+def resource(name=""):
     from snakemake.remote import AUTO
+
     filename = srcdir(f"../resources/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
         return srcdir(filename)
 
-rule all:
-    input:
-        expand("results/{outdir}/aa_muts_{serotype}.json", outdir=outdir, serotype=serotype)
 
-for serotype in serotype:
-    rule translation:
-        name:
-            f"translation_{serotype}"
-        input:
-            mutations = expand("results/{indir}/subsampled_{serotype}_mutations.json", indir=indir["mutations"], serotype=serotype),
-            time_tree = expand("results/{indir}/timetrees/timetree_{serotype}.nwk", indir=indir["treetime"], serotype=serotype),
-            ref_genomes = resource(f"reference_genomes/reference_{serotype}.gb"),
-        output:
-            amino = expand("results/{outdir}/aa_muts_{serotype}.json", outdir=outdir, serotype=serotype),
-        conda:
-            "envs/nextstrain_all.yaml"
-        log:
-            "logs/translations.log"
-        params:
-            genes = "E"
-        message:
-            "Translate sequences"
-        shell:
-            """
-            augur translate \
-                --tree {input.time_tree} \
-                --ancestral-sequences {input.mutations} \
-                --reference-sequence {input.ref_genomes} \
-                --genes {params.genes} \
-                --output {output.amino} 
-            """
+rule translation:
+    input:
+        mutations=expand(
+            "results/{indir}/subsampled_{{serotype}}_mutations.json",
+            indir=indir["mutations"],
+        ),
+        time_tree=expand(
+            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
+            indir=indir["treetime"],
+        ),
+        ref_genomes=resource(f"reference_genomes/reference_{{serotype}}.gb"),
+    output:
+        amino=f"results/{outdir}/aa_muts_{{serotype}}.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/translations_{serotype}.log",
+    params:
+        genes="E",
+    message:
+        "Translate sequences"
+    shell:
+        """
+        augur translate \
+            --tree {input.time_tree} \
+            --ancestral-sequences {input.mutations} \
+            --reference-sequence {input.ref_genomes} \
+            --genes {params.genes} \
+            --output {output.amino} 
+        """

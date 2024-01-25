@@ -1,13 +1,21 @@
 # Step 1: Acquisition of Genomic Data and Metadata from GenBank
 configfile: "config/config.yaml"
 
+
 rule acquire_data:
     output:
-        zip=expand("results/{outdir}/genbank_data.zip", outdir=config["output_namespace"]),
-        metadata=expand("results/{outdir}/metadata.tsv", outdir=config["output_namespace"]),
-        fasta=expand("results/{outdir}/ncbi_dataset/data/genomic.fna", outdir=config["output_namespace"]),
+        zip=expand(
+            "results/{outdir}/genbank_data.zip", outdir=config["output_namespace"]
+        ),
+        metadata=expand(
+            "results/{outdir}/metadata.tsv", outdir=config["output_namespace"]
+        ),
+        fasta=expand(
+            "results/{outdir}/ncbi_dataset/data/genomic.fna",
+            outdir=config["output_namespace"],
+        ),
     log:
-        "logs/acquire_data.log"
+        "logs/acquire_data.log",
     message:
         "Acquiring Genomic Data and Metadata from NCBI database"
     conda:
@@ -16,8 +24,12 @@ rule acquire_data:
         outdir=expand("results/{outdir}", outdir=config["output_namespace"]),
     shell:
         """
-        datasets download virus genome taxon "Dengue Virus" --filename {output.zip} &> {log}
-        datasets summary virus genome taxon "Dengue Virus" --released-after 2000-01-01 --as-json-lines | dataformat tsv virus-genome > {output.metadata} 2>> {log}
+        datasets download virus genome taxon "Dengue Virus" \
+            --filename {output.zip} &> {log}
+        datasets summary virus genome taxon "Dengue Virus" \
+            --released-after 2000-01-01 \
+            --as-json-lines \
+        | dataformat tsv virus-genome > {output.metadata} 2>> {log}
         
         # Unzip the downloaded data
         unzip -d {params.outdir} {output.zip}

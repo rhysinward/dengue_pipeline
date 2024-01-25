@@ -1,43 +1,46 @@
 # Step 7: Building Time-Calibrated Trees
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
-rule all:
+rule treetime:
     input:
-        tree = expand("results/{outdir}/timetrees/timetree_{serotype}.nwk", outdir=outdir, serotype=serotype),
-
-for serotype in serotype:
-    rule:
-        name:
-            f"timetree_{serotype}"
-        input:
-            aln = expand("results/{indir}/subsampled_{serotype}.fasta", indir=indir["metadata"], serotype=serotype),
-            ml_tree = expand("results/{indir}/subsampled_{serotype}.fasta.treefile", indir=indir["fasta"], serotype=serotype),
-            metadata = expand("results/{indir}/subsampled_{serotype}_infoTbl.csv", indir=indir["metadata"], serotype=serotype),
-        output:
-            tree = expand("results/{outdir}/timetrees/timetree_{serotype}.nwk", outdir=outdir, serotype=serotype),
-            branch_lengths = expand("results/{outdir}/timetrees/{serotype}_branch_lengths.json", outdir=outdir, serotype=serotype),
-        conda:
-            "envs/nextstrain_all.yaml"
-        log:
-            "logs/treetime.log"
-        message:
-            "Inferring time-calibrated trees for each Dengue virus serotype."
-        shell:
-            """
-            augur refine \
-                --tree {input.ml_tree} \
-                --alignment {input.aln} \
-                --metadata {input.metadata} \
-                --output-tree {output.tree} \
-                --output-node-data {output.branch_lengths} \
-                --timetree \
-                --coalescent opt \
-                --date-confidence \
-                --date-inference marginal \
-                --clock-filter-iqd 3 \
-                --root best
-            """
+        aln=expand(
+            "results/{indir}/subsampled_{{serotype}}.fasta",
+            indir=indir["metadata"],
+        ),
+        ml_tree=expand(
+            "results/{indir}/subsampled_{{serotype}}.fasta.treefile",
+            indir=indir["fasta"],
+        ),
+        metadata=expand(
+            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
+            indir=indir["metadata"],
+        ),
+    output:
+        tree=f"results/{outdir}/timetrees/timetree_{{serotype}}.nwk",
+        branch_lengths=f"results/{outdir}/timetrees/{{serotype}}_branch_lengths.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/treetime_{serotype}.log",
+    message:
+        "Inferring time-calibrated trees for each Dengue virus serotype."
+    shell:
+        """
+        augur refine \
+            --tree {input.ml_tree} \
+            --alignment {input.aln} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.branch_lengths} \
+            --timetree \
+            --coalescent opt \
+            --date-confidence \
+            --date-inference marginal \
+            --clock-filter-iqd 3 \
+            --root best
+        """
