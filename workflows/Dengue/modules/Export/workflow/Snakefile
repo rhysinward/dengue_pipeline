@@ -4,6 +4,14 @@ outdir = config["output_namespace"]
 
 serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
+def resource(name = ""):
+    from snakemake.remote import AUTO
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return srcdir(filename)
+
 rule all:
     input:
         expand("results/{outdir}/dengue_{serotype}.json", outdir=outdir, serotype=serotype),
@@ -20,7 +28,7 @@ for serotype in serotype:
             traits = expand("results/{indir}/traits_{serotype}.json", indir=indir["mugrations"], serotype=serotype),
             aa_muts = expand("results/{indir}/aa_muts_{serotype}.json", indir=indir["translation"], serotype=serotype),
             nt_muts = expand("results/{indir}/subsampled_{serotype}_mutations.json", indir=indir["mutations"], serotype=serotype),
-            auspice_config = srcdir("../resources/config/auspice_config.json"),
+            auspice_config = resource("config/auspice_config.json"),
         output:
             auspice_json = expand("results/{outdir}/dengue_{serotype}.json", outdir=outdir, serotype=serotype),
         conda:
