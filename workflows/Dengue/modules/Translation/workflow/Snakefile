@@ -16,7 +16,7 @@ for serotype in serotype:
         input:
             mutations = expand("results/{indir}/subsampled_{serotype}_mutations.json", indir=indir["mutations"], serotype=serotype),
             time_tree = expand("results/{indir}/timetrees/timetree_{serotype}.nwk", indir=indir["treetime"], serotype=serotype),
-            ref_genomes = expand("resources/reference_genomes/reference_{serotype}.gb", serotype=serotype),
+            ref_genomes = srcdir(f"../resources/reference_genomes/reference_{serotype}.gb"),
         output:
             amino = expand("results/{outdir}/aa_muts_{serotype}.json", outdir=outdir, serotype=serotype),
         conda:

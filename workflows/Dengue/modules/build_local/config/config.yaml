@@ -1,0 +1,94 @@
+input_namespace: null
+output_namespace: dengue_export
+dengue_acquiredata:
+  name: dengue_acquiredata
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/AcquireData/workflow/Snakefile
+  config:
+    input_namespace: null
+    output_namespace: dengue_acquiredata
+dengue_processdenguedata:
+  name: dengue_processdenguedata
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/ProcessDengueData/workflow/Snakefile
+  config:
+    input_namespace: dengue_acquiredata
+    output_namespace: dengue_processdenguedata
+dengue_sequencealignment:
+  name: dengue_sequencealignment
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/SequenceAlignment/workflow/Snakefile
+  config:
+    input_namespace: dengue_processdenguedata
+    output_namespace: dengue_sequencealignment
+dengue_splitgenomeandqc:
+  name: dengue_splitgenomeandqc
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/SplitGenomeAndQC/workflow/Snakefile
+  config:
+    input_namespace: dengue_sequencealignment
+    output_namespace: dengue_splitgenomeandqc
+dengue_subsample_denv:
+  name: dengue_subsample_denv
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/Subsample_DENV/workflow/Snakefile
+  config:
+    input_namespace:
+      metadata: dengue_processdenguedata
+      fasta: dengue_splitgenomeandqc
+    output_namespace: dengue_subsample_denv
+dengue_iqtree:
+  name: dengue_iqtree
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/IQTree/workflow/Snakefile
+  config:
+    input_namespace: dengue_subsample_denv
+    output_namespace: dengue_iqtree
+dengue_treetime:
+  name: dengue_treetime
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/TreeTime/workflow/Snakefile
+  config:
+    input_namespace:
+      fasta: dengue_iqtree
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_treetime
+dengue_mutations:
+  name: dengue_mutations
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/Mutations/workflow/Snakefile
+  config:
+    input_namespace:
+      fasta: dengue_treetime
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_mutations
+dengue_translation:
+  name: dengue_translation
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/Translation/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      mutations: dengue_mutations
+    output_namespace: dengue_translation
+dengue_mugration:
+  name: dengue_mugration
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/Mugration/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      subsample: dengue_subsample_denv
+    output_namespace: dengue_mugration
+dengue_export:
+  name: dengue_export
+  type: module
+  snakefile: /Users/jsb/repos/jsbrittain/dengue_pipeline/workflows/Dengue/modules/Export/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      translation: dengue_translation
+      subsample: dengue_subsample_denv
+      mutations: dengue_mutations
+      mugrations: dengue_mugration
+    output_namespace: dengue_export
