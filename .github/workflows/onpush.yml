@@ -19,9 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: workflows/Dengue/modules/build_remote
+        working-directory: workflows/Dengue/modules/build_local
+    strategy:
+      matrix:
+        python-version: ["3.11"]
     steps:
       - uses: actions/checkout@v3
-      - name: Test build pipeline
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
-          ./run_docker.sh
+          python -m pip install --upgrade pip
+          python -m pip install snakemake
+      - name: Test pipeline
+        run: |
+          ./run.sh
