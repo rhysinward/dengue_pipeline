@@ -32,7 +32,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install snakemake
+          python -m pip install pulp==2.7.0 snakemake==7.32
+          conda init
+          conda activate base
+          conda install -n base -c conda-forge mamba
       - name: Test pipeline
         run: |
           ./run.sh
