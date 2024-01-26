@@ -1,4 +1,4 @@
 input_namespace:
   treetime: treetime
   mutations: mutations
-output_namespace: translation
+output_namespace: out

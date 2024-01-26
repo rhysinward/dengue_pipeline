@@ -37,3 +37,10 @@ rule mutations:
             --inference joint \
             --output-node-data {output.mutations}
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/subsampled_Dengue_1_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_2_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_3_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_4_mutations.json",

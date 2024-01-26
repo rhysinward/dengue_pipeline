@@ -1,2 +1,2 @@
-input_namespace: subsample_denv
-output_namespace: iqtree
+input_namespace: in
+output_namespace: out

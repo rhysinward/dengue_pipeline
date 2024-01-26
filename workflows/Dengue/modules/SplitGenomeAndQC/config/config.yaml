@@ -1,2 +1,2 @@
-input_namespace: sequencealignment
-output_namespace: splitgenomeandqc
+input_namespace: in
+output_namespace: out

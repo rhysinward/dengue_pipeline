@@ -1,4 +1,4 @@
 input_namespace:
   fasta: iqtree
   metadata: subsample_denv
-output_namespace: treetime
+output_namespace: out

@@ -7,6 +7,11 @@ dengue_acquiredata:
   config:
     input_namespace: null
     output_namespace: dengue_acquiredata
+    params:
+      "Sequence": virus genome taxon "Dengue Virus"
+      "Command line arguments":
+        - "--released-after 2000-01-01"
+      "Data format": virus-genome
 dengue_processdenguedata:
   name: dengue_processdenguedata
   type: module
@@ -14,6 +19,9 @@ dengue_processdenguedata:
   config:
     input_namespace: dengue_acquiredata
     output_namespace: dengue_processdenguedata
+    params:
+      "Start date": 2000-01-01
+      "End date": 2023-12-24
 dengue_sequencealignment:
   name: dengue_sequencealignment
   type: module
@@ -37,6 +45,11 @@ dengue_subsample_denv:
       metadata: dengue_processdenguedata
       fasta: dengue_splitgenomeandqc
     output_namespace: dengue_subsample_denv
+    params:
+      country: Colombia
+      number_sequences: 500
+      prop_rd: 0.8
+      prop_or: 0.2
 dengue_iqtree:
   name: dengue_iqtree
   type: module

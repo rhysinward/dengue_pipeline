@@ -44,3 +44,10 @@ rule treetime:
             --clock-filter-iqd 3 \
             --root best
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/timetrees/timetree_Dengue_1.nwk",
+        f"results/{outdir}/timetrees/timetree_Dengue_2.nwk",
+        f"results/{outdir}/timetrees/timetree_Dengue_3.nwk",
+        f"results/{outdir}/timetrees/timetree_Dengue_4.nwk",

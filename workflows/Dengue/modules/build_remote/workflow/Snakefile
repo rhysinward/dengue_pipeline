@@ -1,6 +1,10 @@
 configfile: "config/config.yaml"
+
+
 import configutil
+
 config = configutil.remap_params(config)
+
 
 module dengue_acquiredata:
     snakefile:
@@ -11,7 +15,10 @@ module dengue_acquiredata:
         )
     config:
         config["dengue_acquiredata"]["config"]
+
+
 use rule * from dengue_acquiredata as dengue_acquiredata_*
+
 
 module dengue_processdenguedata:
     snakefile:
@@ -22,7 +29,10 @@ module dengue_processdenguedata:
         )
     config:
         config["dengue_processdenguedata"]["config"]
+
+
 use rule * from dengue_processdenguedata as dengue_processdenguedata_*
+
 
 module dengue_sequencealignment:
     snakefile:
@@ -33,7 +43,10 @@ module dengue_sequencealignment:
         )
     config:
         config["dengue_sequencealignment"]["config"]
+
+
 use rule * from dengue_sequencealignment as dengue_sequencealignment_*
+
 
 module dengue_splitgenomeandqc:
     snakefile:
@@ -44,7 +57,10 @@ module dengue_splitgenomeandqc:
         )
     config:
         config["dengue_splitgenomeandqc"]["config"]
+
+
 use rule * from dengue_splitgenomeandqc as dengue_splitgenomeandqc_*
+
 
 module dengue_subsample_denv:
     snakefile:
@@ -55,7 +71,10 @@ module dengue_subsample_denv:
         )
     config:
         config["dengue_subsample_denv"]["config"]
+
+
 use rule * from dengue_subsample_denv as dengue_subsample_denv_*
+
 
 module dengue_iqtree:
     snakefile:
@@ -66,7 +85,10 @@ module dengue_iqtree:
         )
     config:
         config["dengue_iqtree"]["config"]
+
+
 use rule * from dengue_iqtree as dengue_iqtree_*
+
 
 module dengue_treetime:
     snakefile:
@@ -77,7 +99,10 @@ module dengue_treetime:
         )
     config:
         config["dengue_treetime"]["config"]
+
+
 use rule * from dengue_treetime as dengue_treetime_*
+
 
 module dengue_mutations:
     snakefile:
@@ -88,7 +113,10 @@ module dengue_mutations:
         )
     config:
         config["dengue_mutations"]["config"]
+
+
 use rule * from dengue_mutations as dengue_mutations_*
+
 
 module dengue_translation:
     snakefile:
@@ -99,7 +127,10 @@ module dengue_translation:
         )
     config:
         config["dengue_translation"]["config"]
+
+
 use rule * from dengue_translation as dengue_translation_*
+
 
 module dengue_mugration:
     snakefile:
@@ -110,7 +141,10 @@ module dengue_mugration:
         )
     config:
         config["dengue_mugration"]["config"]
+
+
 use rule * from dengue_mugration as dengue_mugration_*
+
 
 module dengue_export:
     snakefile:
@@ -121,4 +155,6 @@ module dengue_export:
         )
     config:
         config["dengue_export"]["config"]
+
+
 use rule * from dengue_export as dengue_export_*
