@@ -26,3 +26,10 @@ rule iqtree:
         iqtree2 -s {input.aln} -m {params.model} -redo
         mv {input.aln}.* {params.outdir}
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/subsampled_Dengue_1.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_2.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_3.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_4.fasta.treefile",

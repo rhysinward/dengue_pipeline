@@ -29,7 +29,7 @@ WORKDIR /home/user/workflow
 
 # Set-up the workflow conda environments
 ENV TERM=xterm-color
-RUN snakemake --conda-create-envs-only --use-conda --cores 1 dengue_export_all
+RUN snakemake --conda-create-envs-only --use-conda --cores 4 dengue_export_all
 
 # Run the workflow script
 CMD ["bash", "-i", "-c", "./run.sh"]

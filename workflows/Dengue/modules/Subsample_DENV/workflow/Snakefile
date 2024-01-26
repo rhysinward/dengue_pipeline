@@ -4,6 +4,7 @@ configfile: "config/config.yaml"
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
+params = config["params"]
 
 
 def resource(name=""):
@@ -13,7 +14,7 @@ def resource(name=""):
     try:
         return AUTO.remote(filename)
     except TypeError:
-        return srcdir(filename)
+        return filename
 
 
 rule subsample:
@@ -32,10 +33,10 @@ rule subsample:
         subsample_csv=f"results/{outdir}/subsampled_{{name}}_infoTbl.csv",
         subsample_tsv=f"results/{outdir}/subsampled_{{name}}_infoTbl.tsv",
     params:
-        country="Colombia",
-        number_sequences=500,
-        prop_rd=0.8,
-        prop_or=0.2,
+        country=params["country"],
+        number_sequences=params["number_sequences"],
+        prop_rd=params["prop_rd"],
+        prop_or=params["prop_or"],
         outdir=f"results/{outdir}",
     log:
         "logs/subsample_{name}.log",
@@ -52,3 +53,10 @@ rule subsample:
             --prop_or {params.prop_or} \
             --output_dir {params.outdir}
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/subsampled_Dengue_1.fasta",
+        f"results/{outdir}/subsampled_Dengue_2.fasta",
+        f"results/{outdir}/subsampled_Dengue_3.fasta",
+        f"results/{outdir}/subsampled_Dengue_4.fasta",

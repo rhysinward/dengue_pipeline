@@ -1,2 +1,2 @@
-input_namespace: processdenguedata
-output_namespace: sequencealignment
+input_namespace: in
+output_namespace: out

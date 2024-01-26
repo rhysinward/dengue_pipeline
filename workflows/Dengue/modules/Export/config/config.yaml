@@ -4,5 +4,4 @@ input_namespace:
   subsample: subsample_denv
   mutations: mutations
   mugrations: mugrations
-output_namespace:
-  auspice
+output_namespace: out

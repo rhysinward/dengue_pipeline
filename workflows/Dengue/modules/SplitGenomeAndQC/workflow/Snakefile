@@ -1,35 +1,57 @@
 # Step 4: Segregating E gene and Whole Genomes and performing quaility control
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
 
-def resource(name = ""):
+def resource(name=""):
     from snakemake.remote import AUTO
+
     filename = srcdir(f"../resources/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
-        return srcdir(filename)
+        return filename
+
 
 rule split_genome_and_QC:
     input:
-        fasta_files = expand("results/{indir}/Aligned_{serotype}/nextalign.aligned.fasta", indir=indir, serotype=serotype),
-        script = resource("scripts/Seperate_EG_and_WG.R"),
+        expand(
+            "results/{indir}/Aligned_{serotype}/nextalign.aligned.fasta",
+            indir=indir,
+            serotype=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),
+        fasta_files=f"results/{indir}/Aligned_{{serotype}}/nextalign.aligned.fasta",
+        script=resource("scripts/Seperate_EG_and_WG.R"),
     output:
-        E_gene_dir = expand("results/{outdir}/{serotype}_EG.fasta", outdir=outdir, serotype=serotype),
-        WG_gene_dir = expand("results/{outdir}/{serotype}_WG.fasta", outdir=outdir, serotype=serotype),
+        E_gene_dir=f"results/{outdir}/{{serotype}}_EG.fasta",
+        WG_gene_dir=f"results/{outdir}/{{serotype}}_WG.fasta",
     params:
-        wg_threshold = 0.29,
-        eg_threshold = 0.05,
-        indir = expand("results/{indir}", indir=indir),
-        outdir = expand("results/{outdir}", outdir=outdir),
+        wg_threshold=0.29,
+        eg_threshold=0.05,
+        indir=f"results/{indir}",
+        outdir=f"results/{outdir}",
     log:
-        "logs/process_dengue_data.log"
+        "logs/split_genome_and_QC_{serotype}.log",
     message:
-        "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
+        (
+            "Segregating E gene and whole genomes from aligned Dengue virus sequences "
+            "and performing quality control."
+        )
     shell:
         """
-        Rscript {input.script} --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold} --input_dir {params.indir} --output_dir {params.outdir}
+        Rscript {input.script} \
+            --WG_threshold {params.wg_threshold} \
+            --EG_threshold {params.eg_threshold} \
+            --input_dir {params.indir} \
+            --output_dir {params.outdir}
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/Dengue_1_EG.fasta",
+        f"results/{outdir}/Dengue_2_EG.fasta",
+        f"results/{outdir}/Dengue_3_EG.fasta",
+        f"results/{outdir}/Dengue_4_EG.fasta",

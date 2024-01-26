@@ -13,7 +13,7 @@ def resource(name=""):
     try:
         return AUTO.remote(filename)
     except TypeError:
-        return srcdir(filename)
+        return filename
 
 
 rule translation:
@@ -46,3 +46,10 @@ rule translation:
             --genes {params.genes} \
             --output {output.amino} 
         """
+
+rule _test:
+    input:
+        f"results/{outdir}/aa_muts_Dengue_1.json",
+        f"results/{outdir}/aa_muts_Dengue_2.json",
+        f"results/{outdir}/aa_muts_Dengue_3.json",
+        f"results/{outdir}/aa_muts_Dengue_4.json",
