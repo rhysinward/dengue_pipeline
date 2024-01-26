@@ -9,22 +9,31 @@ workflow_srcdir = srcdir('')
 
 
 def resource(name=""):
+    import os
     from snakemake.remote import AUTO
 
-    filename = f"{workflow_srcdir}../resources/{name}"
     try:
-        return AUTO.remote(filename)
+        return AUTO.remote('/'.join([workflow_srcdir, "..", "resources", name]))
     except TypeError:
-        return filename
+        import os
+        return os.path.join(workflow_srcdir, "..", "resources", name)
 
 
 def get_reference_genome_filename_from_wildcards(wildcards):
+    print("get_reference_genome_filename_from_wildcards")
+    print(f"{wildcards=}")
     ref_num = wildcards.serotype.split("_")[-1]
-    return resource(f"reference_genomes/reference_denv{ref_num}.fasta")
+    out = resource(f"reference_genomes/reference_denv{ref_num}.fasta")
+    print(f"{out=}")
+    return out
 
 def get_genemap_filename_from_wildcards(wildcards):
+    print("get_genemap_filename_from_wildcards")
+    print(f"{wildcards=}")
     ref_num = wildcards.serotype.split("_")[-1]
-    return resource(f"genemap/genemap_denv{ref_num}.gff"),
+    out = resource(f"genemap/genemap_denv{ref_num}.gff")
+    print(f"{out=}")
+    return out
 
 rule sequence_alignment:
     input:
