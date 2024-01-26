@@ -9,9 +9,9 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Set-up conda
-COPY --from=conda /opt/conda /opt/conda
 ENV PATH="/opt/conda/bin:${PATH}"
-RUN conda config --set channel_priority strict
+RUN mamba config --set channel_priority strict
+RUN mamba update -y -n base -c defaults conda
 
 # Install snakemake
 # NOTE: We version tag pulp to permit snakemake to install with a compatible version
