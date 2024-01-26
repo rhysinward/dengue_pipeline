@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -l {0}
         working-directory: workflows/Dengue/modules/build_local
     strategy:
       matrix:
@@ -36,22 +35,11 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Initialise conda base
+      - name: Initialise mamba
         run: |
-          conda init
-      - name: Install mamba
-        run: |
-          conda activate base
-          conda install -y -n base -c conda-forge mamba
-          conda config --set channel_priority strict
-      - name: Install dependencies
-        run: |
+          wget -O Mambaforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"
+          bash Mambaforge.sh -b
+          export CONDA_PATH="${HOME}"/mambaforge/bin
           python -m pip install --upgrade pip
           python -m pip install pulp==2.7.0 snakemake==7.32
-      # Enable tmate debugging of manually-triggered workflows if the input option was provided
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-      - name: Test pipeline
-        run: |
           ./run.sh
