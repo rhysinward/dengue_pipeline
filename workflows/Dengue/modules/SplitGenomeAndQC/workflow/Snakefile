@@ -6,10 +6,10 @@ indir = config["input_namespace"]
 outdir = config["output_namespace"]
 
 
-def resource(name=""):
+def script(name=""):
     from snakemake.remote import AUTO
 
-    filename = srcdir(f"../resources/{name}")
+    filename = srcdir(f"scripts/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
@@ -24,7 +24,7 @@ rule split_genome_and_QC:
             serotype=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
         ),
         fasta_files=f"results/{indir}/Aligned_{{serotype}}/nextalign.aligned.fasta",
-        script=resource("scripts/Seperate_EG_and_WG.R"),
+        script=script("Seperate_EG_and_WG.R"),
     output:
         E_gene_dir=f"results/{outdir}/{{serotype}}_EG.fasta",
         WG_gene_dir=f"results/{outdir}/{{serotype}}_WG.fasta",

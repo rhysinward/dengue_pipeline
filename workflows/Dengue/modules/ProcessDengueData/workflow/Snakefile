@@ -7,10 +7,10 @@ outdir = config["output_namespace"]
 params = config["params"]
 
 
-def resource(name=""):
+def script(name=""):
     from snakemake.remote import AUTO
 
-    filename = srcdir(f"../resources/{name}")
+    filename = srcdir(f"scripts/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
@@ -21,7 +21,7 @@ rule process_dengue_data:
     input:
         metadata=f"results/{indir}/metadata.tsv",
         fasta=f"results/{indir}/ncbi_dataset/data/genomic.fna",
-        script=resource("scripts/Clean_metadata_and_fasta.R"),
+        script=script("Clean_metadata_and_fasta.R"),
     output:
         fasta_files=f"results/{outdir}/Unaligned_{{serotype}}.fasta",
         info_tables_txt=f"results/{outdir}/{{serotype}}_infoTbl.txt",

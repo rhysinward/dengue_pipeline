@@ -7,10 +7,10 @@ outdir = config["output_namespace"]
 params = config["params"]
 
 
-def resource(name=""):
+def script(name=""):
     from snakemake.remote import AUTO
 
-    filename = srcdir(f"../resources/{name}")
+    filename = srcdir(f"scripts/{name}")
     try:
         return AUTO.remote(filename)
     except TypeError:
@@ -27,7 +27,7 @@ rule subsample:
             "results/{indir}/{{name}}_infoTbl.csv",
             indir=indir["metadata"],
         ),
-        script=resource("scripts/subsampler.R"),
+        script=script("subsampler.R"),
     output:
         subsample_fasta=f"results/{outdir}/subsampled_{{name}}.fasta",
         subsample_csv=f"results/{outdir}/subsampled_{{name}}_infoTbl.csv",
