@@ -9,9 +9,14 @@ options(repos = c(CRAN = "http://cran.us.r-project.org"))
 # Function to check and install packages
 suppressMessages(
   for (package in required_packages) {
-    if (!require(package, character.only = TRUE)) {
-      install.packages(package, repos = "http://cran.us.r-project.org")
-    }
+    #if (!require(package, character.only = TRUE)) {
+    #  install.packages(
+    #    package,
+    #    repos = "http://cran.us.r-project.org",
+    #    dependencies = TRUE,
+    #    INSTALL_opts = '--no-lock'
+    #  )
+    #}
     library(package, character.only = TRUE)
   }
 )

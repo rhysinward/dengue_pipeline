@@ -40,6 +40,8 @@ rule split_genome_and_QC:
             "Segregating E gene and whole genomes from aligned Dengue virus sequences "
             "and performing quality control."
         )
+    conda:
+        "envs/conda.yaml"
     shell:
         """
         Rscript {input.script} \
