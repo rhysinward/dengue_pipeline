@@ -42,9 +42,11 @@ rule subsample:
         "logs/subsample_{name}.log",
     message:
         "Subsampling Dengue virus E gene sequences based on specified criteria."
+    conda:
+        "envs/conda.yaml"
     shell:
         """
-        rscript {input.script} \
+        Rscript {input.script} \
             --metadata {input.metadata_files} \
             --fasta {input.fasta_files} \
             --country {params.country} \

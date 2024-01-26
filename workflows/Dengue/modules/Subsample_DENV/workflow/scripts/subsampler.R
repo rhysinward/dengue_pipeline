@@ -4,9 +4,9 @@ required_packages <- c("optparse", "dplyr","lubridate","tidyr",
                        "ggplot2","purrr")
 suppressMessages(
   for (package in required_packages) {
-    if (!require(package, character.only = TRUE)) {
-      install.packages(package, repos = "http://cran.us.r-project.org")
-    }
+    #if (!require(package, character.only = TRUE)) {
+    #  install.packages(package, repos = "http://cran.us.r-project.org")
+    #}
     library(package, character.only = TRUE)
   }
 )
