@@ -20,20 +20,12 @@ def resource(name=""):
 
 
 def get_reference_genome_filename_from_wildcards(wildcards):
-    print("get_reference_genome_filename_from_wildcards")
-    print(f"{wildcards=}")
     ref_num = wildcards.serotype.split("_")[-1]
-    out = resource(f"reference_genomes/reference_denv{ref_num}.fasta")
-    print(f"{out=}")
-    return out
+    return resource(f"reference_genomes/reference_denv{ref_num}.fasta")
 
 def get_genemap_filename_from_wildcards(wildcards):
-    print("get_genemap_filename_from_wildcards")
-    print(f"{wildcards=}")
     ref_num = wildcards.serotype.split("_")[-1]
-    out = resource(f"genemap/genemap_denv{ref_num}.gff")
-    print(f"{out=}")
-    return out
+    return resource(f"genemap/genemap_denv{ref_num}.gff")
 
 rule sequence_alignment:
     input:
