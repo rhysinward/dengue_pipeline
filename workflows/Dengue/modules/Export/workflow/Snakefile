@@ -1,0 +1,75 @@
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
+
+
+def resource(name=""):
+    from snakemake.remote import AUTO
+
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return filename
+
+
+rule all:
+    input:
+        expand(
+            "results/{outdir}/dengue_{serotype}.json",
+            outdir=outdir,
+            serotype=serotype,
+        ),
+
+
+"""Exporting data files for auspice"""
+
+
+rule export:
+    input:
+        tree=expand(
+            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
+            indir=indir["treetime"],
+        ),
+        metadata=expand(
+            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
+            indir=indir["subsample"],
+        ),
+        branch_lengths=expand(
+            "results/{indir}/timetrees/{{serotype}}_branch_lengths.json",
+            indir=indir["treetime"],
+        ),
+        traits=expand(
+            "results/{indir}/traits_{{serotype}}.json",
+            indir=indir["mugrations"],
+        ),
+        aa_muts=expand(
+            "results/{indir}/aa_muts_{{serotype}}.json",
+            indir=indir["translation"],
+        ),
+        nt_muts=expand(
+            "results/{indir}/subsampled_{{serotype}}_mutations.json",
+            indir=indir["mutations"],
+        ),
+        auspice_config=resource("config/auspice_config.json"),
+    output:
+        auspice_json=f"results/{outdir}/dengue_{{serotype}}.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/export_{serotype}.log",
+    message:
+        "Export for visualisation in Auspice"
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
+            --auspice-config {input.auspice_config} \
+            --output {output.auspice_json}
+        """

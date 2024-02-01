@@ -1,0 +1,42 @@
+# Step 9: Discrete trait reconstruction
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+
+rule mugration:
+    input:
+        time_tree=expand(
+            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
+            indir=indir['treetime'],
+        ),
+        metadata=expand(
+            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
+            indir=indir['subsample'],
+        ),
+    output:
+        traits=f"results/{outdir}/traits_{{serotype}}.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/mugration_{serotype}.log",
+    message:
+        "Use Discrete Trait Reconstruction for country and state"
+    shell:
+        """
+        augur traits \
+            --tree {input.time_tree} \
+            --metadata {input.metadata} \
+            --columns Country State \
+            --confidence \
+            --output {output.traits} 
+        """
+
+rule _test:
+    input:
+        f"results/{outdir}/traits_Dengue_1.json",
+        f"results/{outdir}/traits_Dengue_2.json",
+        f"results/{outdir}/traits_Dengue_3.json",
+        f"results/{outdir}/traits_Dengue_4.json",

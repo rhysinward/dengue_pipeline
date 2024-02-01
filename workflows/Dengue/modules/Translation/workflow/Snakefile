@@ -1,0 +1,55 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+
+def resource(name=""):
+    from snakemake.remote import AUTO
+
+    filename = srcdir(f"../resources/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return filename
+
+
+rule translation:
+    input:
+        mutations=expand(
+            "results/{indir}/subsampled_{{serotype}}_mutations.json",
+            indir=indir["mutations"],
+        ),
+        time_tree=expand(
+            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
+            indir=indir["treetime"],
+        ),
+        ref_genomes=resource(f"reference_genomes/reference_{{serotype}}.gb"),
+    output:
+        amino=f"results/{outdir}/aa_muts_{{serotype}}.json",
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/translations_{serotype}.log",
+    params:
+        genes="E",
+    message:
+        "Translate sequences"
+    shell:
+        """
+        augur translate \
+            --tree {input.time_tree} \
+            --ancestral-sequences {input.mutations} \
+            --reference-sequence {input.ref_genomes} \
+            --genes {params.genes} \
+            --output {output.amino} 
+        """
+
+rule _test:
+    input:
+        f"results/{outdir}/aa_muts_Dengue_1.json",
+        f"results/{outdir}/aa_muts_Dengue_2.json",
+        f"results/{outdir}/aa_muts_Dengue_3.json",
+        f"results/{outdir}/aa_muts_Dengue_4.json",
