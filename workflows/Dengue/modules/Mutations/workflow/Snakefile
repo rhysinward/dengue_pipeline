@@ -1,0 +1,46 @@
+# Step 7: Infer "ancestral" mutations across the tree
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+
+
+rule mutations:
+    input:
+        aln=expand(
+            "results/{indir}/subsampled_{{serotype}}.fasta",
+            indir=indir["metadata"],
+        ),
+        time_tree=expand(
+            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
+            indir=indir["fasta"],
+        ),
+    output:
+        mutations=expand(
+            "results/{outdir}/subsampled_{{serotype}}_mutations.json",
+            outdir=outdir,
+        ),
+    conda:
+        "envs/nextstrain_all.yaml"
+    log:
+        "logs/mutations_{serotype}.log",
+    message:
+        "Infer ancestral mutations across the tree"
+    params:
+        outdir=f"results/{outdir}",
+    shell:
+        """
+        augur ancestral \
+            --tree {input.time_tree} \
+            --alignment {input.aln} \
+            --inference joint \
+            --output-node-data {output.mutations}
+        """
+
+rule _test:
+    input:
+        f"results/{outdir}/subsampled_Dengue_1_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_2_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_3_mutations.json",
+        f"results/{outdir}/subsampled_Dengue_4_mutations.json",

@@ -1,0 +1,60 @@
+# Step 3: Sequence alignment
+configfile: "config/config.yaml"
+from snakemake.remote import AUTO
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+workflow_srcdir = srcdir('')
+
+
+def resource(name=""):
+    import os
+    from snakemake.remote import AUTO
+
+    try:
+        return AUTO.remote('/'.join([workflow_srcdir, "..", "resources", name]))
+    except TypeError:
+        import os
+        return os.path.join(workflow_srcdir, "..", "resources", name)
+
+
+def get_reference_genome_filename_from_wildcards(wildcards):
+    ref_num = wildcards.serotype.split("_")[-1]
+    return resource(f"reference_genomes/reference_denv{ref_num}.fasta")
+
+def get_genemap_filename_from_wildcards(wildcards):
+    ref_num = wildcards.serotype.split("_")[-1]
+    return resource(f"genemap/genemap_denv{ref_num}.gff")
+
+rule sequence_alignment:
+    input:
+        sequences=f"results/{indir}/Unaligned_{{serotype}}.fasta",
+        reference=get_reference_genome_filename_from_wildcards,
+        genemap=get_genemap_filename_from_wildcards,
+    output:
+        align_dir=f"results/{outdir}/Aligned_{{serotype}}/nextalign.aligned.fasta",
+    log:
+        "logs/sequence_alignment_{serotype}.log",
+    conda:
+        "envs/alignment.yaml"
+    message:
+        "Running sequence alignment for Dengue serotypes"
+    params:
+        output_serotype=f"results/{outdir}/Aligned_{{serotype}}",
+        resources_dir=resource(),
+    shell:
+        """
+        nextalign run \
+            --reference={input.reference} \
+            --genemap={input.genemap} \
+            --output-all={params.output_serotype} \
+            {input.sequences}
+        """
+
+rule _test:
+    input:
+        f"results/{outdir}/Aligned_Dengue_1/nextalign.aligned.fasta",
+        f"results/{outdir}/Aligned_Dengue_2/nextalign.aligned.fasta",
+        f"results/{outdir}/Aligned_Dengue_3/nextalign.aligned.fasta",
+        f"results/{outdir}/Aligned_Dengue_4/nextalign.aligned.fasta",

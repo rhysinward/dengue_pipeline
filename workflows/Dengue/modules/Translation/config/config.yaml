@@ -1,0 +1,4 @@
+input_namespace:
+  treetime: treetime
+  mutations: mutations
+output_namespace: out
