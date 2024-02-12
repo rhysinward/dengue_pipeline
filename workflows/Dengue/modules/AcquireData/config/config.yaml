@@ -3,5 +3,5 @@ output_namespace: out
 params:
   "Sequence": virus genome taxon "Dengue Virus"
   "Command line arguments":
-    - "--released-after 2000-01-01"
+    - "--released-after 01/01/2021"
   "Data format": virus-genome
