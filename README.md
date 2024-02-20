@@ -193,14 +193,19 @@ One approch used we coin an 'Even Weighted Sub-Sampling' approach was chosen to 
 Each sample from a geographical location collected in a specifiable time period was assigned a weight according to the formula:
 
 Where:
-- `1/x_ij` represents the number of sequences of lineage `i` collected during week `j`.
+- `1/x_ij` represents the number of sequences of location `i` collected during time period `j`.
 
-This weighting scheme inversely correlates the weight of a sequence with the abundance of sequences from the same location in a specifiable time period. Therefore, locations with fewer sequences in a given week are given higher selection probabilities, ensuring a balanced representation of geographies in the final dataset used for analysis.
+This weighting scheme inversely correlates the weight of a sequence with the abundance of sequences from the same location in a specifiable time period. Therefore, locations with fewer sequences in a given time period are given higher selection probabilities, ensuring a balanced representation of geographies in the final dataset used for analysis.
 
+### Proportional Weighting Scheme 
 
+The 'Proportional Weighted Sub-sampling' method is designed to ensure that the selection of sub-samples is representative of a particular variable of interest, such as the number of cases, mobility rates, etc., across various geographical locations and over different time periods. This approach allows for a more nuanced analysis that takes into account the variable's distribution, ensuring that the sub-sample accurately reflects the broader dataset's characteristics.
 
+In this approach, each sample is associated with a specific geographical location and falls within a definable time period. To ensure representativeness, each sample is assigned a weight based on the following formula:
 
+'x_ij' is the value of the variable of interest for location 'i' during time period 'j'.
 
+The weighting scheme is at the heart of the 'Proportional Weighted Sub-sampling' method, ensuring that each sample's likelihood of selection is directly correlated with the chosen variable of interest within a given time frame. This correlation means that areas or time periods with higher values of the variable of interest will have a proportionally greater influence on the sub-sample. 
 
 # Parameters Description
 
