@@ -203,7 +203,7 @@ The 'Proportional Weighted Sub-sampling' method is designed to ensure that the s
 
 In this approach, each sample is associated with a specific geographical location and falls within a definable time period. To ensure representativeness, each sample is assigned a weight based on the following formula:
 
-'x_ij' is the value of the variable of interest for location 'i' during time period 'j'.
+- `x_ij`  is the value of the variable of interest for location `i` during time period `j`.
 
 The weighting scheme is at the heart of the 'Proportional Weighted Sub-sampling' method, ensuring that each sample's likelihood of selection is directly correlated with the chosen variable of interest within a given time frame. This correlation means that areas or time periods with higher values of the variable of interest will have a proportionally greater influence on the sub-sample. 
 
