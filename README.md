@@ -184,13 +184,45 @@ rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
 
 ## Step 6: Sub-sampler
 
-![Sampling Pipeline (1)_page-0001](https://github.com/rhysinward/dengue_pipeline/assets/67955642/06b5a02e-9b14-4324-91e1-79b54d8a1682)
-**Figure 1.** Subsampler pipeline.
+The selection of sequences was performed using a weighted random sampling technique. 
+
+### Even Weighting Scheme
+
+One approch used we coin an 'Even Weighted Sub-Sampling' approach was chosen to ensure a representative and equitable selection of sequences across different locations, collected over various time periods.
+
+Each sample from a geographical location collected in a specifiable time period was assigned a weight according to the formula:
+
+Where:
+- `1/x_ij` represents the number of sequences of lineage `i` collected during week `j`.
+
+This weighting scheme inversely correlates the weight of a sequence with the abundance of sequences from the same location in a specifiable time period. Therefore, locations with fewer sequences in a given week are given higher selection probabilities, ensuring a balanced representation of geographies in the final dataset used for analysis.
+
+
+
+
+
+
+# Parameters Description
+
+The script accepts a range of command-line options to customize the input, output, and behavior of the sampling process. Below is a detailed description of each option available in the `option_list`.
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `-m`, `--metadata` | character | | Input TSV file containing metadata from GenBank, with sequence identifiers matching those in the input FASTA file. |
+| `-f`, `--fasta` | character | | Input FASTA file, with sequence identifiers matching those in the metadata file. |
+| `-c`, `--location_local` | character | | CSV file specifying granularity and location of interest for the analysis. |
+| `-x`, `--location_background` | character | | CSV file to specify the locations for even sampling or to conduct proportional sampling. Please include granularity, location of background, and number of sequences desired (only relevant for proportional sampling). |
+| `-t`, `--time_interval` | character | `Year` | Select the sampling interval from Year, Month, or Week. This option determines the temporal granularity of the analysis. |
+| `-n`, `--number_sequences_local` | numeric | | Number of desired sequences from the location of interest. |
+| `-e`, `--number_sequences_background` | numeric | | Number of desired sequences from the background locations. |
+| `-w`, `--sampling_method` | character | `Even` | Choose between even or proportional sampling methods. |
+| `-o`, `--outfile` | character | `subsampled` | Base name for output files. Files will be named as `<outfile>_fasta.fasta`, `<outfile>_infoTbl.tsv`, and `<outfile>_infoTbl.csv`. |
 
 To use subsampler please use the following line of code:
 
 ```
-rscript Code/subsampler.R --metadata results/Dengue_1_infoTbl.csv --fasta results/Dengue_1_EG.fasta --country Colombia  --number_sequences 3000 --prop_rd 0.8 --prop_or 0.2
+rscript subsampler.R --metadata --fasta --time_interval Year --location_local --location_background --number_sequences_local 100 --number_sequences_background 1000 --sampling_method Even
+
 ```
 
 ## Step 6b (Optional): Add Rooting Sequences to Sub-sampled Datasets
