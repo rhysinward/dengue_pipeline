@@ -1,0 +1,20 @@
+Rows: 38206 Columns: 48
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr  (17): Accession, BioProjects, BioSample accession, Completeness, Geogra...
+dbl   (4): Host Taxonomic ID, Length, Protein count, Virus Taxonomic ID
+lgl  (25): Gene count, Host Common Name, Host Infraspecific Names Breed, Hos...
+dttm  (2): Release date, Update date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Virus
+       Dengue virus      Dengue virus 1      Dengue virus 2      Dengue virus 3 
+               1466                1546                1027                 319 
+     Dengue virus 4 dengue virus type 1 dengue virus type 2 Dengue virus type 2 
+                567                3011                2290                5542 
+dengue virus type 3 Dengue virus type 3 dengue virus type 4 Dengue virus type 4 
+               1413                1755                 487                1387 
+dengue virus type I 
+               6727 
+Processing metadata and sequences completed

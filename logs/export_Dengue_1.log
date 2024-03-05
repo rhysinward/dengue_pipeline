@@ -1,0 +1,47 @@
+DEPRECATED: [config file] 'defaults' has been replaced with 'display_defaults'
+
+DEPRECATED: [config file] 'geoResolution' has been replaced with 'geo_resolution'
+
+DEPRECATED: [config file] 'colorBy' has been replaced with 'color_by'
+
+DEPRECATED: [config file] 'distanceMeasure' has been replaced with 'distance_measure'
+
+DEPRECATED: [config file] 'mapTriplicate' has been replaced with 'map_triplicate'
+
+DEPRECATED: [config file] 'color_options' has been replaced with 'colorings' & the structure has changed.
+
+DEPRECATED: [config file] coloring 'gt': 'menuItem' has been replaced with 'title'. Using 'menuItem' as 'title'.
+
+DEPRECATED: [config file] coloring 'gt': 'legendTitle' has been replaced with 'title' & is unused since 'menuItem' is present.
+
+DEPRECATED: [config file] coloring 'gt': type 'discrete' is no longer valid. Please use either 'ordinal', 'categorical' or 'boolean'. This has been automatically changed to 'categorical'.
+
+DEPRECATED: [config file] coloring 'Country': type 'discrete' is no longer valid. Please use either 'ordinal', 'categorical' or 'boolean'. This has been automatically changed to 'categorical'.
+
+DEPRECATED: [config file] coloring 'State': type 'discrete' is no longer valid. Please use either 'ordinal', 'categorical' or 'boolean'. This has been automatically changed to 'categorical'.
+
+DEPRECATED: [config file] coloring 'num_date': 'menuItem' has been replaced with 'title'. Using 'menuItem' as 'title'.
+
+DEPRECATED: [config file] coloring 'num_date': 'legendTitle' has been replaced with 'title' & is unused since 'menuItem' is present.
+
+DEPRECATED: [config file] 'geo' has been replaced with 'geo_resolutions'. The field is now list of strings, or list of dicts each with format {"key":"country"}
+
+WARNING: Geo resolution "strain" had no demes with supplied lat/longs and will be excluded from the exported "geo_resolutions".
+
+WARNING: Country->Kiribati did not have an associated lat/long value (matching performed in lower case). Auspice won't be able to display this location.
+
+	WARNING:  "Kiribati", a value of the geographic resolution "Country", appears in the tree but not in the metadata.
+		This will cause transmissions & demes involving this location not to be displayed in Auspice
+Validating schema of 'results/subsampled_Dengue_1_cleaned_mutations.json'...
+Validating schema of 'results/aa_muts_Dengue_1.json'...
+Validating config file config/auspice_config.json against the JSON schema
+Validating schema of 'config/auspice_config.json'...
+Validating produced JSON
+Validating schema of 'auspice/dengue_Dengue_1.json'...
+Validating that the JSON is internally consistent...
+Validation of 'auspice/dengue_Dengue_1.json' succeeded, but there were warnings you may want to resolve.
+
+------------------------
+There were deprecation warnings displayed. They have been fixed but these will likely become breaking errors in a future version of augur.
+------------------------
+

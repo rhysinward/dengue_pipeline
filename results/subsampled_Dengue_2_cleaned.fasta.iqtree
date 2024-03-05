@@ -1,0 +1,326 @@
+IQ-TREE 2.2.6 COVID-edition built Dec  8 2023
+
+Input file name: results/subsampled_Dengue_2_cleaned.fasta
+Type of analysis: tree reconstruction
+Random seed number: 771385
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 110 sequences with 1485 nucleotide sites
+Number of constant sites: 1018 (= 68.5522% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 1018 (= 68.5522% of all sites)
+Number of parsimony informative sites: 379
+Number of distinct site patterns: 512
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F+I
+
+Rate parameter R:
+
+  A-C: 1.8441
+  A-G: 23.2512
+  A-T: 2.7787
+  C-G: 0.7228
+  C-T: 72.3697
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.3338
+  pi(C) = 0.196
+  pi(G) = 0.2565
+  pi(T) = 0.2136
+
+Rate matrix Q:
+
+  A    -0.637   0.03327    0.5491   0.05465
+  C   0.05667    -1.497   0.01707     1.423
+  G    0.7145   0.01304   -0.7473   0.01967
+  T   0.08539     1.306   0.02362    -1.415
+
+Model of rate heterogeneity: Invar
+Proportion of invariable sites: 0.6401
+
+ Category  Relative_rate  Proportion
+  0         0              0.6401
+  1         2.778          0.3599
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -9310.6406 (s.e. 309.4567)
+Unconstrained log-likelihood (without tree): -6510.0309
+Number of free parameters (#branches + #model parameters): 226
+Akaike information criterion (AIC) score: 19073.2811
+Corrected Akaike information criterion (AICc) score: 19154.8423
+Bayesian information criterion (BIC) score: 20271.7976
+
+Total tree length (sum of branch lengths): 0.8972
+Sum of internal branch lengths: 0.4655 (51.8879% of tree length)
+
+WARNING: 29 near-zero internal branches (<0.0007) should be treated with caution
+         Such branches are denoted by '**' in the figure below
+
+NOTE: Tree is UNROOTED although outgroup taxon 'PP269862.1|Viet_Nam|NA|NA|Dengue_2|2013-12-02|2013.91780821918' is drawn at root
+
++--PP269862.1|Viet_Nam|NA|NA|Dengue_2|2013-12-02|2013.91780821918
+|
+|                                                                     +**PP269856.1|Viet_Nam|NA|NA|Dengue_2|2014-11-03|2014.83835616438
+|                                                                  +--|
+|                                                                  |  +**KT175129.1|Viet_Nam|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|                                                               +--|
+|                                                               |  +--MN272404.1|Reunion|NA|NA|Dengue_2|2018-03-15|2018.2
+|                                                            +--|
+|                                                            |  +--MK858097.2|India|NA|NA|Dengue_2|2013-06-15|2013.45205479452
+|                                                         +--|
+|                                                         |  |  +---MZ857218.1|Eritrea|NA|NA|Dengue_2|2017-06-15|2017.45205479452
+|                                                         |  +**|
+|                                                         |     |  +--MH594930.1|India|NA|NA|Dengue_2|2010-06-15|2010.45205479452
+|                                                         |     +--|
+|                                                         |        +--MG895047.1|Taiwan|NA|NA|Dengue_2|2013-10-30|2013.82739726027
+|                                                      +--|
+|                                                      |  |  +--KT781533.1|Pakistan|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|                                                      |  +--|
+|                                                      |     |  +--KJ010185.1|Pakistan|NA|NA|Dengue_2|2011-10-20|2011.8
+|                                                      |     +--|
+|                                                      |        +--KF360005.1|Pakistan|NA|NA|Dengue_2|2010-11-01|2010.83287671233
+|                                                 +----|
+|                                                 |    +-----KT781532.1|Bangladesh|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|                                         +-------|
+|                                         |       |  +----MZ130521.1|Democratic_Republic_of_the_Congo|NA|NA|Dengue_2|2016-06-20|2016.46575342466
+|                                         |       +--|
+|                                         |          |    +--MN335244.1|Kenya|NA|NA|Dengue_2|2017-05-29|2017.40547945205
+|                                         |          +----|
+|                                         |               +--MK473384.1|Kenya|NA|NA|Dengue_2|2016-05-04|2016.33698630137
+|                                  +------|
+|                                  |      |                                    +--PP269913.1|Viet_Nam|NA|NA|Dengue_2|2022-06-08|2022.43287671233
+|                                  |      |                                 +--|
+|                                  |      |                                 |  +--MW295818.1|China|Guangzhou|NA|Dengue_2|2020-10-09|2020.7698630137
+|                                  |      |                              +**|
+|                                  |      |                              |  |     +--OR821724.1|Nepal|NA|NA|Dengue_2|2022-09-15|2022.70410958904
+|                                  |      |                              |  |  +**|
+|                                  |      |                              |  |  |  +--OR936752.1|Pakistan|NA|NA|Dengue_2|2023-10-15|2023.78630136986
+|                                  |      |                              |  +--|
+|                                  |      |                              |     +**MN982892.1|Malaysia|NA|NA|Dengue_2|2016-10-15|2016.78630136986
+|                                  |      |                           +--|
+|                                  |      |                           |  +--MT252658.1|Singapore|NA|NA|Dengue_2|2017-06-11|2017.44109589041
+|                                  |      |                        +**|
+|                                  |      |                        |  |  +--PP204093.1|United_Arab_Emirates|Abu_Dhabi|Duba__Maldives|Dengue_2|2023-06-08|2023.43287671233
+|                                  |      |                        |  +--|
+|                                  |      |                        |     +**LC775723.1|Japan|Tokyo|NA|Dengue_2|2018-09-15|2018.70410958904
+|                                  |      |                     +**|
+|                                  |      |                     |  |        +--OQ102945.1|Sri_Lanka|NA|NA|Dengue_2|2021-11-19|2021.88219178082
+|                                  |      |                     |  |     +**|
+|                                  |      |                     |  |     |  +--LC774781.1|Japan|Tokyo|NA|Dengue_2|2017-10-15|2017.78630136986
+|                                  |      |                     |  |  +**|
+|                                  |      |                     |  |  |  +**MZ130522.1|Egypt|NA|NA|Dengue_2|2017-11-07|2017.84931506849
+|                                  |      |                     |  +--|
+|                                  |      |                     |     +--OQ102946.1|Sri_Lanka|NA|NA|Dengue_2|2021-12-01|2021.91506849315
+|                                  |      |                  +--|
+|                                  |      |                  |  |  +--OQ826855.1|Bangladesh|NA|NA|Dengue_2|2018-06-15|2018.45205479452
+|                                  |      |                  |  +--|
+|                                  |      |                  |     |  +--OP599687.1|Brazil|Pontal_do_Parana|Parana|Dengue_2|2022-03-18|2022.20821917808
+|                                  |      |                  |     +**|
+|                                  |      |                  |        +--ON123641.1|Peru|NA|NA|Dengue_2|2021-03-24|2021.22465753425
+|                                  |      |              +---|
+|                                  |      |              |   +--KJ806878.1|Malaysia|NA|NA|Dengue_2|2012-06-15|2012.45205479452
+|                                  |      |           +--|
+|                                  |      |           |  |                +**MZ857215.1|Somalia|NA|NA|Dengue_2|2015-06-15|2015.45205479452
+|                                  |      |           |  |             +**|
+|                                  |      |           |  |             |  +**MZ130526.1|Tanzania|NA|NA|Dengue_2|2014-05-21|2014.38356164384
+|                                  |      |           |  |        +----|
+|                                  |      |           |  |        |    +**KT288902.1|Tanzania|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|                                  |      |           |  |     +--|
+|                                  |      |           |  |     |  +----MG895025.1|Taiwan|NA|NA|Dengue_2|2013-04-02|2013.24931506849
+|                                  |      |           |  |  +--|
+|                                  |      |           |  |  |  +--KY275207.1|East_Timor|NA|NA|Dengue_2|2012-03-15|2012.2
+|                                  |      |           |  +--|
+|                                  |      |           |     +--KT781526.1|Indonesia|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|                                  |      |        +--|
+|                                  |      |        |  |        +--OL321186.1|Papua_New_Guinea|NCD|Hohola|Dengue_2|2016-04-12|2016.27671232877
+|                                  |      |        |  |     +--|
+|                                  |      |        |  |     |  |  +--MT921571.1|Australia|Queensland|NA|Dengue_2|2015-06-15|2015.45205479452
+|                                  |      |        |  |     |  +--|
+|                                  |      |        |  |     |     +--KT806320.1|Papua_New_Guinea|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|                                  |      |        |  |  +--|
+|                                  |      |        |  |  |  +--KT781529.1|Australia|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|                                  |      |        |  +--|
+|                                  |      |        |     |  +--KT781549.1|Australia|NA|NA|Dengue_2|2013-06-15|2013.45205479452
+|                                  |      |        |     +--|
+|                                  |      |        |        |    +--KJ806877.1|Malaysia|NA|NA|Dengue_2|2012-06-15|2012.45205479452
+|                                  |      |        |        +----|
+|                                  |      |        |             +**JN196602.1|Singapore|NA|NA|Dengue_2|2010-06-15|2010.45205479452
+|                                  |      |  +-----|
+|                                  |      |  |     |           +--OQ579356.1|Philippines|NA|NA|Dengue_2|2017-01-15|2017.03835616438
+|                                  |      |  |     |        +**|
+|                                  |      |  |     |        |  +--OQ579360.1|Philippines|NA|NA|Dengue_2|2017-03-15|2017.2
+|                                  |      |  |     |  +-----|
+|                                  |      |  |     |  |     |                 +--MT799879.1|Vanuatu|NA|NA|Dengue_2|2020-06-15|2020.45205479452
+|                                  |      |  |     |  |     |              +**|
+|                                  |      |  |     |  |     |              |  +**MN548842.1|Vanuatu|NA|NA|Dengue_2|2018-06-15|2018.45205479452
+|                                  |      |  |     |  |     |           +**|
+|                                  |      |  |     |  |     |           |  |     +**MT799880.1|New_Caledonia|NA|NA|Dengue_2|2020-02-04|2020.09315068493
+|                                  |      |  |     |  |     |           |  |  +**|
+|                                  |      |  |     |  |     |           |  |  |  +**MH807160.1|French_Polynesia|NA|NA|Dengue_2|2018-06-23|2018.47397260274
+|                                  |      |  |     |  |     |           |  +--|
+|                                  |      |  |     |  |     |           |     +**MN548849.1|New_Caledonia|NA|NA|Dengue_2|2019-03-14|2019.19726027397
+|                                  |      |  |     |  |     |        +**|
+|                                  |      |  |     |  |     |        |  |  +**MN566110.1|New_Caledonia|NA|NA|Dengue_2|2017-06-18|2017.4602739726
+|                                  |      |  |     |  |     |        |  +**|
+|                                  |      |  |     |  |     |        |     +**MN566109.1|New_Caledonia|NA|NA|Dengue_2|2017-04-01|2017.24657534247
+|                                  |      |  |     |  |     |     +**|
+|                                  |      |  |     |  |     |     |  +**MG967230.1|Fiji|NA|NA|Dengue_2|2017-02-10|2017.1095890411
+|                                  |      |  |     |  |     |  +**|
+|                                  |      |  |     |  |     |  |  +**MG967231.1|Fiji|NA|NA|Dengue_2|2017-02-22|2017.14246575342
+|                                  |      |  |     |  |     +--|
+|                                  |      |  |     |  |        +--MG967227.1|Fiji|NA|NA|Dengue_2|2015-03-26|2015.2301369863
+|                                  |      |  |     +--|
+|                                  |      |  |        |     +---OP941683.1|Indonesia|Bengkulu|NA|Dengue_2|2021-06-07|2021.4301369863
+|                                  |      |  |        |  +--|
+|                                  |      |  |        |  |  +--KT781570.1|East_Timor|NA|NA|Dengue_2|2015-06-15|2015.45205479452
+|                                  |      |  |        +--|
+|                                  |      |  |           +-------KT175130.1|China|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|                                  |      +--|
+|                                  |         |                      +--ON908223.1|Niger|NA|NA|Dengue_2|2019-06-15|2019.45205479452
+|                                  |         |                   +--|
+|                                  |         |                   |  +**MT982148.1|Burkina_Faso|NA|NA|Dengue_2|2019-09-08|2019.68493150685
+|                                  |         |                +--|
+|                                  |         |                |  +--MT982126.1|Burkina_Faso|NA|NA|Dengue_2|2019-08-10|2019.60547945205
+|                                  |         |    +-----------|
+|                                  |         |    |           +--OM317565.1|Cameroon|Africa|NA|Dengue_2|2020-06-24|2020.47671232877
+|                                  |         +----|
+|                                  |              +------KC848583.1|Somalia|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|           +----------------------|
+|           |                      |                             +--OQ603287.1|Colombia|Bolivar|NA|Dengue_2|2015-08-27|2015.65205479452
+|           |                      |                          +--|
+|           |                      |                          |  |  +--OQ603296.1|Colombia|Boyaca|NA|Dengue_2|2016-07-14|2016.53150684932
+|           |                      |                          |  +--|
+|           |                      |                          |     +--KY887613.1|Colombia|Santander|Piedecuesta|Dengue_2|2014-09-15|2014.70410958904
+|           |                      |                      +---|
+|           |                      |                      |   +---KY851509.1|Colombia|NA|NA|Dengue_2|2012-06-15|2012.45205479452
+|           |                      |                   +--|
+|           |                      |                   |  |     +----OQ740556.1|Dominican_Republic|NA|NA|Dengue_2|2022-05-20|2022.38082191781
+|           |                      |                   |  |  +--|
+|           |                      |                   |  |  |  |  +--ON634710.1|Brazil|Sao_Paulo|Mogi_Mirim|Dengue_2|2020-02-08|2020.10410958904
+|           |                      |                   |  |  |  +--|
+|           |                      |                   |  |  |     +--MN631127.1|Brazil|NA|NA|Dengue_2|2018-04-18|2018.29315068493
+|           |                      |                   |  +--|
+|           |                      |                   |     |                       +**OQ821384.1|Cuba|NA|NA|Dengue_2|2017-06-29|2017.4904109589
+|           |                      |                   |     |                    +--|
+|           |                      |                   |     |                    |  +--OQ821449.1|Cuba|NA|NA|Dengue_2|2020-01-15|2020.03835616438
+|           |                      |                   |     |                 +--|
+|           |                      |                   |     |                 |  +--MZ540899.1|Cuba|NA|NA|Dengue_2|2018-08-21|2018.63561643836
+|           |                      |                   |     |              +**|
+|           |                      |                   |     |              |  |     +----ON123645.1|Peru|NA|NA|Dengue_2|2021-06-18|2021.4602739726
+|           |                      |                   |     |              |  |  +**|
+|           |                      |                   |     |              |  |  |  +--KC294211.1|Peru|Iquitos|NA|Dengue_2|2011-04-04|2011.25479452055
+|           |                      |                   |     |              |  +--|
+|           |                      |                   |     |              |     +**JX051787.1|Peru|Loreto|NA|Dengue_2|2010-06-15|2010.45205479452
+|           |                      |                   |     |           +**|
+|           |                      |                   |     |           |  +**JX051811.1|Bolivia|Beni|NA|Dengue_2|2010-06-15|2010.45205479452
+|           |                      |                   |     |        +**|
+|           |                      |                   |     |        |  +--KF419414.1|Paraguay|NA|NA|Dengue_2|2011-06-15|2011.45205479452
+|           |                      |                   |     |     +**|
+|           |                      |                   |     |     |  |  +--KY415992.1|Haiti|NA|NA|Dengue_2|2014-06-11|2014.44109589041
+|           |                      |                   |     |     |  +--|
+|           |                      |                   |     |     |     +**KX702403.1|Haiti|NA|NA|Dengue_2|2016-02-05|2016.09589041096
+|           |                      |                   |     |  +**|
+|           |                      |                   |     |  |  |  +**MN589872.1|Brazil|NA|NA|Dengue_2|2011-02-16|2011.12602739726
+|           |                      |                   |     |  |  +--|
+|           |                      |                   |     |  |     +**HQ012531.1|Brazil|NA|NA|Dengue_2|2010-06-15|2010.45205479452
+|           |                      |                   |     +--|
+|           |                      |                   |        +--MW577834.1|Brazil|NA|NA|Dengue_2|2011-02-16|2011.12602739726
+|           |                      |                +**|
+|           |                      |                |  |        +--OQ821383.1|Cuba|NA|NA|Dengue_2|2013-12-01|2013.91506849315
+|           |                      |                |  |     +--|
+|           |                      |                |  |     |  |  +--OQ821485.1|Mexico|NA|NA|Dengue_2|2022-07-06|2022.5095890411
+|           |                      |                |  |     |  +--|
+|           |                      |                |  |     |     +--MZ008464.1|Nicaragua|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|           |                      |                |  |  +--|
+|           |                      |                |  |  |  |     +--MZ520914.1|Mexico|NA|NA|Dengue_2|2017-09-19|2017.71506849315
+|           |                      |                |  |  |  |  +--|
+|           |                      |                |  |  |  |  |  +--MZ008458.1|Nicaragua|NA|NA|Dengue_2|2015-06-15|2015.45205479452
+|           |                      |                |  |  |  +**|
+|           |                      |                |  |  |     +--MH936419.1|Mexico|Quintana_Roo|NA|Dengue_2|2016-10-12|2016.77808219178
+|           |                      |                |  +--|
+|           |                      |                |     +---KY851530.1|Mexico|NA|NA|Dengue_2|2012-06-15|2012.45205479452
+|           |                      +----------------|
+|           |                                       +---KY474309.1|Ecuador|Machala|NA|Dengue_2|2014-06-15|2014.45205479452
+|        +--|
+|        |  +--JN568246.1|Australia|NA|NA|Dengue_2|2010-06-15|2010.45205479452
+|     +--|
+|     |  |           +--PP269927.1|Viet_Nam|NA|NA|Dengue_2|2016-12-22|2016.97260273973
+|     |  |        +--|
+|     |  |        |  +--OQ028205.1|Viet_Nam|NA|NA|Dengue_2|2017-03-27|2017.23287671233
+|     |  |     +--|
+|     |  |     |  +--MW018160.1|Cambodia|NA|NA|Dengue_2|2018-10-15|2018.78630136986
+|     |  |  +--|
+|     |  |  |  +--ON046265.1|Thailand|NA|NA|Dengue_2|2012-12-02|2012.91780821918
+|     |  +**|
+|     |     |              +--MW788985.1|Myanmar|Yangon|NA|Dengue_2|2019-09-15|2019.70410958904
+|     |     |           +--|
+|     |     |           |  +--MK780875.1|Thailand|NA|NA|Dengue_2|2015-10-17|2015.79178082192
+|     |     |        +--|
+|     |     |        |  |     +--MW788986.1|Myanmar|Yangon|NA|Dengue_2|2019-01-15|2019.03835616438
+|     |     |        |  |  +--|
+|     |     |        |  |  |  +**KT806324.1|Myanmar|NA|NA|Dengue_2|2014-06-15|2014.45205479452
+|     |     |        |  +**|
+|     |     |        |     +--KX357994.1|Myanmar|NA|NA|Dengue_2|2015-06-15|2015.45205479452
+|     |     |     +--|
+|     |     |     |  +--KJ470746.1|China|NA|NA|Dengue_2|2013-09-15|2013.70410958904
+|     |     |  +--|
+|     |     |  |  +--KF060920.1|China|Guangzhou|NA|Dengue_2|2012-06-15|2012.45205479452
+|     |     +--|
+|     |        +--MN448888.1|Thailand|NA|NA|Dengue_2|2011-11-15|2011.87123287671
+|  +--|
+|  |  |  +---PP269928.1|Viet_Nam|NA|NA|Dengue_2|2017-01-03|2017.00547945205
+|  |  +--|
+|  |     +--JF968019.1|Viet_Nam|NA|NA|Dengue_2|2010-06-15|2010.45205479452
++**|
+|  +**KP706454.1|Viet_Nam|DakLak|NA|Dengue_2|2012-06-15|2012.45205479452
+|
+|  +--MN628234.1|Laos|NA|NA|Dengue_2|2012-06-15|2012.45205479452
++**|
+   +**KP706453.1|Viet_Nam|DakLak|NA|Dengue_2|2012-06-15|2012.45205479452
+
+Tree in newick format:
+
+(PP269862.1|Viet_Nam|NA|NA|Dengue_2|2013-12-02|2013.91780821918:0.0046477842,(((((((((((((PP269856.1|Viet_Nam|NA|NA|Dengue_2|2014-11-03|2014.83835616438:0.0000010000,KT175129.1|Viet_Nam|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0000010000):0.0026780329,MN272404.1|Reunion|NA|NA|Dengue_2|2018-03-15|2018.2:0.0046798623):0.0012993009,MK858097.2|India|NA|NA|Dengue_2|2013-06-15|2013.45205479452:0.0039963392):0.0020010506,(MZ857218.1|Eritrea|NA|NA|Dengue_2|2017-06-15|2017.45205479452:0.0108312655,(MH594930.1|India|NA|NA|Dengue_2|2010-06-15|2010.45205479452:0.0019554835,MG895047.1|Taiwan|NA|NA|Dengue_2|2013-10-30|2013.82739726027:0.0034864237):0.0052330289):0.0000010000):0.0031144205,(KT781533.1|Pakistan|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0008025965,(KJ010185.1|Pakistan|NA|NA|Dengue_2|2011-10-20|2011.8:0.0017782893,KF360005.1|Pakistan|NA|NA|Dengue_2|2010-11-01|2010.83287671233:0.0042058721):0.0027053120):0.0054955528):0.0024854309,KT781532.1|Bangladesh|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0144481990):0.0112949615,(MZ130521.1|Democratic_Republic_of_the_Congo|NA|NA|Dengue_2|2016-06-20|2016.46575342466:0.0117872523,(MN335244.1|Kenya|NA|NA|Dengue_2|2017-05-29|2017.40547945205:0.0027176712,MK473384.1|Kenya|NA|NA|Dengue_2|2016-05-04|2016.33698630137:0.0046623456):0.0119121846):0.0085026791):0.0179377740,(((((((((((PP269913.1|Viet_Nam|NA|NA|Dengue_2|2022-06-08|2022.43287671233:0.0033351140,MW295818.1|China|Guangzhou|NA|Dengue_2|2020-10-09|2020.7698630137:0.0026689983):0.0019789937,((OR821724.1|Nepal|NA|NA|Dengue_2|2022-09-15|2022.70410958904:0.0046580956,OR936752.1|Pakistan|NA|NA|Dengue_2|2023-10-15|2023.78630136986:0.0073767329):0.0000010000,MN982892.1|Malaysia|NA|NA|Dengue_2|2016-10-15|2016.78630136986:0.0000010000):0.0032974555):0.0000023145,MT252658.1|Singapore|NA|NA|Dengue_2|2017-06-11|2017.44109589041:0.0033088335):0.0039773002,(PP204093.1|United_Arab_Emirates|Abu_Dhabi|Duba__Maldives|Dengue_2|2023-06-08|2023.43287671233:0.0019725317,LC775723.1|Japan|Tokyo|NA|Dengue_2|2018-09-15|2018.70410958904:0.0006667358):0.0039749349):0.0000010000,(((OQ102945.1|Sri_Lanka|NA|NA|Dengue_2|2021-11-19|2021.88219178082:0.0026386005,LC774781.1|Japan|Tokyo|NA|Dengue_2|2017-10-15|2017.78630136986:0.0013143424):0.0000010000,MZ130522.1|Egypt|NA|NA|Dengue_2|2017-11-07|2017.84931506849:0.0006566680):0.0000010000,OQ102946.1|Sri_Lanka|NA|NA|Dengue_2|2021-12-01|2021.91506849315:0.0066741625):0.0019747533):0.0000010000,(OQ826855.1|Bangladesh|NA|NA|Dengue_2|2018-06-15|2018.45205479452:0.0019952591,(OP599687.1|Brazil|Pontal_do_Parana|Parana|Dengue_2|2022-03-18|2022.20821917808:0.0026483577,ON123641.1|Peru|NA|NA|Dengue_2|2021-03-24|2021.22465753425:0.0013195416):0.0006503998):0.0060159387):0.0025491273,KJ806878.1|Malaysia|NA|NA|Dengue_2|2012-06-15|2012.45205479452:0.0014236962):0.0106464929,(((((MZ857215.1|Somalia|NA|NA|Dengue_2|2015-06-15|2015.45205479452:0.0000010000,MZ130526.1|Tanzania|NA|NA|Dengue_2|2014-05-21|2014.38356164384:0.0006563168):0.0000010000,KT288902.1|Tanzania|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0006563272):0.0113628125,MG895025.1|Taiwan|NA|NA|Dengue_2|2013-04-02|2013.24931506849:0.0124183169):0.0010150443,KY275207.1|East_Timor|NA|NA|Dengue_2|2012-03-15|2012.2:0.0051496373):0.0014818960,KT781526.1|Indonesia|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0067280084):0.0053346355):0.0024342360,(((OL321186.1|Papua_New_Guinea|NCD|Hohola|Dengue_2|2016-04-12|2016.27671232877:0.0049071127,(MT921571.1|Australia|Queensland|NA|Dengue_2|2015-06-15|2015.45205479452:0.0044691109,KT806320.1|Papua_New_Guinea|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0008313187):0.0019861287):0.0024620222,KT781529.1|Australia|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0033325752):0.0040576945,(KT781549.1|Australia|NA|NA|Dengue_2|2013-06-15|2013.45205479452:0.0076348888,(KJ806877.1|Malaysia|NA|NA|Dengue_2|2012-06-15|2012.45205479452:0.0028370392,JN196602.1|Singapore|NA|NA|Dengue_2|2010-06-15|2010.45205479452:0.0000010000):0.0117732918):0.0017488918):0.0018277994):0.0046839481,(((OQ579356.1|Philippines|NA|NA|Dengue_2|2017-01-15|2017.03835616438:0.0033724922,OQ579360.1|Philippines|NA|NA|Dengue_2|2017-03-15|2017.2:0.0053562933):0.0003204943,((((((MT799879.1|Vanuatu|NA|NA|Dengue_2|2020-06-15|2020.45205479452:0.0013083121,MN548842.1|Vanuatu|NA|NA|Dengue_2|2018-06-15|2018.45205479452:0.0000010000):0.0006519834,((MT799880.1|New_Caledonia|NA|NA|Dengue_2|2020-02-04|2020.09315068493:0.0000010000,MH807160.1|French_Polynesia|NA|NA|Dengue_2|2018-06-23|2018.47397260274:0.0000010000):0.0006519574,MN548849.1|New_Caledonia|NA|NA|Dengue_2|2019-03-14|2019.19726027397:0.0000010000):0.0019613229):0.0000010000,(MN566110.1|New_Caledonia|NA|NA|Dengue_2|2017-06-18|2017.4602739726:0.0000010000,MN566109.1|New_Caledonia|NA|NA|Dengue_2|2017-04-01|2017.24657534247:0.0000010000):0.0000010000):0.0006521097,MG967230.1|Fiji|NA|NA|Dengue_2|2017-02-10|2017.1095890411:0.0006532664):0.0000010000,MG967231.1|Fiji|NA|NA|Dengue_2|2017-02-22|2017.14246575342:0.0006522127):0.0006285981,MG967227.1|Fiji|NA|NA|Dengue_2|2015-03-26|2015.2301369863:0.0026658240):0.0029318485):0.0138581651,((OP941683.1|Indonesia|Bengkulu|NA|Dengue_2|2021-06-07|2021.4301369863:0.0089087996,KT781570.1|East_Timor|NA|NA|Dengue_2|2015-06-15|2015.45205479452:0.0070632317):0.0045100170,KT175130.1|China|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0184492917):0.0065969439):0.0039684616):0.0147947968,((((ON908223.1|Niger|NA|NA|Dengue_2|2019-06-15|2019.45205479452:0.0032915174,MT982148.1|Burkina_Faso|NA|NA|Dengue_2|2019-09-08|2019.68493150685:0.0000010000):0.0032938473,MT982126.1|Burkina_Faso|NA|NA|Dengue_2|2019-08-10|2019.60547945205:0.0006802240):0.0036693458,OM317565.1|Cameroon|Africa|NA|Dengue_2|2020-06-24|2020.47671232877:0.0057456378):0.0280349117,KC848583.1|Somalia|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0169535633):0.0126268401):0.0055061247):0.0168349797,(((((OQ603287.1|Colombia|Bolivar|NA|Dengue_2|2015-08-27|2015.65205479452:0.0053370603,(OQ603296.1|Colombia|Boyaca|NA|Dengue_2|2016-07-14|2016.53150684932:0.0033241277,KY887613.1|Colombia|Santander|Piedecuesta|Dengue_2|2014-09-15|2014.70410958904:0.0039937996):0.0064561324):0.0039681820,KY851509.1|Colombia|NA|NA|Dengue_2|2012-06-15|2012.45205479452:0.0102069268):0.0088462783,((OQ740556.1|Dominican_Republic|NA|NA|Dengue_2|2022-05-20|2022.38082191781:0.0110403917,(ON634710.1|Brazil|Sao_Paulo|Mogi_Mirim|Dengue_2|2020-02-08|2020.10410958904:0.0074402720,MN631127.1|Brazil|NA|NA|Dengue_2|2018-04-18|2018.29315068493:0.0033838730):0.0025494934):0.0055458929,((((((((OQ821384.1|Cuba|NA|NA|Dengue_2|2017-06-29|2017.4904109589:0.0000010000,OQ821449.1|Cuba|NA|NA|Dengue_2|2020-01-15|2020.03835616438:0.0026243958):0.0007609708,MZ540899.1|Cuba|NA|NA|Dengue_2|2018-08-21|2018.63561643836:0.0051117513):0.0045344895,((ON123645.1|Peru|NA|NA|Dengue_2|2021-06-18|2021.4602739726:0.0129149594,KC294211.1|Peru|Iquitos|NA|Dengue_2|2011-04-04|2011.25479452055:0.0006778201):0.0006333150,JX051787.1|Peru|Loreto|NA|Dengue_2|2010-06-15|2010.45205479452:0.0000010000):0.0013103194):0.0000010000,JX051811.1|Bolivia|Beni|NA|Dengue_2|2010-06-15|2010.45205479452:0.0000010000):0.0000010000,KF419414.1|Paraguay|NA|NA|Dengue_2|2011-06-15|2011.45205479452:0.0019690798):0.0006605757,(KY415992.1|Haiti|NA|NA|Dengue_2|2014-06-11|2014.44109589041:0.0019676757,KX702403.1|Haiti|NA|NA|Dengue_2|2016-02-05|2016.09589041096:0.0000010000):0.0026374552):0.0006523195,(MN589872.1|Brazil|NA|NA|Dengue_2|2011-02-16|2011.12602739726:0.0006539324,HQ012531.1|Brazil|NA|NA|Dengue_2|2010-06-15|2010.45205479452:0.0006539530):0.0013221175):0.0005912682,MW577834.1|Brazil|NA|NA|Dengue_2|2011-02-16|2011.12602739726:0.0060495680):0.0033925064):0.0085221797):0.0009770962,(((OQ821383.1|Cuba|NA|NA|Dengue_2|2013-12-01|2013.91506849315:0.0044767661,(OQ821485.1|Mexico|NA|NA|Dengue_2|2022-07-06|2022.5095890411:0.0079988390,MZ008464.1|Nicaragua|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0038131330):0.0007791286):0.0008042919,((MZ520914.1|Mexico|NA|NA|Dengue_2|2017-09-19|2017.71506849315:0.0028761945,MZ008458.1|Nicaragua|NA|NA|Dengue_2|2015-06-15|2015.45205479452:0.0052786575):0.0006838093,MH936419.1|Mexico|Quintana_Roo|NA|Dengue_2|2016-10-12|2016.77808219178:0.0046597447):0.0006694409):0.0081798394,KY851530.1|Mexico|NA|NA|Dengue_2|2012-06-15|2012.45205479452:0.0088505427):0.0027067509):0.0002206365,KY474309.1|Ecuador|Machala|NA|Dengue_2|2014-06-15|2014.45205479452:0.0098928837):0.0384782696):0.0504906713,JN568246.1|Australia|NA|NA|Dengue_2|2010-06-15|2010.45205479452:0.0071862510):0.0016935171,((((PP269927.1|Viet_Nam|NA|NA|Dengue_2|2016-12-22|2016.97260273973:0.0024092482,OQ028205.1|Viet_Nam|NA|NA|Dengue_2|2017-03-27|2017.23287671233:0.0023197161):0.0022995819,MW018160.1|Cambodia|NA|NA|Dengue_2|2018-10-15|2018.78630136986:0.0060913308):0.0036688046,ON046265.1|Thailand|NA|NA|Dengue_2|2012-12-02|2012.91780821918:0.0023196386):0.0030014206,(((((MW788985.1|Myanmar|Yangon|NA|Dengue_2|2019-09-15|2019.70410958904:0.0066109932,MK780875.1|Thailand|NA|NA|Dengue_2|2015-10-17|2015.79178082192:0.0006763913):0.0014523872,((MW788986.1|Myanmar|Yangon|NA|Dengue_2|2019-01-15|2019.03835616438:0.0033126005,KT806324.1|Myanmar|NA|NA|Dengue_2|2014-06-15|2014.45205479452:0.0006460094):0.0013260208,KX357994.1|Myanmar|NA|NA|Dengue_2|2015-06-15|2015.45205479452:0.0013087479):0.0000010000):0.0013020310,KJ470746.1|China|NA|NA|Dengue_2|2013-09-15|2013.70410958904:0.0026676418):0.0028141345,KF060920.1|China|Guangzhou|NA|Dengue_2|2012-06-15|2012.45205479452:0.0038716656):0.0009112020,MN448888.1|Thailand|NA|NA|Dengue_2|2011-11-15|2011.87123287671:0.0055906386):0.0018165785):0.0005601776):0.0019072805,(PP269928.1|Viet_Nam|NA|NA|Dengue_2|2017-01-03|2017.00547945205:0.0100295592,JF968019.1|Viet_Nam|NA|NA|Dengue_2|2010-06-15|2010.45205479452:0.0027596285):0.0061779510):0.0028091704,KP706454.1|Viet_Nam|DakLak|NA|Dengue_2|2012-06-15|2012.45205479452:0.0000010000):0.0006541396,(MN628234.1|Laos|NA|NA|Dengue_2|2012-06-15|2012.45205479452:0.0059674211,KP706453.1|Viet_Nam|DakLak|NA|Dengue_2|2012-06-15|2012.45205479452:0.0000010000):0.0006541096);
+
+ALISIM COMMAND
+--------------
+To simulate an alignment of the same length as the original alignment, using the tree and model parameters estimated from this analysis, you can use the following command:
+
+--alisim simulated_MSA -t results/subsampled_Dengue_2_cleaned.fasta.treefile -m "GTR{1.84412,23.2512,2.77873,0.722782,72.3697}+F{0.33383,0.195976,0.256545,0.213649}+I{0.640075}" --length 1485
+
+To mimic the alignment used to produce this analysis, i.e. simulate an alignment of the same length as the original alignment, using the tree and model parameters estimated from this analysis *and* copying the same gap positions as the original alignment, you can use the following command:
+
+iqtree -s results/subsampled_Dengue_2_cleaned.fasta --alisim mimicked_MSA
+
+To simulate any number of alignments in either of the two commandlines above, use the --num-alignments options, for example mimic 100 alignments you would use the command line:
+
+iqtree -s results/subsampled_Dengue_2_cleaned.fasta --alisim mimicked_MSA --num-alignments 100
+
+For more information on using AliSim, please visit: www.iqtree.org/doc/AliSim
+
+TIME STAMP
+----------
+
+Date and time: Tue Mar  5 12:08:04 2024
+Total CPU time used: 13.6755 seconds (0h:0m:13s)
+Total wall-clock time used: 14.4733 seconds (0h:0m:14s)
+

@@ -1,0 +1,49 @@
+augur refine is using TreeTime version 0.11.2
+
+0.24	TreeTime.reroot: with method or node: least-squares
+
+0.24	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+
+0.34	TreeTime.reroot: with method or node: least-squares
+
+0.34	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+pruning leaf  MN083243.1|Sri_Lanka|NA|NA|Dengue_4|2017-09-15|2017.70410958904
+pruning leaf  MG840527.1|China|NA|NA|Dengue_4|2016-06-15|2016.45205479452
+pruning leaf  OP411000.1|Singapore|NA|NA|Dengue_4|2017-10-15|2017.78630136986
+pruning leaf  ON799402.1|India|NA|NA|Dengue_4|2020-06-15|2020.45205479452
+pruning leaf  MZ310555.1|India|NA|NA|Dengue_4|2018-04-02|2018.24931506849
+pruning leaf  MW422796.1|India|ANDHRA_PRADESH|KALIKIRI|Dengue_4|2017-05-30|2017.40821917808
+pruning leaf  MW422849.1|India|ANDHRA_PRADESH|illupuru|Dengue_4|2017-10-16|2017.78904109589
+pruning leaf  MT076957.1|Kenya|Kisumu|NA|Dengue_4|2016-02-15|2016.12328767123
+
+0.99	TreeTime.reroot: with method or node: least-squares
+
+0.99	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+
+1.43	###TreeTime.run: INITIAL ROUND
+
+3.46	TreeTime.reroot: with method or node: least-squares
+
+3.46	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+
+3.52	###TreeTime.run: rerunning timetree after rerooting
+
+5.67	###TreeTime.run: ITERATION 1 out of 2 iterations
+
+5.85	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
+    	polytomies using the old 'greedy' mode. This is not well suited for large
+    	polytomies. Stochastic resolution will become the default in future
+    	versions. To switch now, rerun with the flag `--stochastic-resolve`. To
+    	keep using the greedy method in the future, run with `--greedy-resolve`
+
+8.19	###TreeTime.run: ITERATION 2 out of 2 iterations
+
+16.90	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
+     	reconstruction
+
+Inferred a time resolved phylogeny using TreeTime:
+	Sagulenko et al. TreeTime: Maximum-likelihood phylodynamic analysis
+	Virus Evolution, vol 4, https://academic.oup.com/ve/article/4/1/vex042/4794731
+
+updated tree written to results/timetrees/timetree_Dengue_4.tree
+node attributes written to results/timetrees/Dengue_4_branch_lengths.json
