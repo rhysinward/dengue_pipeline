@@ -34,7 +34,7 @@ rule acquire_data:
         datasets summary virus genome taxon "Dengue Virus" --released-after {params.date} --as-json-lines | dataformat tsv virus-genome > {output.metadata} 2>> {log}
         
         # Unzip the downloaded data
-        unzip -d data {output.zip}
+        unzip -o -d data {output.zip}
         """
 
 # Step 2: Clean metadata and FASTA
