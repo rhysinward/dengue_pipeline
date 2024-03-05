@@ -162,7 +162,7 @@ ggsave(filename = paste0(opt$output_dir,"metadata_countries_of_interest_plot_", 
 
 #conduct random weighted sampling
 
-if (!is.null(opt$metadata)) {
+if (!is.null(opt$number_sequences_local)) {
   number_sequences_local <- opt[["number_sequences_local"]]
 } else {
   number_sequences_local <- nrow(metadata_countries_of_interest)
