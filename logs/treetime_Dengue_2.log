@@ -1,0 +1,42 @@
+augur refine is using TreeTime version 0.11.2
+
+0.23	TreeTime.reroot: with method or node: least-squares
+
+0.23	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+
+0.33	TreeTime.reroot: with method or node: least-squares
+
+0.33	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+pruning leaf  PP204093.1|United_Arab_Emirates|Abu_Dhabi|Duba__Maldives|Dengue_2|2023-06-08|2023.43287671233
+
+0.99	TreeTime.reroot: with method or node: least-squares
+
+0.99	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+
+1.45	###TreeTime.run: INITIAL ROUND
+
+3.60	TreeTime.reroot: with method or node: least-squares
+
+3.60	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+
+3.67	###TreeTime.run: rerunning timetree after rerooting
+
+5.99	###TreeTime.run: ITERATION 1 out of 2 iterations
+
+6.15	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
+    	polytomies using the old 'greedy' mode. This is not well suited for large
+    	polytomies. Stochastic resolution will become the default in future
+    	versions. To switch now, rerun with the flag `--stochastic-resolve`. To
+    	keep using the greedy method in the future, run with `--greedy-resolve`
+
+8.55	###TreeTime.run: ITERATION 2 out of 2 iterations
+
+17.56	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
+     	reconstruction
+
+Inferred a time resolved phylogeny using TreeTime:
+	Sagulenko et al. TreeTime: Maximum-likelihood phylodynamic analysis
+	Virus Evolution, vol 4, https://academic.oup.com/ve/article/4/1/vex042/4794731
+
+updated tree written to results/timetrees/timetree_Dengue_2.tree
+node attributes written to results/timetrees/Dengue_2_branch_lengths.json

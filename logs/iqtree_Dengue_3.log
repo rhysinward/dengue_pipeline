@@ -1,0 +1,311 @@
+IQ-TREE multicore version 2.2.6 COVID-edition for Mac OS X 64-bit built Dec  8 2023
+Developed by Bui Quang Minh, James Barbetti, Nguyen Lam Tung,
+Olga Chernomor, Heiko Schmidt, Dominik Schrempf, Michael Woodhams, Ly Trong Nhan.
+
+Host:    BIO-M-LT-03039.local (SSE4.2, 8 GB RAM)
+Command: iqtree2 -s results/subsampled_Dengue_3_cleaned.fasta -m GTR+F+I -redo
+Seed:    771382 (Using SPRNG - Scalable Parallel Random Number Generator)
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Time:    Tue Mar  5 12:07:49 2024
+Kernel:  SSE2 - 1 threads (8 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 8 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file results/subsampled_Dengue_3_cleaned.fasta ... Fasta format detected
+Reading fasta file: done in 0.00235105 secs using 91.92% CPU
+Alignment most likely contains DNA/RNA sequences
+Constructing alignment: done in 0.00177693 secs using 72.15% CPU
+Alignment has 101 sequences with 1479 columns, 541 distinct patterns
+384 parsimony-informative, 125 singleton sites, 970 constant sites
+                                                                                 Gap/Ambiguity  Composition  p-value
+Analyzing sequences: done in 7.70092e-05 secs using 85.7% CPU
+   1  OR875963.1|Senegal|NA|NA|Dengue_3|2022-08-15|2022.61917808219                      0.00%    passed     99.92%
+   2  OR977072.1|USA|FL|NA|Dengue_3|2023-10-13|2023.78082191781                          3.79%    passed     99.55%
+   3  PP234923.1|Philippines|NA|NA|Dengue_3|2019-07-01|2019.49589041096                  0.00%    passed     92.31%
+   4  OR393932.1|Sri_Lanka|NA|NA|Dengue_3|2018-09-25|2018.73150684932                    0.00%    passed     95.74%
+   5  OR229981.1|Guadeloupe|NA|NA|Dengue_3|2020-08-15|2020.61917808219                   0.00%    passed     98.92%
+   6  OR364401.1|China|Guangzhou|NA|Dengue_3|2023-06-20|2023.46575342466                 2.10%    passed     93.58%
+   7  OR364402.1|China|Guangzhou|NA|Dengue_3|2023-06-15|2023.45205479452                 0.00%    passed     98.75%
+   8  OQ821569.1|Cuba|NA|NA|Dengue_3|2022-10-21|2022.80273972603                        14.06%    passed     98.58%
+   9  OQ821611.1|Saint_Lucia|NA|NA|Dengue_3|2020-11-07|2020.84931506849                  1.49%    passed     96.55%
+  10  OQ821612.1|USA|Florida|NA|Dengue_3|2014-07-02|2014.49863013699                    10.55%    passed     91.73%
+  11  OQ826912.1|Bangladesh|NA|NA|Dengue_3|2019-06-15|2019.45205479452                   0.00%    passed     97.11%
+  12  OQ826975.1|Bangladesh|NA|NA|Dengue_3|2021-06-15|2021.45205479452                   0.00%    passed     98.28%
+  13  OQ706227.1|Brazil|Roraima|Boa_Vista|Dengue_3|2023-01-22|2023.05753424658           0.00%    passed     99.28%
+  14  OQ721957.1|India|NA|NA|Dengue_3|2022-06-15|2022.45205479452                        0.00%    passed     82.57%
+  15  OQ445900.2|Puerto_Rico|NA|NA|Dengue_3|2022-09-13|2022.69863013699                 18.93%    passed     84.67%
+  16  OP941685.1|Indonesia|Bengkulu|NA|Dengue_3|2021-04-19|2021.29589041096              2.84%    passed     81.58%
+  17  OP952204.1|Australia|NA|NA|Dengue_3|2016-04-25|2016.31232876712                    0.00%    passed     86.88%
+  18  OQ103113.1|Sri_Lanka|NA|NA|Dengue_3|2020-01-01|2020                                0.00%    passed     95.15%
+  19  OP410998.1|Singapore|NA|NA|Dengue_3|2018-02-15|2018.12328767123                    0.00%    passed     97.47%
+  20  ON584420.1|Indonesia|Bali|NA|Dengue_3|2020-02-22|2020.14246575342                  0.00%    passed     97.71%
+  21  ON055550.1|Thailand|NA|NA|Dengue_3|2012-08-06|2012.59452054795                     0.00%    passed     82.02%
+  22  ON123655.1|India|NA|NA|Dengue_3|2020-06-15|2020.45205479452                        0.14%    passed     99.86%
+  23  OM920055.1|Tanzania|NA|NA|Dengue_3|2018-03-28|2018.23561643836                     0.07%    passed     95.94%
+  24  OM920051.1|Tanzania|NA|NA|Dengue_3|2018-04-05|2018.25753424658                     0.00%    passed     95.12%
+  25  OM920063.1|Tanzania|NA|NA|Dengue_3|2018-01-20|2018.05205479452                     0.00%    passed     97.02%
+  26  OK180536.1|Indonesia|Yogyakarta|NA|Dengue_3|2016-10-31|2016.8301369863             0.00%    passed     76.70%
+  27  MZ505714.1|Costa_Rica|NA|NA|Dengue_3|2013-09-09|2013.68767123288                   0.00%    passed     94.00%
+  28  MZ620638.1|New_Caledonia|NA|NA|Dengue_3|2014-02-12|2014.11506849315                0.14%    passed     99.80%
+  29  MW946808.1|Thailand|NA|NA|Dengue_3|2010-06-15|2010.45205479452                     0.00%    passed     95.13%
+  30  MW946870.1|Thailand|NA|NA|Dengue_3|2014-06-15|2014.45205479452                     0.00%    passed     99.15%
+  31  MZ008468.1|Nicaragua|NA|NA|Dengue_3|2014-06-15|2014.45205479452                    0.00%    passed     98.46%
+  32  MW720892.1|China|NA|NA|Dengue_3|2019-09-15|2019.70410958904                        0.00%    passed     98.14%
+  33  MW788899.1|Myanmar|Yangon|NA|Dengue_3|2019-02-15|2019.12328767123                  0.00%    passed     97.59%
+  34  MW788902.1|Myanmar|Yangon|NA|Dengue_3|2018-07-15|2018.53424657534                  0.00%    passed     99.60%
+  35  MW308181.1|Mexico|Puebla|NA|Dengue_3|2019-08-22|2019.63835616438                   0.00%    passed     93.97%
+  36  MT261975.1|Burkina_Faso|Ouagadougou|NA|Dengue_3|2017-11-17|2017.87671232877        0.00%    passed     97.42%
+  37  MW288033.1|Senegal|NA|NA|Dengue_3|2018-11-15|2018.87123287671                      0.00%    passed     97.57%
+  38  MT377733.1|Indonesia|Jember|NA|Dengue_3|2019-05-15|2019.36712328767                0.00%    passed     98.73%
+  39  MN448943.1|Thailand|NA|NA|Dengue_3|2010-02-16|2010.12602739726                     0.00%    passed     94.48%
+  40  MN453624.1|Singapore|NA|NA|Dengue_3|2016-01-20|2016.05205479452                    0.00%    passed     98.92%
+  41  MK858152.1|India|NA|NA|Dengue_3|2016-08-24|2016.64383561644                        0.00%    passed     96.00%
+  42  MH888333.1|Bolivia|NA|NA|Dengue_3|2011-01-01|2011                                  0.00%    passed     94.01%
+  43  MH936417.1|Mexico|Puebla|NA|Dengue_3|2016-06-11|2016.44109589041                   0.41%    passed     92.15%
+  44  MG895224.1|Taiwan|NA|NA|Dengue_3|2014-12-13|2014.94794520548                       0.00%    passed     95.37%
+  45  MG895192.1|Taiwan|NA|NA|Dengue_3|2013-03-13|2013.19452054795                       0.00%    passed     97.56%
+  46  MG895231.1|Taiwan|NA|NA|Dengue_3|2015-04-10|2015.27123287671                       0.00%    passed     83.70%
+  47  MG895278.1|Taiwan|NA|NA|Dengue_3|2016-08-19|2016.6301369863                        0.00%    passed     94.88%
+  48  MG895283.1|Taiwan|NA|NA|Dengue_3|2016-08-19|2016.6301369863                        0.00%    passed     99.17%
+  49  MG840506.1|China|NA|NA|Dengue_3|2016-06-15|2016.45205479452                        0.00%    passed     98.44%
+  50  MF004386.1|Malaysia|NA|NA|Dengue_3|2012-10-04|2012.75616438356                     0.00%    passed     91.87%
+  51  LT898502.1|Malaysia|NA|NA|Dengue_3|2011-06-15|2011.45205479452                     0.00%    passed     98.77%
+  52  LT996910.1|Malaysia|NA|NA|Dengue_3|2010-06-15|2010.45205479452                     0.00%    passed     99.88%
+  53  LC379197.1|Gabon|Lambarene|NA|Dengue_3|2017-04-15|2017.28493150685                 0.00%    passed     97.28%
+  54  LC379199.1|Gabon|Lambarene|NA|Dengue_3|2016-06-17|2016.45753424658                 0.00%    passed     97.28%
+  55  LC379198.1|Gabon|Lambarene|NA|Dengue_3|2016-05-01|2016.32876712329                 0.00%    passed     97.28%
+  56  LC436665.1|Bangladesh|NA|NA|Dengue_3|2017-10-15|2017.78630136986                   0.00%    passed     97.26%
+  57  LC410193.1|Thailand|NA|NA|Dengue_3|2016-12-15|2016.95342465753                     0.00%    passed     94.12%
+  58  LC498638.1|Japan|NA|NA|Dengue_3|2019-07-15|2019.53424657534                        0.00%    passed     97.74%
+  59  LC775729.1|Japan|Tokyo|NA|Dengue_3|2015-11-15|2015.87123287671                     0.00%    passed     97.05%
+  60  LC775740.1|Japan|Tokyo|NA|Dengue_3|2016-10-15|2016.78630136986                     0.00%    passed     97.67%
+  61  LC776697.1|Japan|Tokyo|NA|Dengue_3|2019-11-15|2019.87123287671                     0.00%    passed     99.48%
+  62  KY978445.1|India|NA|NA|Dengue_3|2012-06-15|2012.45205479452                        0.00%    passed     98.75%
+  63  KY849770.1|Laos|Vientiane|NA|Dengue_3|2010-08-12|2010.61095890411                  0.00%    passed     97.99%
+  64  KY851563.1|Colombia|NA|NA|Dengue_3|2012-06-15|2012.45205479452                     0.00%    passed     96.91%
+  65  KY851632.1|Philippines|NA|NA|Dengue_3|2011-06-15|2011.45205479452                  0.00%    passed     97.39%
+  66  KY673724.1|China|NA|NA|Dengue_3|2012-06-15|2012.45205479452                        0.00%    passed     90.79%
+  67  KY495820.1|Malaysia|NA|NA|Dengue_3|2016-06-15|2016.45205479452                     0.00%    passed     99.20%
+  68  KX357894.1|Myanmar|NA|NA|Dengue_3|2015-06-15|2015.45205479452                      0.41%    passed     97.39%
+  69  KX224289.1|Singapore|NA|NA|Dengue_3|2014-06-15|2014.45205479452                    0.00%    passed     94.79%
+  70  KU053467.1|Solomon_Islands|NA|NA|Dengue_3|2013-02-26|2013.15342465753              0.00%    passed     99.47%
+  71  KT758743.1|Australia|NA|NA|Dengue_3|2012-06-15|2012.45205479452                    0.00%    passed     96.49%
+  72  KT758745.1|East_Timor|NA|NA|Dengue_3|2012-06-15|2012.45205479452                   0.00%    passed     88.05%
+  73  KT758770.1|Cambodia|NA|NA|Dengue_3|2013-06-15|2013.45205479452                     0.00%    passed     99.71%
+  74  KT758776.1|Papua_New_Guinea|NA|NA|Dengue_3|2014-06-15|2014.45205479452             0.00%    passed     99.12%
+  75  KT758783.1|Tonga|NA|NA|Dengue_3|2015-06-15|2015.45205479452                        0.00%    passed     99.96%
+  76  KT758787.1|Australia|NA|NA|Dengue_3|2013-06-15|2013.45205479452                    0.00%    passed     98.67%
+  77  KT758788.1|Australia|NA|NA|Dengue_3|2013-06-15|2013.45205479452                    0.00%    passed     98.64%
+  78  KT758798.1|Vanuatu|NA|NA|Dengue_3|2014-06-15|2014.45205479452                      0.00%    passed     99.71%
+  79  KT204456.1|Indonesia|Surabaya|NA|Dengue_3|2012-06-15|2012.45205479452              0.00%    passed     96.13%
+  80  KT204462.1|Indonesia|Surabaya|NA|Dengue_3|2010-06-15|2010.45205479452              0.00%    passed     99.47%
+  81  KP176709.1|Malaysia|NA|NA|Dengue_3|2013-06-15|2013.45205479452                     0.00%    passed     99.64%
+  82  KM226344.1|Pakistan|NA|NA|Dengue_3|2011-08-15|2011.61917808219                     0.00%    passed     95.70%
+  83  KM226348.1|Pakistan|NA|NA|Dengue_3|2011-08-15|2011.61917808219                     0.00%    passed     95.70%
+  84  KJ830751.1|Saudi_Arabia|NA|NA|Dengue_3|2014-01-26|2014.06849315068                 0.00%    passed     99.76%
+  85  KF816163.1|Laos|NA|NA|Dengue_3|2013-08-15|2013.61917808219                         0.00%    passed     98.12%
+  86  KF973485.1|Nicaragua|NA|NA|Dengue_3|2011-06-15|2011.45205479452                    0.00%    passed     94.36%
+  87  KF973479.1|Nicaragua|NA|NA|Dengue_3|2012-06-15|2012.45205479452                    0.00%    passed     96.38%
+  88  KC848588.1|Somalia|NA|NA|Dengue_3|2011-06-15|2011.45205479452                      0.00%    passed     97.97%
+  89  JX070120.1|India|Pathanapuram|Kerala|Dengue_3|2010-05-23|2010.38904109589         25.90%    passed     56.48%
+  90  JN544412.1|Singapore|NA|NA|Dengue_3|2011-06-15|2011.45205479452                    0.07%    passed     97.80%
+  91  JX070133.1|India|Thiruvananthapuram|Kerala|Dengue_3|2011-03-01|2011.16164383562   25.90%    passed     41.37%
+  92  JF968091.1|Indonesia|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    0.00%    passed     86.92%
+  93  JF968102.1|Indonesia|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    0.00%    passed     99.49%
+  94  JF968111.1|Malaysia|NA|NA|Dengue_3|2010-06-15|2010.45205479452                     0.00%    passed     99.79%
+  95  JN029824.1|China|NA|NA|Dengue_3|2010-06-15|2010.45205479452                        0.14%    passed     73.19%
+  96  JN030188.1|Singapore|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    0.47%    passed     87.21%
+  97  JN030192.1|Singapore|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    0.00%    passed     99.12%
+  98  JN030190.1|Singapore|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    1.42%    passed     75.90%
+  99  JN030181.1|Singapore|NA|NA|Dengue_3|2010-06-15|2010.45205479452                    0.00%    passed     92.39%
+ 100  JF937637.1|Nicaragua|Managua|NA|Dengue_3|2010-06-15|2010.45205479452               0.00%    passed     98.86%
+ 101  HQ141582.1|Viet_Nam|NA|NA|Dengue_3|2010-06-15|2010.45205479452                     0.00%    passed     91.71%
+****  TOTAL                                                                              1.08%  0 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: KM226348.1|Pakistan|NA|NA|Dengue_3|2011-08-15|2011.61917808219 is identical to KM226344.1|Pakistan|NA|NA|Dengue_3|2011-08-15|2011.61917808219 but kept for subsequent analysis
+Checking for duplicate sequences: done in 0.000223875 secs using 82.19% CPU
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.005 seconds
+
+NOTE: 1 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -10429.090
+2. Current log-likelihood: -9271.330
+3. Current log-likelihood: -9241.262
+4. Current log-likelihood: -9239.921
+5. Current log-likelihood: -9239.687
+Optimal log-likelihood: -9239.638
+Rate parameters:  A-C: 1.73926  A-G: 19.10812  A-T: 2.66241  C-G: 0.57307  C-T: 52.47704  G-T: 1.00000
+Base frequencies:  A: 0.317  C: 0.199  G: 0.270  T: 0.214
+Proportion of invariable sites: 0.589
+Parameters optimization took 5 rounds (0.290 sec)
+Wrote distance file to... 
+Computing ML distances based on estimated model parameters...
+Calculating distance matrix: done in 0.0133741 secs using 94.65% CPU
+Computing ML distances took 0.013575 sec (of wall-clock time) 0.012815 sec (of CPU time)
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Setting up auxiliary I and S matrices: done in 0.000195026 secs using 117.9% CPU
+Constructing RapidNJ tree: done in 0.000494003 secs using 161.3% CPU
+Computing RapidNJ tree took 0.000728 sec (of wall-clock time) 0.001070 sec (of CPU time)
+OMP: Info #276: omp_set_nested routine deprecated, please use omp_set_max_active_levels instead.
+Log-likelihood of RapidNJ tree: -9291.940
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 0.617 second
+Computing log-likelihood of 98 initial trees ... 0.496 seconds
+Current best score: -9236.526
+
+Do NNI search on 20 best initial trees
+Optimizing NNI: done in 0.0330439 secs using 95.48% CPU
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -9236.444
+Optimizing NNI: done in 0.0391419 secs using 97.71% CPU
+Optimizing NNI: done in 0.0349851 secs using 97.13% CPU
+Optimizing NNI: done in 0.0421331 secs using 97.78% CPU
+Optimizing NNI: done in 0.0389891 secs using 97.52% CPU
+Optimizing NNI: done in 0.0351081 secs using 97.64% CPU
+Optimizing NNI: done in 0.042876 secs using 94.83% CPU
+UPDATE BEST LOG-LIKELIHOOD: -9236.443
+Optimizing NNI: done in 0.039047 secs using 97.17% CPU
+Optimizing NNI: done in 0.038048 secs using 97.97% CPU
+Optimizing NNI: done in 0.0410049 secs using 97.92% CPU
+Iteration 10 / LogL: -9236.448 / Time: 0h:0m:1s
+Optimizing NNI: done in 0.0417671 secs using 96.73% CPU
+Optimizing NNI: done in 0.038857 secs using 96.72% CPU
+Optimizing NNI: done in 0.0408618 secs using 97.61% CPU
+Optimizing NNI: done in 0.0396061 secs using 96.75% CPU
+Optimizing NNI: done in 0.040801 secs using 97.07% CPU
+Optimizing NNI: done in 0.040956 secs using 97.83% CPU
+Optimizing NNI: done in 0.036633 secs using 96.56% CPU
+UPDATE BEST LOG-LIKELIHOOD: -9236.443
+Optimizing NNI: done in 0.041764 secs using 94.12% CPU
+Optimizing NNI: done in 0.0401621 secs using 94.91% CPU
+UPDATE BEST LOG-LIKELIHOOD: -9236.443
+Optimizing NNI: done in 0.0433102 secs using 90.25% CPU
+Iteration 20 / LogL: -9236.443 / Time: 0h:0m:2s
+Finish initializing candidate tree set (4)
+Current best tree score: -9236.443 / CPU time: 1.962
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Optimizing NNI: done in 0.100346 secs using 95.2% CPU
+Optimizing NNI: done in 0.12835 secs using 96.07% CPU
+Optimizing NNI: done in 0.0804648 secs using 93.41% CPU
+Optimizing NNI: done in 0.0990541 secs using 92.48% CPU
+Optimizing NNI: done in 0.0949428 secs using 95.87% CPU
+Optimizing NNI: done in 0.120284 secs using 96.03% CPU
+Optimizing NNI: done in 0.0812609 secs using 96.84% CPU
+Optimizing NNI: done in 0.0820169 secs using 96.27% CPU
+Optimizing NNI: done in 0.101154 secs using 95.24% CPU
+Optimizing NNI: done in 0.0936432 secs using 94.03% CPU
+Iteration 30 / LogL: -9236.481 / Time: 0h:0m:3s (0h:0m:8s left)
+Optimizing NNI: done in 0.11438 secs using 95.09% CPU
+Optimizing NNI: done in 0.0889461 secs using 96.72% CPU
+Optimizing NNI: done in 0.102404 secs using 94.35% CPU
+Optimizing NNI: done in 0.100188 secs using 97.31% CPU
+Optimizing NNI: done in 0.0981681 secs using 96.99% CPU
+Optimizing NNI: done in 0.111853 secs using 97.06% CPU
+Optimizing NNI: done in 0.103657 secs using 97.86% CPU
+Optimizing NNI: done in 0.114379 secs using 97.73% CPU
+Optimizing NNI: done in 0.119353 secs using 96.07% CPU
+Optimizing NNI: done in 0.108694 secs using 97.49% CPU
+Iteration 40 / LogL: -9236.459 / Time: 0h:0m:4s (0h:0m:6s left)
+Optimizing NNI: done in 0.0933321 secs using 94.55% CPU
+Optimizing NNI: done in 0.0912349 secs using 92.75% CPU
+Optimizing NNI: done in 0.106818 secs using 93.4% CPU
+Optimizing NNI: done in 0.0965691 secs using 93.57% CPU
+Optimizing NNI: done in 0.105815 secs using 93.79% CPU
+Optimizing NNI: done in 0.0978529 secs using 95.48% CPU
+Optimizing NNI: done in 0.107824 secs using 96.19% CPU
+Optimizing NNI: done in 0.101282 secs using 95.37% CPU
+Optimizing NNI: done in 0.102783 secs using 95.83% CPU
+Optimizing NNI: done in 0.14419 secs using 95.6% CPU
+Iteration 50 / LogL: -9236.458 / Time: 0h:0m:5s (0h:0m:5s left)
+Optimizing NNI: done in 0.106737 secs using 97.43% CPU
+Optimizing NNI: done in 0.100096 secs using 97.56% CPU
+Optimizing NNI: done in 0.091233 secs using 96.98% CPU
+Optimizing NNI: done in 0.07216 secs using 97.37% CPU
+Optimizing NNI: done in 0.0978 secs using 97.36% CPU
+Optimizing NNI: done in 0.103044 secs using 97.54% CPU
+Optimizing NNI: done in 0.096241 secs using 97.61% CPU
+Optimizing NNI: done in 0.10658 secs using 97.07% CPU
+Optimizing NNI: done in 0.11091 secs using 96.57% CPU
+Optimizing NNI: done in 0.10182 secs using 90.05% CPU
+Iteration 60 / LogL: -9236.487 / Time: 0h:0m:6s (0h:0m:4s left)
+Optimizing NNI: done in 0.101708 secs using 96.62% CPU
+Optimizing NNI: done in 0.127569 secs using 94.02% CPU
+Optimizing NNI: done in 0.114475 secs using 84.5% CPU
+Optimizing NNI: done in 0.175265 secs using 73.17% CPU
+Optimizing NNI: done in 0.115777 secs using 92.45% CPU
+Optimizing NNI: done in 0.107857 secs using 94.71% CPU
+Optimizing NNI: done in 0.11775 secs using 93.02% CPU
+Optimizing NNI: done in 0.11695 secs using 94.73% CPU
+Optimizing NNI: done in 0.110022 secs using 94.12% CPU
+Optimizing NNI: done in 0.147736 secs using 92.68% CPU
+Iteration 70 / LogL: -9236.481 / Time: 0h:0m:7s (0h:0m:3s left)
+Optimizing NNI: done in 0.132828 secs using 94.04% CPU
+Optimizing NNI: done in 0.108017 secs using 92.15% CPU
+Optimizing NNI: done in 0.103929 secs using 93.22% CPU
+Optimizing NNI: done in 0.103541 secs using 92.92% CPU
+Optimizing NNI: done in 0.123208 secs using 96.64% CPU
+Optimizing NNI: done in 0.109569 secs using 98.71% CPU
+Optimizing NNI: done in 0.0847681 secs using 97.83% CPU
+Optimizing NNI: done in 0.105841 secs using 98.23% CPU
+Optimizing NNI: done in 0.121277 secs using 96.14% CPU
+Optimizing NNI: done in 0.097563 secs using 98.18% CPU
+Iteration 80 / LogL: -9236.454 / Time: 0h:0m:8s (0h:0m:2s left)
+Optimizing NNI: done in 0.10325 secs using 97.56% CPU
+Optimizing NNI: done in 0.088527 secs using 97.44% CPU
+Optimizing NNI: done in 0.093313 secs using 98.92% CPU
+Optimizing NNI: done in 0.136142 secs using 97.94% CPU
+Optimizing NNI: done in 0.103133 secs using 94.04% CPU
+Optimizing NNI: done in 0.126513 secs using 91.97% CPU
+Optimizing NNI: done in 0.109227 secs using 97.35% CPU
+Optimizing NNI: done in 0.0990031 secs using 97.23% CPU
+Optimizing NNI: done in 0.095021 secs using 97.55% CPU
+Optimizing NNI: done in 0.118606 secs using 93.25% CPU
+Iteration 90 / LogL: -9237.301 / Time: 0h:0m:9s (0h:0m:1s left)
+Optimizing NNI: done in 0.096468 secs using 94.42% CPU
+Optimizing NNI: done in 0.127216 secs using 93.97% CPU
+Optimizing NNI: done in 0.14112 secs using 93.74% CPU
+Optimizing NNI: done in 0.106806 secs using 94.32% CPU
+Optimizing NNI: done in 0.103981 secs using 94.85% CPU
+Optimizing NNI: done in 0.141072 secs using 93.6% CPU
+Optimizing NNI: done in 0.091465 secs using 96.04% CPU
+Optimizing NNI: done in 0.117463 secs using 95.58% CPU
+Optimizing NNI: done in 0.123489 secs using 93.1% CPU
+Optimizing NNI: done in 0.0969341 secs using 97.53% CPU
+Iteration 100 / LogL: -9256.883 / Time: 0h:0m:11s (0h:0m:0s left)
+Optimizing NNI: done in 0.095562 secs using 99.9% CPU
+Optimizing NNI: done in 0.0913591 secs using 99.87% CPU
+TREE SEARCH COMPLETED AFTER 102 ITERATIONS / Time: 0h:0m:11s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -9236.443
+Optimal log-likelihood: -9236.443
+Rate parameters:  A-C: 1.73903  A-G: 19.08617  A-T: 2.66485  C-G: 0.57367  C-T: 52.48262  G-T: 1.00000
+Base frequencies:  A: 0.317  C: 0.199  G: 0.270  T: 0.214
+Proportion of invariable sites: 0.590
+Parameters optimization took 1 rounds (0.018 sec)
+BEST SCORE FOUND : -9236.443
+Total tree length: 0.852
+
+Total number of iterations: 102
+CPU time used for tree search: 10.532 sec (0h:0m:10s)
+Wall-clock time used for tree search: 10.983 sec (0h:0m:10s)
+Total CPU time used: 10.897 sec (0h:0m:10s)
+Total wall-clock time used: 11.362 sec (0h:0m:11s)
+
+Analysis results written to: 
+  IQ-TREE report:                results/subsampled_Dengue_3_cleaned.fasta.iqtree
+  Maximum-likelihood tree:       results/subsampled_Dengue_3_cleaned.fasta.treefile
+  Likelihood distances:          results/subsampled_Dengue_3_cleaned.fasta.mldist
+  Screen log file:               results/subsampled_Dengue_3_cleaned.fasta.log
+
+Date and Time: Tue Mar  5 12:08:01 2024
