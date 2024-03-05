@@ -1,0 +1,4 @@
+input_namespace:
+  treetime: treetime
+  subsample: subsample_denv
+output_namespace: out

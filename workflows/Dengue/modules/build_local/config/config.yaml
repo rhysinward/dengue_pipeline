@@ -1,0 +1,107 @@
+input_namespace: null
+output_namespace: dengue_export
+dengue_acquiredata:
+  name: dengue_acquiredata
+  type: module
+  snakefile: ../../AcquireData/workflow/Snakefile
+  config:
+    input_namespace: null
+    output_namespace: dengue_acquiredata
+    params:
+      "Sequence": virus genome taxon "Dengue Virus"
+      "Command line arguments":
+        - "--released-after 2000-01-01"
+      "Data format": virus-genome
+dengue_processdenguedata:
+  name: dengue_processdenguedata
+  type: module
+  snakefile: ../../ProcessDengueData/workflow/Snakefile
+  config:
+    input_namespace: dengue_acquiredata
+    output_namespace: dengue_processdenguedata
+    params:
+      "Start date": 2000-01-01
+      "End date": 2023-12-24
+dengue_sequencealignment:
+  name: dengue_sequencealignment
+  type: module
+  snakefile: ../../SequenceAlignment/workflow/Snakefile
+  config:
+    input_namespace: dengue_processdenguedata
+    output_namespace: dengue_sequencealignment
+dengue_splitgenomeandqc:
+  name: dengue_splitgenomeandqc
+  type: module
+  snakefile: ../../SplitGenomeAndQC/workflow/Snakefile
+  config:
+    input_namespace: dengue_sequencealignment
+    output_namespace: dengue_splitgenomeandqc
+dengue_subsample_denv:
+  name: dengue_subsample_denv
+  type: module
+  snakefile: ../../Subsample_DENV/workflow/Snakefile
+  config:
+    input_namespace:
+      metadata: dengue_processdenguedata
+      fasta: dengue_splitgenomeandqc
+    output_namespace: dengue_subsample_denv
+    params:
+      country: Colombia
+      number_sequences: 500
+      prop_rd: 0.8
+      prop_or: 0.2
+dengue_iqtree:
+  name: dengue_iqtree
+  type: module
+  snakefile: ../../IQTree/workflow/Snakefile
+  config:
+    input_namespace: dengue_subsample_denv
+    output_namespace: dengue_iqtree
+dengue_treetime:
+  name: dengue_treetime
+  type: module
+  snakefile: ../../TreeTime/workflow/Snakefile
+  config:
+    input_namespace:
+      fasta: dengue_iqtree
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_treetime
+dengue_mutations:
+  name: dengue_mutations
+  type: module
+  snakefile: ../../Mutations/workflow/Snakefile
+  config:
+    input_namespace:
+      fasta: dengue_treetime
+      metadata: dengue_subsample_denv
+    output_namespace: dengue_mutations
+dengue_translation:
+  name: dengue_translation
+  type: module
+  snakefile: ../../Translation/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      mutations: dengue_mutations
+    output_namespace: dengue_translation
+dengue_mugration:
+  name: dengue_mugration
+  type: module
+  snakefile: ../../Mugration/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      subsample: dengue_subsample_denv
+    output_namespace: dengue_mugration
+dengue_export:
+  name: dengue_export
+  type: module
+  snakefile: ../../Export/workflow/Snakefile
+  config:
+    input_namespace:
+      treetime: dengue_treetime
+      translation: dengue_translation
+      subsample: dengue_subsample_denv
+      mutations: dengue_mutations
+      mugrations: dengue_mugration
+    output_namespace: dengue_export
