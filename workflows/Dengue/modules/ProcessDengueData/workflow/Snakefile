@@ -1,0 +1,55 @@
+# Step 2: Clean metadata and generate FASTA
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+params = config["params"]
+
+
+def script(name=""):
+    from snakemake.remote import AUTO
+
+    filename = srcdir(f"scripts/{name}")
+    try:
+        return AUTO.remote(filename)
+    except TypeError:
+        return filename
+
+
+rule process_dengue_data:
+    input:
+        metadata=f"results/{indir}/metadata.tsv",
+        fasta=f"results/{indir}/ncbi_dataset/data/genomic.fna",
+        script=script("Clean_metadata_and_fasta.R"),
+    output:
+        fasta_files=f"results/{outdir}/Unaligned_{{serotype}}.fasta",
+        info_tables_txt=f"results/{outdir}/{{serotype}}_infoTbl.txt",
+        info_tables_csv=f"results/{outdir}/{{serotype}}_infoTbl.csv",
+    params:
+        outdir=f"results/{outdir}",
+        start_date=params["Start date"],
+        end_date=params["End date"],
+    log:
+        "logs/process_dengue_data_{serotype}.log",
+    message:
+        "Processing and cleaning Dengue data downloaded from NCBI"
+    conda:
+        "envs/dengue.yaml"
+    shell:
+        """
+        mkdir -p {params.outdir}
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --output_dir {params.outdir} \
+            --start-date {params.start_date} \
+            --end-date {params.end_date}
+        """
+
+rule _test:
+    input:
+        f"results/{outdir}/Unaligned_Dengue_1.fasta",
+        f"results/{outdir}/Unaligned_Dengue_2.fasta",
+        f"results/{outdir}/Unaligned_Dengue_3.fasta",
+        f"results/{outdir}/Unaligned_Dengue_4.fasta",

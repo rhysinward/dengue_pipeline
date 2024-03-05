@@ -1,0 +1,9 @@
+input_namespace:
+  metadata: processdenguedata
+  fasta: splitgenomeandqc
+output_namespace: out
+params:
+  country: Colombia
+  number_sequences: 500
+  prop_rd: 0.8
+  prop_or: 0.2

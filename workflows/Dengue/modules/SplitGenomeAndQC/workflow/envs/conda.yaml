@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+dependencies:
+  - r
+  - r-essentials
+  - r-dplyr
+  - r-lubridate
+  - r-tidyr
+  - r-optparse
+  - r-ape
+  - r-seqinr

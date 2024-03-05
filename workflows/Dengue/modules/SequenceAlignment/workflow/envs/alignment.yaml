@@ -1,0 +1,7 @@
+name: nextstrain
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - nextalign=2.14.0
