@@ -1,7 +1,7 @@
 ## load packages
 required_packages <- c("optparse", "dplyr","lubridate","tidyr",
                        "readr","ape","seqinr","countrycode",
-                       "ggplot2","purrr")
+                       "ggplot2","purrr","zoo","rlang","wrswoR")
 suppressMessages(
   for (package in required_packages) {
     if (!require(package, character.only = TRUE)) {
@@ -16,10 +16,15 @@ opt_parser <- OptionParser(
   option_list = list(
     make_option(c("-m", "--metadata"), type="character", help="Input tsv file containing metadata from GenBank, with sequence identifiers matching those in the input fasta file."),
     make_option(c("-f", "--fasta"), type="character", help="Input fasta file, with sequence identifiers matching those in the metadata file."),
-    make_option(c("-c", "--country"), type="character", help="Country(ies) of Interest, the first country specified will determine local region"),
-    make_option(c("-n", "--number_sequences"), type="numeric", help="Number of desired sequences (defult is 1:1 ratio with number of sequences from desired country(ies))"),
-    make_option(c("-e", "--prop_rd"), type="numeric",default = 0.8, help="Set proportion desired for region of interest (defult is 0.8)"),
-    make_option(c("-w", "--prop_or"), type="numeric",default = 0.2, help="Set proprotion desired for outside region of interest (defult is 0.2)")
+    make_option(c("-c", "--location_local"), type="character", help="Add csv specifying granuality and location of interest"),
+    make_option(c("-x", "--location_background"), type="character", help="Input CSV if you want to specify the locations for even sampling or conduct proportional sampling please add a csv specifying granuality, location of background, and number of sequences desired (only relevent for proportional)"),
+    make_option(c("-t", "--time_interval"), type="character", default = 'Year', help="Select sampling interval (Year, Month, Week)"),
+    make_option(c("-n", "--number_sequences_local"), type="numeric", help="Number of desired sequences from location of interest"),
+    make_option(c("-s", "--serotype"), type="character", help="Serotype to plot viral movements from."),
+    make_option(c("-e", "--number_sequences_background"), type="numeric", help="Number of desired sequences from background"),
+    make_option(c("-w", "--sampling_method"), type="character",default = 'Even', help="Select either even or proportional sampling"),
+    make_option(c("-o", "--outfile"), type="character", default="subsampled", help="Base name for output files. Files will be named as '<outfile>_fasta.fasta', '<outfile>_infoTbl.tsv', and '<outfile>_infoTbl.csv'"),
+    make_option(c("-d", "--output_dir"), type="character", default="subsampled", help="Output directory")
   )
   )
 
@@ -48,6 +53,10 @@ if (!is.null(opt$fasta)) {
   quit()
 }
 
+if (!is.null(opt$location_background)) {
+  proportional_variable <- read.csv(opt$location_background)
+}
+
 ##########################################################
 # Step 2: processing of metadata
 ##########################################################
@@ -62,202 +71,300 @@ length <- nrow(metadata.df)
 metadata.df <- metadata.df %>%
   filter(Sequence_name %in% seq_name$V1)
 
-metadata.df <- metadata.df %>%
-  mutate(Year = year(ymd(Date)))
+#add year, month, week to metadata
 
-# Check if any rows were removed
+metadata.df <- metadata.df %>%
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d")) %>%
+  mutate(Year = year(ymd(Date))) %>%
+  mutate(Month = floor_date(ymd(metadata.df$Date), "month")) %>%
+  mutate(Week = floor_date(ymd(metadata.df$Date), "week"))
+
+# Check if any rows were removed from the metadata
 if (nrow(metadata.df) < length) {
   cat("Some identifiers in the metadata did not match the FASTA file. They have been removed.\n")
 }
 
-#assign region (SA, NA, Africa, Asia, Europe, Oceania)
+#assign region (SA, NA, Africa, Asia, Europe, Oceania) 
 metadata.df$Country <- ifelse(metadata.df$Country == "Micronesia", "Micronesia (Federated States of)", metadata.df$Country)
 metadata.df$Country <- ifelse(metadata.df$Country == "Borneo", "Indonesia", metadata.df$Country)
 metadata.df$Country <- ifelse(metadata.df$Country == "South_Korea", "Korea (Republic of)", metadata.df$Country)
 metadata.df$Country <- ifelse(metadata.df$Country == "Republic_of_the_Congo", "Congo (Republic of)", metadata.df$Country)
 
-remove_countries <- c("Pacific_Ocean","Saint_Martin")
+#Pacific ocean is not a country so remove it
+
+remove_countries <- c("Pacific_Ocean")
 
 metadata.df <- metadata.df %>%
   filter(!Country %in% remove_countries)
 
+#add continent to metadata
+
 metadata.df$Continent <- countrycode(metadata.df$Country, origin = "country.name", destination = "continent")
 
-#select all metadata from country of interest is ok if there are no metadata but number of required sequences needs to be specified
+#add Saint_Martin to Americas 
 
-countries_of_interest <- opt$country
+metadata.df$Continent <- ifelse(metadata.df$Country == "Saint_Martin", "Americas", metadata.df$Continent)
 
-#opt$country
+# add csv containing the column (which can be country, continent etc) and the value of interest (e.g. Australia, Asia etc)
 
-countries_of_interest_first <- strsplit(countries_of_interest, ",")[[1]]
+if (!is.null(opt$location_local)) {
+  location_of_interest <- read.csv(opt$location_local)
+} else {
+  cat("Input metadata file. Exiting now...")
+  quit()
+}
 
+# Get the column name and value of interest
+column_of_interest <- colnames(location_of_interest)[1]
+value_of_interest <- location_of_interest[1, 1]
+
+#add time interval
+
+time_interval <- opt$time_interval
+
+#add serotype
+
+if (!is.null(opt$serotype)) {
+  Serotype <- opt$serotype
+}
+
+# Filter metadata.df where the dynamic column equals the value of interest
 metadata_countries_of_interest <- metadata.df %>%
-  filter(Country %in% countries_of_interest)
+  filter(!!sym(column_of_interest) == value_of_interest)
 
 ##############################################################################
-# Step 3: Identify the region of the first country
+# Step 3: Select sample from Location of Interest using weighted random sampling
 ##############################################################################
 
-first_country <- countries_of_interest_first[1]
-first_country_region <- countrycode(first_country, origin = "country.name", destination = "continent")
+#add sampling weights 1/sample for each letter at each time
 
-##############################################################################
-# Step 4: Input required number of sequences and calculate Sequences per Year
-##############################################################################
+metadata_countries_of_interest <- metadata_countries_of_interest %>%
+  group_by(!!sym(time_interval)) %>%
+  mutate(weights = 1/n())
 
+#plot histogram with ggplot this will help us understand if the sample has worked
 
-#if opt$number_sequences is null (I.e. not imputed then automatically select 1:1 ratio) if not subtract 
-#required number of sequences from number of sequences from countries of interest
-if (is.null(opt$number_sequences)) {
-  n_remainder <- as.numeric(nrow(metadata_countries_of_interest))
+metadata_countries_of_interest_plot <- metadata_countries_of_interest %>%
+  group_by(!!sym(time_interval)) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+plot_1 <- ggplot(metadata_countries_of_interest_plot, aes(x = !!sym(time_interval), y = count)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Sequences", title = paste0('Number of Sequences per Year in ', value_of_interest)) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_brewer(palette = "Set1")
+
+#save as pdf
+
+ggsave(filename = paste0(opt$output_dir,"metadata_countries_of_interest_plot_", Serotype, ".pdf"), plot = plot_1)
+
+#conduct random weighted sampling
+
+if (!is.null(opt$number_sequences_local)) {
+  number_sequences_local <- opt[["number_sequences_local"]]
 } else {
-  n_remainder <- as.numeric(opt$number_sequences) - nrow(metadata_countries_of_interest) # Total number of sequences desired
+  number_sequences_local <- nrow(metadata_countries_of_interest)
 }
 
-if (n_remainder < 0) {
-  stop("Error: The number of sequences specified (", opt$number_sequences, 
-       ") is less than the number of sequences available in the country of interest (", 
-       nrow(metadata_countries_of_interest), ").")
-}
+df_sample <- sample_int_crank(n = nrow(metadata_countries_of_interest),number_sequences_local,
+                              metadata_countries_of_interest$weights)
 
-total_proportion <- opt[["prop_rd"]] + opt[["prop_or"]]
+df_sample_location_of_interest <- metadata_countries_of_interest[df_sample,]
 
-# Check if the total proportion is not equal to 1
-if (total_proportion != 1) {
-  error_message <- sprintf("Error: The total proportion of 'prop_RD' and 'prop_OR' should be 1, but it is %.2f", total_proportion)
-  stop(error_message)
-}
-
-# In-region sequences per year
-in_region_sequences <- round(opt[["prop_rd"]] * n_remainder)
-# Out-of-region sequences per year
-out_region_sequences <- round(opt[["prop_or"]] * n_remainder)
-
-##############################################################################
-# Step 3: Sampling Sequences per Country within a Region
-##############################################################################
-  
-in_region_countries <- unique(metadata.df$Country[metadata.df$Continent == first_country_region])
-
-same_region_metadata <- metadata.df %>%
-  filter(!Country %in% countries_of_interest & Country %in% in_region_countries)
-
-#sample sequences from countries of interest
-
-# Function to perform subsampler
-
-subsampler <- function(df, max_per_year) {
-  if (max_per_year < 1) {
-    sampled_data <- data.frame()
-} else {
-  unique_years <- unique(df$Year)
-  unique_countries <- unique(df$Country)
-  sampled_data <- data.frame()
-  
-  for (year in unique_years) {
-    year_data <- filter(df, Year == year)
-    count <- 0
-    
-    while(count < max_per_year && nrow(year_data) > 0) {
-      unique_countries <- sample(unique_countries)  # Randomize the order of countries so same countries aren't always sampled first
-      for (country in unique_countries) {
-        country_data <- filter(year_data, Country == country)
-        if (nrow(country_data) > 0) {
-          sampled_data <- rbind(sampled_data, slice_sample(country_data, n = 1))
-          count <- count + 1
-          if (count == max_per_year) break
-        }
-      }
-      suppressMessages({
-        year_data <- anti_join(year_data, sampled_data)
-      })
-          }
-  }
-  if (nrow(sampled_data) < max_per_year * length(unique_years)) {
-    remaining <- max_per_year * length(unique_years) - nrow(sampled_data)
-    additional_data <- df %>%
-      filter(!Sequence_name %in% sampled_data$Sequence_name) %>%
-      slice_sample(n = remaining)
-    sampled_data <- rbind(sampled_data, additional_data)
-  }
-  sampled_data
-}
-}
-
-# Apply advanced sampling to the data
-sampling_region_of_interest <- subsampler(same_region_metadata, max_per_year = round(in_region_sequences/length(unique(same_region_metadata$Year))))
-
-##############################################################################
-# Step 4: Sampling Sequences per Country within a Region
-##############################################################################
-in_region_countries <- unique(metadata.df$Country[metadata.df$Continent == first_country_region])
-
-out_of_region_countries <- unique(metadata.df$Country[metadata.df$Continent != first_country_region])
-
-out_of_region_metadata <- metadata.df %>%
-  filter(!Country %in% countries_of_interest & Country %in% out_of_region_countries)
-
-# Apply advanced sampling to the data
-sampling_out_of_region <- subsampler(out_of_region_metadata, max_per_year = round(out_region_sequences/length(unique(out_of_region_metadata$Year))))
-
-##############################################################################
-# Step 5: Combine all sampled sequences into a single data frame
-##############################################################################
-# Assuming metadata_countries_of_interest, sampling_out_of_region, and sampling_region_of_interest are already defined
-
-final_sample <- metadata_countries_of_interest
-
-#if metadata is empty do not join
-
-if (nrow(sampling_out_of_region) == 0 && nrow(sampling_region_of_interest) == 0) {
-} else {
-  if (nrow(sampling_out_of_region) > 0) {
-    final_sample <- rbind(final_sample, sampling_out_of_region)
-  }
-  if (nrow(sampling_region_of_interest) > 0) {
-    final_sample <- rbind(final_sample, sampling_region_of_interest)
-  }
-}
-
-##############################################################################
-# Step 6: Combine all sampled sequences into a single data frame
-##############################################################################
-
-#get count of data 
-
-final_sample_plot <- final_sample %>%
-  mutate(Group = if_else(Country == first_country, first_country, as.character(Continent))) %>%
-  group_by(Group, Year) %>%
+df_sample_location_of_interest_plot <- df_sample_location_of_interest %>%
+  group_by(!!sym(time_interval)) %>%
   summarise(count = n()) %>%
   ungroup()
 
 #plot data with good color scheme
 
-ggplot(final_sample_plot, aes(x = Year, y = count, fill = Group)) +
+plot_2 <- ggplot(df_sample_location_of_interest_plot, aes(x = !!sym(time_interval), y = count, fill)) +
   geom_bar(stat = "identity", position = "stack") +
-  labs(x = "Year", y = "Number of Sequences", title = "Number of Sequences per Year") +
+  labs(x = "Year", y = "Number of Sequences", title = paste0('Number of Sampled Sequences per Year in ', value_of_interest)) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer(palette = "Set1")
 
-#export to pdf
+#save as pdf
 
-serotype <- unique(final_sample$Serotype)
-
-ggsave(paste0('results/subsampled_', serotype, '_summary_plot.pdf'), width = 10, height = 10, units = "in")
-
+ggsave(filename = paste0(opt$output_dir,"df_sample_location_of_interest_plot_", Serotype,".pdf"), plot = plot_2)
 
 ##############################################################################
-# Step 6: Match sample to sequences and produce sampled metadata + sequences
+# Step 4: Select even sample from background using weighted random sampling
 ##############################################################################
 
-colnames(final_sample) <- c('GenBank_ID', "Country", "State",
-                            "City", "Serotype", "date","Decimal_Date","name","Year","Continent")
+if (opt$sampling_method == 'Even') {
+
+  if (exists("proportional_variable")) {
+    # 'proportional_variable' exists, proceed with filtering
+    background_metadata_even <- metadata.df %>%
+      filter(!!sym(column_of_interest) != value_of_interest) %>%
+      filter(!!sym(column_of_interest) %in% unique(proportional_variable$Location))
+  } else {
+    # 'proportional_variable' does not exist, skip the second filter
+    background_metadata_even <- metadata.df %>%
+      filter(!!sym(column_of_interest) != value_of_interest)
+  }
+  
+#add sampling weights 1/sample for each letter at each time
+
+background_metadata_even <- background_metadata_even %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  mutate(weights = 1/n())
+
+#plot histogram with ggplot
+
+background_metadata_plot_even <- background_metadata_even %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+#plot data with good color scheme
+
+plot_3 <- ggplot(background_metadata_plot_even, aes(x = !!sym(time_interval), y = count, fill = !!sym(column_of_interest))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Sequences", title = "Number of Sequences per Year, Background Dataset") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.text = element_text(size = 5),  # Reduce text size
+        legend.key.size = unit(0.2, "cm"),  # Reduce key size
+        legend.spacing.y = unit(0.1, "cm"),  # Reduce spacing between legend keys
+        legend.margin = margin(2, 2, 2, 2)  # Reduce margin around the legend
+  ) +
+  guides(fill = guide_legend(ncol = 3, byrow = FALSE))  # Organize legend items in rows
+
+#save as pdf
+
+ggsave(filename = paste0(opt$output_dir,"background_metadata_plot_even_", Serotype,".pdf"), plot = plot_3)
+
+
+#conduct random weighted sampling
+
+df_sample <- sample_int_crank(n = nrow(background_metadata_even),opt[["number_sequences_background"]],
+                              background_metadata_even$weights)
+
+background_sample_even <- background_metadata_even[df_sample,]
+
+background_sample_plot_even <- background_sample_even %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+#plot data with good color scheme
+
+plot_4 <- ggplot(background_sample_plot_even, aes(x = Year, y = count,fill = !!sym(column_of_interest))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Sequences", title = "Number of Sequences per Year, Sampled Background") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.text = element_text(size = 5),  # Reduce text size
+        legend.key.size = unit(0.2, "cm"),  # Reduce key size
+        legend.spacing.y = unit(0.1, "cm"),  # Reduce spacing between legend keys
+        legend.margin = margin(2, 2, 2, 2)  # Reduce margin around the legend
+  ) +
+  guides(fill = guide_legend(ncol = 3, byrow = FALSE))  # Organize legend items in rows
+
+#save as pdf
+
+ggsave(filename = paste0(opt$output_dir,"background_sample_plot_even_", Serotype,".pdf"), plot = plot_4)
+
+} else {
+
+##############################################################################
+#Step 5: Proportional sampling of sequences from countries of interest and background
+##############################################################################
+background_metadata_proportional <- metadata.df %>%
+  filter(!!sym(column_of_interest) != value_of_interest)  %>%
+  filter(!!sym(column_of_interest) %in% unique(proportional_variable$Location))
+
+#add sampling weights at each time
+join_conditions <- setNames(c("Date", "Location"), c(time_interval, column_of_interest))
+
+background_metadata_proportional_with_variable <- left_join(background_metadata_proportional,proportional_variable,
+                                              by = join_conditions)
+
+# List column names of proportional_variable
+
+background_metadata_proportional_with_variable <- background_metadata_proportional_with_variable %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  mutate(weights = Variable)
+
+#plot histogram with ggplot
+
+background_metadata_proportional_with_variable_plot <- background_metadata_proportional_with_variable %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+#plot data with good color scheme
+
+plot_5 <- ggplot(background_metadata_proportional_with_variable_plot, aes(x = !!sym(time_interval), y = count, fill = !!sym(column_of_interest))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Sequences", title = "Number of Sequences per Year") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.text = element_text(size = 5),  # Reduce text size
+        legend.key.size = unit(0.2, "cm"),  # Reduce key size
+        legend.spacing.y = unit(0.1, "cm"),  # Reduce spacing between legend keys
+        legend.margin = margin(2, 2, 2, 2)  # Reduce margin around the legend
+  ) +
+  guides(fill = guide_legend(ncol = 3, byrow = FALSE))  # Organize legend items in rows
+
+#save as pdf
+
+ggsave(filename = paste0(opt$output_dir,"background_metadata_plot_proportional_", Serotype, ".pdf"), plot = plot_5)
+
+df_sample <- sample_int_crank(n = nrow(background_metadata_proportional_with_variable),opt[["number_sequences_background"]],
+                              background_metadata_proportional_with_variable$weights)
+
+background_sample_proportional <- background_metadata_proportional_with_variable[df_sample,]
+
+background_sample_plot_proportional <- background_sample_proportional %>%
+  group_by(!!sym(time_interval),!!sym(column_of_interest)) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+#plot data with good color scheme
+
+plot_6 <- ggplot(background_sample_plot_proportional, aes(x = !!sym(time_interval), y = count,fill = !!sym(column_of_interest))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Sequences", title = "Number of Sequences per Year") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+    legend.text = element_text(size = 5),  # Reduce text size
+    legend.key.size = unit(0.2, "cm"),  # Reduce key size
+    legend.spacing.y = unit(0.1, "cm"),  # Reduce spacing between legend keys
+    legend.margin = margin(2, 2, 2, 2)  # Reduce margin around the legend
+  ) +
+  guides(fill = guide_legend(ncol = 3, byrow = FALSE))  # Organize legend items in rows
+
+#save as pdf
+
+ggsave(filename = paste0(opt$output_dir,"background_sample_plot_proportional_", Serotype, ".pdf"), plot = plot_6)
+
+}
+
+##############################################################################
+#Step 6: Merge the local and background datasets
+##############################################################################
+
+if (opt$sampling_method == 'Even') {
+  final_sample <- rbind(df_sample_location_of_interest, background_sample_even)
+} else {
+  final_sample <- rbind(df_sample_location_of_interest, background_sample_proportional)
+}
+
+##############################################################################
+#Step 7: Save the final sample
+##############################################################################
+
 
 seq_name <- as.data.frame(as.matrix(attributes(seqs)$names))
 
 keep <- seq_name %>%
-  filter(V1 %in% final_sample$name)
+  filter(V1 %in% final_sample$Sequence_name)
 
 taxa_split <- data.frame(do.call('rbind',strsplit(as.character(keep$V1),'|',fixed = TRUE)))
 taxa_split$name <- keep$V1
@@ -269,20 +376,13 @@ vec.tokeep <-which(vec.names %in%  species.to.keep)
 
 # Write the sequences to a new FASTA file
 
-seq_name_kept <- as.data.frame(as.matrix(attributes(seqs[vec.tokeep])$names))
-taxa_split <- data.frame(do.call('rbind',strsplit(as.character(seq_name_kept$V1),'|',fixed = TRUE)))
-taxa_split$name <- seq_name_kept$V1
-colnames(taxa_split) <- c('GenBank_ID', "Country", "State",
-                          "City", "Serotype", "date","Decimal_Date","name")
-
-taxa_split <- select(taxa_split,c(8,6,1,2,3,4,5,7))
 write.fasta(sequences=seqs[vec.tokeep], names=names(seqs)[vec.tokeep],
-            file.out=paste0('results/subsampled_', serotype, '.fasta'))
+            file.out=paste0(opt$outfile, '.fasta'))
 
-write.csv(taxa_split,
-          file = paste0("results/subsampled_",serotype,'_infoTbl.tsv'),
+write.csv(final_sample,
+          file = paste0(opt$outfile, "_infoTbl.tsv"),
           row.names = FALSE, quote=FALSE)
 
-write.csv(taxa_split,
-          file = paste0("results/subsampled_",serotype,'_infoTbl.csv'),
-          row.names = FALSE,quote=FALSE)
+write.csv(final_sample,
+          file = paste0(opt$outfile, "_infoTbl.csv"),
+          row.names = FALSE, quote=FALSE)
