@@ -1,9 +1,19 @@
-# Step 4: Segregating E gene and Whole Genomes and performing quaility control
+"""Segregating E gene and Whole Genomes and performing quaility control
+
+This module takes aligned virus sequences and segregates the envelope gene (EG) and whole genomes (WG). It then performs quality control on the sequences.
+
+Params:
+  WG Threshold (number): Whole Genome Threshold
+  EG Threshold (number): Envelope Gene Threshold
+  Serotypes (list of str): List of serotype names (e.g. Dengue_1, etc.)
+"""
 configfile: "config/config.yaml"
+
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 params = config["params"]
+
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -13,6 +23,7 @@ def script(name=""):
         return AUTO.remote(filename)
     except TypeError:
         return filename
+
 
 rule split_genome_and_QC:
     input:
@@ -53,8 +64,10 @@ rule split_genome_and_QC:
             --WG_threshold {params.wg_threshold} \
             --EG_threshold {params.eg_threshold} \
             --input_dir {params.indir} \
-            --output_dir {params.outdir} > {log} 2>&1
+            --output_dir {params.outdir} \
+            > {log} 2>&1
         """
+
 
 rule _test:
     input:

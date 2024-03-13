@@ -29,6 +29,7 @@ rule mutations:
             --output-node-data {output.mutations} > {log} 2>&1
         """
 
+
 rule _test:
     input:
         f"results/{outdir}/subsampled_Dengue_1_mutations.json",

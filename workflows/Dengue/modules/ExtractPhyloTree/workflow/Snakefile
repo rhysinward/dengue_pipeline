@@ -1,6 +1,9 @@
 configfile: "config/config.yaml"
+
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
+
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -11,21 +14,22 @@ def script(name=""):
     except TypeError:
         return filename
 
+
 rule extract_phylogenetic_tree:
     input:
-        json_file = f"results/{indir}/dengue_{{serotype}}.json",
-        script = script("extract_tree_from_json.py"),
+        json_file=f"results/{indir}/dengue_{{serotype}}.json",
+        script=script("extract_tree_from_json.py"),
     output:
-        nexus_file = f"results/{outdir}/dengue_{{serotype}}_timetree.nexus"
+        nexus_file=f"results/{outdir}/dengue_{{serotype}}_timetree.nexus",
     conda:
         "envs/python_env.yaml"
     log:
-        "logs/extract_tree_{serotype}.log"
+        "logs/extract_tree_{serotype}.log",
     message:
         "Extract annotated tree from nextstrain JSON format ({{serotype}})"
     shell:
         """
-        python {input.script} {input.json_file} {output.nexus_file}
+        python {input.script} {input.json_file} {output.nexus_file} > {log} 2>&1
         """
 
 rule _test:

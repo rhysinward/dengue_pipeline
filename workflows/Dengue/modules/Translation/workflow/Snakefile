@@ -38,8 +38,10 @@ rule translation:
             --ancestral-sequences {input.mutations} \
             --reference-sequence {input.ref_genomes} \
             --genes {params.genes} \
-            --output {output.amino} > {log} 2>&1
+            --output {output.amino} \
+            > {log} 2>&1
         """
+
 
 rule _test:
     input:

@@ -1,10 +1,14 @@
 """Split input data into Dengue serotypes, add serotypes to sequence name and generate
 sequence specific metadata.
 """
+
+
 configfile: "config/config.yaml"
+
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
+
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -15,19 +19,20 @@ def script(name=""):
     except TypeError:
         return filename
 
+
 rule process_dengue_data:
     input:
         script=script("split_dengue.R"),
         metadata=f"results/{indir}/infoTbl.csv",
-        fasta=f"results/{indir}/Unaligned.fasta"
+        fasta=f"results/{indir}/Unaligned.fasta",
     output:
-        fasta = f"results/{outdir}/Unaligned_{{serotype}}.fasta",
-        csv = f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.csv",
-        tsv = f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.txt",
+        fasta=f"results/{outdir}/Unaligned_{{serotype}}.fasta",
+        csv=f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.csv",
+        tsv=f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.txt",
     params:
-        output_dir = directory(f"results/{outdir}"),
+        output_dir=directory(f"results/{outdir}"),
     log:
-        "logs/process_data_{serotype}.log"
+        "logs/process_data_{serotype}.log",
     message:
         (
             "Split into serotype, add serotypes to sequence name and generate "
@@ -44,6 +49,7 @@ rule process_dengue_data:
             --outfile {params.output_dir}/Unaligned_ \
             > {log} 2>&1
         """
+
 
 rule _test:
     input:

@@ -31,13 +31,13 @@ rule all:
 
 rule export:
     input:
-        tree = f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
-        metadata = f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
-        branch_lengths = f"results/{indir['treetime']}/{{serotype}}_branch_lengths.json",
-        traits = f"results/{indir['mugrations']}/traits_{{serotype}}.json",
-        aa_muts = f"results/{indir['translation']}/aa_muts_{{serotype}}.json",
-        nt_muts = f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
-        auspice_config = resource("config/auspice_config.json"),
+        tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
+        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
+        branch_lengths=f"results/{indir['treetime']}/{{serotype}}_branch_lengths.json",
+        traits=f"results/{indir['mugrations']}/traits_{{serotype}}.json",
+        aa_muts=f"results/{indir['translation']}/aa_muts_{{serotype}}.json",
+        nt_muts=f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
+        auspice_config=resource("auspice_config.json"),
     output:
         auspice_json=f"results/{outdir}/dengue_{{serotype}}.json",
     conda:
@@ -55,6 +55,7 @@ rule export:
             --auspice-config {input.auspice_config} \
             --output {output.auspice_json} > {log} 2>&1
         """
+
 
 rule _test:
     input:

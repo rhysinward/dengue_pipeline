@@ -1,4 +1,4 @@
-name: Check GRAPEVNE workflow
+name: Check GRAPEVNE workflow (packaged/container build)
 
 on:
   workflow_call:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: workflows/Dengue/modules/build_local
+        working-directory: workflows/Dengue/sources/build_local
     strategy:
       matrix:
         python-version: ["3.11"]
@@ -42,4 +42,5 @@ jobs:
           source "${HOME}/conda/etc/profile.d/conda.sh"
           source "${HOME}/conda/etc/profile.d/mamba.sh"
           mamba activate
-          ./run.sh
+          ./build_container.sh
+          ./launch_container.sh

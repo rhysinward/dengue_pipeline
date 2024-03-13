@@ -5,11 +5,15 @@ Params:
     End date (str): End date for the data to be processed (e.g. "2023-12-24")
     Host (str): Host for the data to be processed (e.g. "Homo sapiens")
 """
+
+
 configfile: "config/config.yaml"
+
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
 params = config["params"]
+
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -19,6 +23,7 @@ def script(name=""):
         return AUTO.remote(filename)
     except TypeError:
         return filename
+
 
 rule process_genbank_data:
     input:
@@ -54,6 +59,7 @@ rule process_genbank_data:
             --outfile_tsv {output.info_tables_txt} \
             > {log} 2>&1
         """
+
 
 rule _test:
     input:

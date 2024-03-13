@@ -1,11 +1,15 @@
 """Sequence alignment for Dengue serotypes"""
+
+
 configfile: "config/config.yaml"
+
+
 from snakemake.remote import AUTO
 
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
-workflow_srcdir = srcdir('')
+workflow_srcdir = srcdir("")
 
 
 def resource(name=""):
@@ -13,10 +17,12 @@ def resource(name=""):
     from snakemake.remote import AUTO
 
     try:
-        return AUTO.remote('/'.join([workflow_srcdir, "..", "resources", name]))
+        return AUTO.remote("/".join([workflow_srcdir, "..", "resources", name]))
     except TypeError:
         import os
+
         return os.path.join(workflow_srcdir, "..", "resources", name)
+
 
 rule sequence_alignment:
     input:
@@ -43,6 +49,7 @@ rule sequence_alignment:
             --genemap={input.genemap} \
             --output-fasta={output.fasta} > {log} 2>&1
         """
+
 
 rule _test:
     input:

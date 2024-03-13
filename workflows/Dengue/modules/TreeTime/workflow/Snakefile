@@ -3,7 +3,10 @@
 Params:
     Clock filter IQD (number): Interquartile range for clock filter
 """
+
+
 configfile: "config/config.yaml"
+
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
@@ -19,7 +22,7 @@ rule treetime:
         tree=f"results/{outdir}/timetree_{{serotype}}.tree",
         branch_lengths=f"results/{outdir}/{{serotype}}_branch_lengths.json",
     params:
-        clock_filter=params['Clock filter IQD'],
+        clock_filter=params["Clock filter IQD"],
     conda:
         "envs/nextstrain_all.yaml"
     log:
@@ -38,8 +41,10 @@ rule treetime:
             --coalescent opt \
             --date-confidence \
             --clock-filter-iqd {params.clock_filter} \
-            --root best > {log} 2>&1
+            --root best \
+            > {log} 2>&1
         """
+
 
 rule _test:
     input:

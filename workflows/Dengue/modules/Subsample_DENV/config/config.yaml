@@ -7,5 +7,12 @@ params:
   "Number of sequences (background)": 100
   "Time Interval": "Year"
   "Sampling Method": "Even"
-  "Serotype": "denv4"
-  "Serotype name": "Dengue_4"
+  "Serotypes":
+    - "Serotype": "denv1"
+      "Filename": "Dengue_1"
+    - "Serotype": "denv2"
+      "Filename": "Dengue_2"
+    - "Serotype": "denv3"
+      "Filename": "Dengue_3"
+    - "Serotype": "denv4"
+      "Filename": "Dengue_4"

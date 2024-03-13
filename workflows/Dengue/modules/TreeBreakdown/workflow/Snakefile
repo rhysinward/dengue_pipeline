@@ -1,7 +1,9 @@
 configfile: "config/config.yaml"
 
+
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
+
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -12,22 +14,24 @@ def script(name=""):
     except TypeError:
         return filename
 
+
 rule tree_breakdown:
     input:
-        tree_file = f"results/{indir}/dengue_{{serotype}}_timetree.nexus",
-        script = script("DENV_tree_breakdown.py"),
+        tree_file=f"results/{indir}/dengue_{{serotype}}_timetree.nexus",
+        script=script("DENV_tree_breakdown.py"),
     output:
-        tsv_file = f"results/{outdir}/dengue_{{serotype}}_timetree_extracted.tsv"
+        tsv_file=f"results/{outdir}/dengue_{{serotype}}_timetree_extracted.tsv",
     conda:
         "envs/python_env.yaml"
     log:
-        "logs/extract_information_from_tree_{{serotype}}.log"
+        "logs/extract_information_from_tree_{{serotype}}.log",
     message:
         "Extract information from annotated tree ({{serotype}})"
     shell:
         """
-        python {input.script} {input.tree_file} {output.tsv_file}
+        python {input.script} {input.tree_file} {output.tsv_file} > {log} 2>&1
         """
+
 
 rule _test:
     input:

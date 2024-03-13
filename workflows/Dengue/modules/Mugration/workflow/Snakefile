@@ -28,6 +28,7 @@ rule mugration:
             --output {output.traits} > {log} 2>&1
         """
 
+
 rule _test:
     input:
         f"results/{outdir}/traits_Dengue_1.json",
