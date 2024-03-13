@@ -18,14 +18,8 @@ def resource(name=""):
 
 rule translation:
     input:
-        mutations=expand(
-            "results/{indir}/subsampled_{{serotype}}_mutations.json",
-            indir=indir["mutations"],
-        ),
-        time_tree=expand(
-            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
-            indir=indir["treetime"],
-        ),
+        mutations=f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
+        time_tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
         ref_genomes=resource(f"reference_genomes/reference_{{serotype}}.gb"),
     output:
         amino=f"results/{outdir}/aa_muts_{{serotype}}.json",
@@ -44,7 +38,7 @@ rule translation:
             --ancestral-sequences {input.mutations} \
             --reference-sequence {input.ref_genomes} \
             --genes {params.genes} \
-            --output {output.amino} 
+            --output {output.amino} > {log} 2>&1
         """
 
 rule _test:

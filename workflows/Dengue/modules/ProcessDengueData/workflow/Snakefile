@@ -1,11 +1,10 @@
-# Step 2: Clean metadata and generate FASTA
+"""Split input data into Dengue serotypes, add serotypes to sequence name and generate
+sequence specific metadata.
+"""
 configfile: "config/config.yaml"
-
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
-params = config["params"]
-
 
 def script(name=""):
     from snakemake.remote import AUTO
@@ -16,35 +15,34 @@ def script(name=""):
     except TypeError:
         return filename
 
-
 rule process_dengue_data:
     input:
-        metadata=f"results/{indir}/metadata.tsv",
-        fasta=f"results/{indir}/ncbi_dataset/data/genomic.fna",
-        script=script("Clean_metadata_and_fasta.R"),
+        script=script("split_dengue.R"),
+        metadata=f"results/{indir}/infoTbl.csv",
+        fasta=f"results/{indir}/Unaligned.fasta"
     output:
-        fasta_files=f"results/{outdir}/Unaligned_{{serotype}}.fasta",
-        info_tables_txt=f"results/{outdir}/{{serotype}}_infoTbl.txt",
-        info_tables_csv=f"results/{outdir}/{{serotype}}_infoTbl.csv",
+        fasta = f"results/{outdir}/Unaligned_{{serotype}}.fasta",
+        csv = f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.csv",
+        tsv = f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.txt",
     params:
-        outdir=f"results/{outdir}",
-        start_date=params["Start date"],
-        end_date=params["End date"],
+        output_dir = directory(f"results/{outdir}"),
     log:
-        "logs/process_dengue_data_{serotype}.log",
+        "logs/process_data_{serotype}.log"
     message:
-        "Processing and cleaning Dengue data downloaded from NCBI"
+        (
+            "Split into serotype, add serotypes to sequence name and generate "
+            "sequence specific metadata ({wildcards.serotype})"
+        )
     conda:
         "envs/dengue.yaml"
     shell:
         """
-        mkdir -p {params.outdir}
-        Rscript {input.script} \
+        mkdir -p {params.output_dir}
+        rscript {input.script} \
             --metadata {input.metadata} \
             --fasta {input.fasta} \
-            --output_dir {params.outdir} \
-            --start-date {params.start_date} \
-            --end-date {params.end_date}
+            --outfile {params.output_dir}/Unaligned_ \
+            > {log} 2>&1
         """
 
 rule _test:

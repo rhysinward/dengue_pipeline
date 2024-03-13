@@ -78,9 +78,9 @@ fasta.df <- read.dna(fasta_file, format = "fasta", as.matrix = TRUE)
 
 gene_ranges <- list(
   "1" = c(935, 2419),
-  "2" = c(937, 2421), # example ranges, change to the correct ones
-  "3" = c(935, 2413), # example ranges, change to the correct ones
-  "4" = c(939, 2423)  # example ranges, change to the correct ones
+  "2" = c(937, 2421),
+  "3" = c(935, 2413),
+  "4" = c(939, 2423)
 )
 
 # Loop through the serotypes
