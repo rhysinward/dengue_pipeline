@@ -43,7 +43,7 @@ rule process_dengue_data:
     shell:
         """
         mkdir -p {params.output_dir}
-        rscript {input.script} \
+        Rscript {input.script} \
             --metadata {input.metadata} \
             --fasta {input.fasta} \
             --outfile {params.output_dir}/Unaligned_ \

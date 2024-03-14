@@ -60,7 +60,7 @@ rule split_genome_and_QC:
         "envs/conda.yaml"
     shell:
         """
-        rscript {input.script} \
+        Rscript {input.script} \
             --WG_threshold {params.wg_threshold} \
             --EG_threshold {params.eg_threshold} \
             --input_dir {params.indir} \

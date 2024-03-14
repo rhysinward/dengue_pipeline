@@ -35,7 +35,7 @@ rule plot_exports_and_imports:
         "Quantify number of exports and imports from desired country ({{serotype}})"
     shell:
         """
-        rscript {input.script} \
+        Rscript {input.script} \
             --metadata {input.metadata} \
             --output_dir {params.outdir} \
             --output_dir_export {output.exports} \

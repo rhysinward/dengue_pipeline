@@ -31,7 +31,7 @@ rule reformatting:
         "Reformat metadata and fasta files into the correct format for iqtree and treetime"
     shell:
         """
-        rscript {input.script} \
+        Rscript {input.script} \
             --metadata {input.metadata_file} \
             --fasta {input.fasta_file} \
             --output_dir_fasta {output.cleaned_fasta} \
