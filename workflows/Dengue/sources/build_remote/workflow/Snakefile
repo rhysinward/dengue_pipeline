@@ -1,0 +1,177 @@
+configfile: "config/config.yaml"
+
+module acquiredata:
+    snakefile:
+        eval(
+            f'{config["acquiredata"]["snakefile"]["function"]}'
+            '(*config["acquiredata"]["snakefile"]["args"],'
+            '**config["acquiredata"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["acquiredata"]["config"]
+use rule * from acquiredata as acquiredata_*
+
+module processgenbankdata:
+    snakefile:
+        eval(
+            f'{config["processgenbankdata"]["snakefile"]["function"]}'
+            '(*config["processgenbankdata"]["snakefile"]["args"],'
+            '**config["processgenbankdata"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["processgenbankdata"]["config"]
+use rule * from processgenbankdata as processgenbankdata_*
+
+module processdenguedata:
+    snakefile:
+        eval(
+            f'{config["processdenguedata"]["snakefile"]["function"]}'
+            '(*config["processdenguedata"]["snakefile"]["args"],'
+            '**config["processdenguedata"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["processdenguedata"]["config"]
+use rule * from processdenguedata as processdenguedata_*
+
+module sequencealignment:
+    snakefile:
+        eval(
+            f'{config["sequencealignment"]["snakefile"]["function"]}'
+            '(*config["sequencealignment"]["snakefile"]["args"],'
+            '**config["sequencealignment"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["sequencealignment"]["config"]
+use rule * from sequencealignment as sequencealignment_*
+
+module splitgenomeandqc:
+    snakefile:
+        eval(
+            f'{config["splitgenomeandqc"]["snakefile"]["function"]}'
+            '(*config["splitgenomeandqc"]["snakefile"]["args"],'
+            '**config["splitgenomeandqc"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["splitgenomeandqc"]["config"]
+use rule * from splitgenomeandqc as splitgenomeandqc_*
+
+module subsample_denv:
+    snakefile:
+        eval(
+            f'{config["subsample_denv"]["snakefile"]["function"]}'
+            '(*config["subsample_denv"]["snakefile"]["args"],'
+            '**config["subsample_denv"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["subsample_denv"]["config"]
+use rule * from subsample_denv as subsample_denv_*
+
+module reformatting:
+    snakefile:
+        eval(
+            f'{config["reformatting"]["snakefile"]["function"]}'
+            '(*config["reformatting"]["snakefile"]["args"],'
+            '**config["reformatting"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["reformatting"]["config"]
+use rule * from reformatting as reformatting_*
+
+module treebuilding:
+    snakefile:
+        eval(
+            f'{config["treebuilding"]["snakefile"]["function"]}'
+            '(*config["treebuilding"]["snakefile"]["args"],'
+            '**config["treebuilding"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["treebuilding"]["config"]
+use rule * from treebuilding as treebuilding_*
+
+module treetime:
+    snakefile:
+        eval(
+            f'{config["treetime"]["snakefile"]["function"]}'
+            '(*config["treetime"]["snakefile"]["args"],'
+            '**config["treetime"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["treetime"]["config"]
+use rule * from treetime as treetime_*
+
+module mutations:
+    snakefile:
+        eval(
+            f'{config["mutations"]["snakefile"]["function"]}'
+            '(*config["mutations"]["snakefile"]["args"],'
+            '**config["mutations"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["mutations"]["config"]
+use rule * from mutations as mutations_*
+
+module translation:
+    snakefile:
+        eval(
+            f'{config["translation"]["snakefile"]["function"]}'
+            '(*config["translation"]["snakefile"]["args"],'
+            '**config["translation"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["translation"]["config"]
+use rule * from translation as translation_*
+
+module mugration:
+    snakefile:
+        eval(
+            f'{config["mugration"]["snakefile"]["function"]}'
+            '(*config["mugration"]["snakefile"]["args"],'
+            '**config["mugration"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["mugration"]["config"]
+use rule * from mugration as mugration_*
+
+module export:
+    snakefile:
+        eval(
+            f'{config["export"]["snakefile"]["function"]}'
+            '(*config["export"]["snakefile"]["args"],'
+            '**config["export"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["export"]["config"]
+use rule * from export as export_*
+
+module extractphylotree:
+    snakefile:
+        eval(
+            f'{config["extractphylotree"]["snakefile"]["function"]}'
+            '(*config["extractphylotree"]["snakefile"]["args"],'
+            '**config["extractphylotree"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["extractphylotree"]["config"]
+use rule * from extractphylotree as extractphylotree_*
+
+module treebreakdown:
+    snakefile:
+        eval(
+            f'{config["treebreakdown"]["snakefile"]["function"]}'
+            '(*config["treebreakdown"]["snakefile"]["args"],'
+            '**config["treebreakdown"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["treebreakdown"]["config"]
+use rule * from treebreakdown as treebreakdown_*
+
+module plotexportsandimports:
+    snakefile:
+        eval(
+            f'{config["plotexportsandimports"]["snakefile"]["function"]}'
+            '(*config["plotexportsandimports"]["snakefile"]["args"],'
+            '**config["plotexportsandimports"]["snakefile"]["kwargs"])'
+        )
+    config:
+        config["plotexportsandimports"]["config"]
+use rule * from plotexportsandimports as plotexportsandimports_*
