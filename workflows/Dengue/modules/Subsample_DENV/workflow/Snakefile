@@ -17,44 +17,63 @@ def script(name=""):
         return filename
 
 
-rule subsample:
-    input:
-        fasta_files=expand(
-            "results/{indir}/{{name}}_EG.fasta",
-            indir=indir["fasta"],
-        ),
-        metadata_files=expand(
-            "results/{indir}/{{name}}_infoTbl.csv",
-            indir=indir["metadata"],
-        ),
-        script=script("subsampler.R"),
-    output:
-        subsample_fasta=f"results/{outdir}/subsampled_{{name}}.fasta",
-        subsample_csv=f"results/{outdir}/subsampled_{{name}}_infoTbl.csv",
-        subsample_tsv=f"results/{outdir}/subsampled_{{name}}_infoTbl.tsv",
-    params:
-        country=params["country"],
-        number_sequences=params["number_sequences"],
-        prop_rd=params["prop_rd"],
-        prop_or=params["prop_or"],
-        outdir=f"results/{outdir}",
-    log:
-        "logs/subsample_{name}.log",
-    message:
-        "Subsampling Dengue virus E gene sequences based on specified criteria."
-    conda:
-        "envs/conda.yaml"
-    shell:
-        """
-        Rscript {input.script} \
-            --metadata {input.metadata_files} \
-            --fasta {input.fasta_files} \
-            --country {params.country} \
-            --number_sequences {params.number_sequences} \
-            --prop_rd {params.prop_rd} \
-            --prop_or {params.prop_or} \
-            --output_dir {params.outdir}
-        """
+def resource(name=""):
+    import os
+    from snakemake.remote import AUTO
+
+    try:
+        return AUTO.remote("/".join([srcdir("."), "..", "resources", name]))
+    except TypeError:
+        import os
+
+        return os.path.join(srcdir("."), "..", "resources", name)
+
+
+for serotype_item in params["Serotypes"]:
+    serotype_code = serotype_item["Serotype"]
+    denv_name = serotype_item["Filename"]
+
+    rule:
+        name:
+            f"subsample_{denv_name}"
+        input:
+            fasta_file=f"results/{indir['fasta']}/{denv_name}_EG.fasta",
+            metadata_file=f"results/{indir['metadata']}/Unaligned_{denv_name}_infoTbl.csv",
+            location_local=resource("number_of_sequences.csv"),
+            script=script("subsampler.R"),
+        output:
+            subsample_fasta=f"results/{outdir}/subsampled_{denv_name}.fasta",
+            subsample_csv=f"results/{outdir}/subsampled_{denv_name}_infoTbl.csv",
+            subsample_tsv=f"results/{outdir}/subsampled_{denv_name}_infoTbl.tsv",
+        params:
+            number_sequences_local=params["Number of sequences (local)"],
+            number_sequences_background=params["Number of sequences (background)"],
+            time_interval=params["Time Interval"],
+            sampling_method=params["Sampling Method"],
+            serotype=serotype_code,
+            denv_name=denv_name,
+            output_dir=f"results/{outdir}/",
+        log:
+            f"logs/subsample_{denv_name}.log",
+        message:
+            f"Subsampling {denv_name} sequences based on specified criteria."
+        conda:
+            "envs/conda.yaml"
+        shell:
+            """
+            Rscript {input.script} \
+                --metadata {input.metadata_file} \
+                --fasta {input.fasta_file} \
+                --location_local {input.location_local} \
+                --number_sequences_local {params.number_sequences_local} \
+                --number_sequences_background {params.number_sequences_background} \
+                --time_interval {params.time_interval} \
+                --sampling_method {params.sampling_method} \
+                --outfile {params.output_dir}/subsampled_{params.denv_name} \
+                --output_dir {params.output_dir} \
+                --serotype {params.serotype} > {log} 2>&1
+            """
+
 
 rule _test:
     input:

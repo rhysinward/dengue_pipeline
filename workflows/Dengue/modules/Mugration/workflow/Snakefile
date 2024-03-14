@@ -8,14 +8,8 @@ outdir = config["output_namespace"]
 
 rule mugration:
     input:
-        time_tree=expand(
-            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
-            indir=indir['treetime'],
-        ),
-        metadata=expand(
-            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
-            indir=indir['subsample'],
-        ),
+        time_tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
+        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
     output:
         traits=f"results/{outdir}/traits_{{serotype}}.json",
     conda:
@@ -31,8 +25,9 @@ rule mugration:
             --metadata {input.metadata} \
             --columns Country State \
             --confidence \
-            --output {output.traits} 
+            --output {output.traits} > {log} 2>&1
         """
+
 
 rule _test:
     input:

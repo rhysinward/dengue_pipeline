@@ -8,19 +8,10 @@ outdir = config["output_namespace"]
 
 rule mutations:
     input:
-        aln=expand(
-            "results/{indir}/subsampled_{{serotype}}.fasta",
-            indir=indir["metadata"],
-        ),
-        time_tree=expand(
-            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
-            indir=indir["fasta"],
-        ),
+        aln=f"results/{indir['metadata']}/subsampled_{{serotype}}.fasta",
+        time_tree=f"results/{indir['fasta']}/timetree_{{serotype}}.tree",
     output:
-        mutations=expand(
-            "results/{outdir}/subsampled_{{serotype}}_mutations.json",
-            outdir=outdir,
-        ),
+        mutations=f"results/{outdir}/subsampled_{{serotype}}_mutations.json",
     conda:
         "envs/nextstrain_all.yaml"
     log:
@@ -35,8 +26,9 @@ rule mutations:
             --tree {input.time_tree} \
             --alignment {input.aln} \
             --inference joint \
-            --output-node-data {output.mutations}
+            --output-node-data {output.mutations} > {log} 2>&1
         """
+
 
 rule _test:
     input:

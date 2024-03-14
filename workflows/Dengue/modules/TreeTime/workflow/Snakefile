@@ -1,28 +1,28 @@
-# Step 7: Building Time-Calibrated Trees
+"""Inferring time-calibrated trees for each Dengue virus serotype
+
+Params:
+    Clock filter IQD (number): Interquartile range for clock filter
+"""
+
+
 configfile: "config/config.yaml"
 
 
 indir = config["input_namespace"]
 outdir = config["output_namespace"]
+params = config["params"]
 
 
 rule treetime:
     input:
-        aln=expand(
-            "results/{indir}/subsampled_{{serotype}}.fasta",
-            indir=indir["metadata"],
-        ),
-        ml_tree=expand(
-            "results/{indir}/subsampled_{{serotype}}.fasta.treefile",
-            indir=indir["fasta"],
-        ),
-        metadata=expand(
-            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
-            indir=indir["metadata"],
-        ),
+        aln=f"results/{indir['metadata']}/subsampled_{{serotype}}.fasta",
+        ml_tree=f"results/{indir['fasta']}/subsampled_{{serotype}}.fasta.treefile",
+        metadata=f"results/{indir['metadata']}/subsampled_{{serotype}}_infoTbl.csv",
     output:
-        tree=f"results/{outdir}/timetrees/timetree_{{serotype}}.nwk",
-        branch_lengths=f"results/{outdir}/timetrees/{{serotype}}_branch_lengths.json",
+        tree=f"results/{outdir}/timetree_{{serotype}}.tree",
+        branch_lengths=f"results/{outdir}/{{serotype}}_branch_lengths.json",
+    params:
+        clock_filter=params["Clock filter IQD"],
     conda:
         "envs/nextstrain_all.yaml"
     log:
@@ -40,14 +40,15 @@ rule treetime:
             --timetree \
             --coalescent opt \
             --date-confidence \
-            --date-inference marginal \
-            --clock-filter-iqd 3 \
-            --root best
+            --clock-filter-iqd {params.clock_filter} \
+            --root best \
+            > {log} 2>&1
         """
+
 
 rule _test:
     input:
-        f"results/{outdir}/timetrees/timetree_Dengue_1.nwk",
-        f"results/{outdir}/timetrees/timetree_Dengue_2.nwk",
-        f"results/{outdir}/timetrees/timetree_Dengue_3.nwk",
-        f"results/{outdir}/timetrees/timetree_Dengue_4.nwk",
+        f"results/{outdir}/timetree_Dengue_1.tree",
+        f"results/{outdir}/timetree_Dengue_2.tree",
+        f"results/{outdir}/timetree_Dengue_3.tree",
+        f"results/{outdir}/timetree_Dengue_4.tree",

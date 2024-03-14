@@ -1,4 +1,4 @@
 input_namespace:
   fasta: treetime
-  metadata: subsample_denv
+  metadata: reformatting
 output_namespace: out

@@ -58,7 +58,7 @@ rule process_genbank_data:
         "Processing and cleaning data downloaded from NCBI"
     shell:
         """
-        rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --start-date {params.start_date} --end-date {params.end_date} --host "{params.host}" --outfile_fasta {output.fasta_files} --outfile_csv {output.info_tables_csv} --outfile_tsv {output.info_tables_txt} > {log} 2>&1
+        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --start-date {params.start_date} --end-date {params.end_date} --host "{params.host}" --outfile_fasta {output.fasta_files} --outfile_csv {output.info_tables_csv} --outfile_tsv {output.info_tables_txt} > {log} 2>&1
         """
 
 # Step 3: Split into serotype, add serotypes to sequence name and generate sequence specific metadata
@@ -80,7 +80,7 @@ rule process_dengue_data:
     shell:
         """
         mkdir -p results/Unaligned_output/
-        rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --outfile results/Unaligned_output/Unaligned_ > {log} 2>&1
+        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --outfile results/Unaligned_output/Unaligned_ > {log} 2>&1
         """
 
 # Step 4: Sequence alignment
@@ -149,7 +149,7 @@ rule subsample_denv1:
         "Subsampling Dengue 1 virus E gene sequences based on specified criteria."
     shell:
         """
-        rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_1 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
+        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_1 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
         """
 
 # Step 6b: Subsampler DENV2
@@ -174,7 +174,7 @@ rule subsample_denv2:
         "Subsampling Dengue 2 virus E gene sequences based on specified criteria."
     shell:
         """
-        rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_2 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
+        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_2 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
         """
 
 # Step 6c: Subsampler DENV3
@@ -199,7 +199,7 @@ rule subsample_denv3:
         "Subsampling Dengue 3 virus E gene sequences based on specified criteria."
     shell:
         """
-        rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_3 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
+        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_3 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
         """
 
 # Step 6d: Subsampler DENV4
@@ -224,7 +224,7 @@ rule subsample_denv4:
         "Subsampling Dengue 4 virus E gene sequences based on specified criteria."
     shell:
         """
-        rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local}  --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_4 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
+        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local}  --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_4 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
         """
 
 # Step 7: Correct metadata and fasta files into the correct format for iqtree and treetime  
@@ -241,7 +241,7 @@ rule reformatting:
         "Correct metadata and fasta files into the correct format for iqtree and treetime"
     shell:
         """
-        rscript code/reformatting_iqtree_treetime.R --metadata {input.metadata_file} --fasta {input.fasta_file} --output_dir_fasta {output.cleaned_fasta} --output_dir_csv {output.cleaned_metadata}
+        Rscript code/reformatting_iqtree_treetime.R --metadata {input.metadata_file} --fasta {input.fasta_file} --output_dir_fasta {output.cleaned_fasta} --output_dir_csv {output.cleaned_metadata}
         """
 
 # Step 8: Treebuilding
@@ -450,7 +450,7 @@ rule plot_exports_and_imports:
         "Quantify number of exports and imports from desired country"
     shell:
         """
-        rscript code/plot_exports_and_imports.R --metadata {input.metadata} --output_dir results/  --output_dir_export {output.exports} --output_dir_import {output.imports} --country {params.country} --serotype {params.serotype}
+        Rscript code/plot_exports_and_imports.R --metadata {input.metadata} --output_dir results/  --output_dir_export {output.exports} --output_dir_import {output.imports} --country {params.country} --serotype {params.serotype}
         """
 
 # Step 17: Create updated metadata and fasta file based of prunning from treetime

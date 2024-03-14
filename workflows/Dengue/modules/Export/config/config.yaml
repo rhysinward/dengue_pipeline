@@ -1,7 +1,7 @@
 input_namespace:
   treetime: treetime
   translation: translation
-  subsample: subsample_denv
+  subsample: reformatting
   mutations: mutations
-  mugrations: mugrations
+  mugrations: mugration
 output_namespace: out

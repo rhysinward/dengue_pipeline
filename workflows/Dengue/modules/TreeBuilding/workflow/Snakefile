@@ -1,0 +1,51 @@
+"""Tree building with IQ-TREE
+
+Uses IQ-TREE multicore version 2.2.6 COVID-edition [https://github.com/iqtree/iqtree2]
+
+Params:
+    Model (str) - Model of nucleotide substitution (e.g. )
+    Command line arguments (str): Additional command line arguments for IQ-TREE
+        For example: "-nt AUTO" to use all available cores
+"""
+
+
+configfile: "config/config.yaml"
+
+
+indir = config["input_namespace"]
+outdir = config["output_namespace"]
+params = config["params"]
+
+
+rule treebuilding:
+    input:
+        aln=f"results/{indir}/subsampled_{{serotype}}.fasta",
+    output:
+        tree=f"results/{outdir}/subsampled_{{serotype}}.fasta.treefile",
+    conda:
+        "envs/treebuilding.yaml"
+    params:
+        model=params["Model"],
+        cli=params["Command line arguments"],
+        outdir=f"results/{outdir}",
+    log:
+        "logs/iqtree_{serotype}.log",
+    message:
+        (
+            "Inferring maximum likelihood phylogenetic trees for using IQ-TREE "
+            "({wildcards.serotype})"
+        )
+    shell:
+        """
+        mkdir -p {params.outdir}
+        iqtree2 -s {input.aln} -m {params.model} {params.cli} -redo  > {log} 2>&1
+        mv {input.aln}.* {params.outdir}
+        """
+
+
+rule _test:
+    input:
+        f"results/{outdir}/subsampled_Dengue_1.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_2.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_3.fasta.treefile",
+        f"results/{outdir}/subsampled_Dengue_4.fasta.treefile",

@@ -1,0 +1,57 @@
+"""Acquisition of Genomic Data and Metadata from GenBank
+
+GenBank is the NIH genetic sequence database, an annotated collection of all publicly available DNA sequences (https://www.ncbi.nlm.nih.gov/genbank/).
+
+Params:
+    Sequence (str): The taxon of the virus genome to be acquired
+    Data format (str): The format of the data to be acquired
+    Date (str): The date after which the data was released (e.g. '01/01/2010')
+    Command line arguments (list): Additional command line arguments to be passed to the NCBI datasets command
+"""
+
+
+configfile: "config/config.yaml"
+
+
+outdir = config["output_namespace"]
+params = config["params"]
+
+
+rule acquire_data:
+    output:
+        zip=f"results/{outdir}/genbank_data.zip",
+        metadata=f"results/{outdir}/metadata.tsv",
+        fasta=f"results/{outdir}/ncbi_dataset/data/genomic.fna",
+    log:
+        "logs/acquire_data.log",
+    message:
+        "Acquiring Genomic Data and Metadata from NCBI database"
+    conda:
+        "envs/ncbi_datasets_env.yaml"
+    params:
+        outdir=f"results/{outdir}",
+        sequence=params["Sequence"],
+        cli=" ".join(params["Command line arguments"]),
+        dataformat=params["Data format"],
+        date=params["Date"],
+    shell:
+        """
+        # Download the data and metadata
+        datasets download {params.sequence} \
+            {params.cli} \
+            --released-after {params.date} \
+            --filename {output.zip} &> {log}
+        datasets summary {params.sequence} \
+            {params.cli} \
+            --released-after {params.date} \
+            --as-json-lines \
+        | dataformat tsv {params.dataformat} > {output.metadata} 2>> {log}
+        
+        # Unzip the downloaded data
+        unzip -od {params.outdir} {output.zip}
+        """
+
+
+rule _test:
+    input:
+        f"results/{outdir}/ncbi_dataset/data/genomic.fna",

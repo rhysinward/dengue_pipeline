@@ -1,0 +1,113 @@
+configfile: "config/config.yaml"
+
+module acquiredata:
+    snakefile:
+        config["acquiredata"]["snakefile"]
+    config:
+        config["acquiredata"]["config"]
+use rule * from acquiredata as acquiredata_*
+
+module processgenbankdata:
+    snakefile:
+        config["processgenbankdata"]["snakefile"]
+    config:
+        config["processgenbankdata"]["config"]
+use rule * from processgenbankdata as processgenbankdata_*
+
+module processdenguedata:
+    snakefile:
+        config["processdenguedata"]["snakefile"]
+    config:
+        config["processdenguedata"]["config"]
+use rule * from processdenguedata as processdenguedata_*
+
+module sequencealignment:
+    snakefile:
+        config["sequencealignment"]["snakefile"]
+    config:
+        config["sequencealignment"]["config"]
+use rule * from sequencealignment as sequencealignment_*
+
+module splitgenomeandqc:
+    snakefile:
+        config["splitgenomeandqc"]["snakefile"]
+    config:
+        config["splitgenomeandqc"]["config"]
+use rule * from splitgenomeandqc as splitgenomeandqc_*
+
+module subsample_denv:
+    snakefile:
+        config["subsample_denv"]["snakefile"]
+    config:
+        config["subsample_denv"]["config"]
+use rule * from subsample_denv as subsample_denv_*
+
+module reformatting:
+    snakefile:
+        config["reformatting"]["snakefile"]
+    config:
+        config["reformatting"]["config"]
+use rule * from reformatting as reformatting_*
+
+module treebuilding:
+    snakefile:
+        config["treebuilding"]["snakefile"]
+    config:
+        config["treebuilding"]["config"]
+use rule * from treebuilding as treebuilding_*
+
+module treetime:
+    snakefile:
+        config["treetime"]["snakefile"]
+    config:
+        config["treetime"]["config"]
+use rule * from treetime as treetime_*
+
+module mutations:
+    snakefile:
+        config["mutations"]["snakefile"]
+    config:
+        config["mutations"]["config"]
+use rule * from mutations as mutations_*
+
+module translation:
+    snakefile:
+        config["translation"]["snakefile"]
+    config:
+        config["translation"]["config"]
+use rule * from translation as translation_*
+
+module mugration:
+    snakefile:
+        config["mugration"]["snakefile"]
+    config:
+        config["mugration"]["config"]
+use rule * from mugration as mugration_*
+
+module export:
+    snakefile:
+        config["export"]["snakefile"]
+    config:
+        config["export"]["config"]
+use rule * from export as export_*
+
+module extractphylotree:
+    snakefile:
+        config["extractphylotree"]["snakefile"]
+    config:
+        config["extractphylotree"]["config"]
+use rule * from extractphylotree as extractphylotree_*
+
+module treebreakdown:
+    snakefile:
+        config["treebreakdown"]["snakefile"]
+    config:
+        config["treebreakdown"]["config"]
+use rule * from treebreakdown as treebreakdown_*
+
+module plotexportsandimports:
+    snakefile:
+        config["plotexportsandimports"]["snakefile"]
+    config:
+        config["plotexportsandimports"]["config"]
+use rule * from plotexportsandimports as plotexportsandimports_*

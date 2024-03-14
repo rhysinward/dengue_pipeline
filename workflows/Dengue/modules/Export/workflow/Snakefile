@@ -31,31 +31,13 @@ rule all:
 
 rule export:
     input:
-        tree=expand(
-            "results/{indir}/timetrees/timetree_{{serotype}}.nwk",
-            indir=indir["treetime"],
-        ),
-        metadata=expand(
-            "results/{indir}/subsampled_{{serotype}}_infoTbl.csv",
-            indir=indir["subsample"],
-        ),
-        branch_lengths=expand(
-            "results/{indir}/timetrees/{{serotype}}_branch_lengths.json",
-            indir=indir["treetime"],
-        ),
-        traits=expand(
-            "results/{indir}/traits_{{serotype}}.json",
-            indir=indir["mugrations"],
-        ),
-        aa_muts=expand(
-            "results/{indir}/aa_muts_{{serotype}}.json",
-            indir=indir["translation"],
-        ),
-        nt_muts=expand(
-            "results/{indir}/subsampled_{{serotype}}_mutations.json",
-            indir=indir["mutations"],
-        ),
-        auspice_config=resource("config/auspice_config.json"),
+        tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
+        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
+        branch_lengths=f"results/{indir['treetime']}/{{serotype}}_branch_lengths.json",
+        traits=f"results/{indir['mugrations']}/traits_{{serotype}}.json",
+        aa_muts=f"results/{indir['translation']}/aa_muts_{{serotype}}.json",
+        nt_muts=f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
+        auspice_config=resource("auspice_config.json"),
     output:
         auspice_json=f"results/{outdir}/dengue_{{serotype}}.json",
     conda:
@@ -71,5 +53,13 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
             --auspice-config {input.auspice_config} \
-            --output {output.auspice_json}
+            --output {output.auspice_json} > {log} 2>&1
         """
+
+
+rule _test:
+    input:
+        f"results/{outdir}/dengue_Dengue_1.json",
+        f"results/{outdir}/dengue_Dengue_2.json",
+        f"results/{outdir}/dengue_Dengue_3.json",
+        f"results/{outdir}/dengue_Dengue_4.json",
