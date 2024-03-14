@@ -48,13 +48,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pulp==2.7.0 snakemake==7.32
+      # tmate debugging (needs to run _before_ any error stops the workflow)
+      - name: tmate debugging
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - name: Run pipeline
         run: |
           source "${HOME}/conda/etc/profile.d/conda.sh"
           source "${HOME}/conda/etc/profile.d/mamba.sh"
           mamba activate
           snakemake --use-conda --cores 4
-      # Enable tmate debugging of manually-triggered workflows if the input option was provided
-      - name: tmate debugging
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
