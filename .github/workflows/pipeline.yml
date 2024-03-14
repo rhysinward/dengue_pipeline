@@ -3,6 +3,12 @@ name: Check pipeline
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
+        required: false
+        default: false
   pull_request:
     branches:
       - main
@@ -48,3 +54,7 @@ jobs:
           source "${HOME}/conda/etc/profile.d/mamba.sh"
           mamba activate
           snakemake --use-conda --cores 4
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: tmate debugging
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
