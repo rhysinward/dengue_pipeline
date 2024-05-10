@@ -44,12 +44,13 @@ if (!is.null(opt$metadata)) {
   quit()
 }
 
-## read in extra metadata from sequencing
+## read in and combine extra metadata from sequencing
 ## Nb will need to be in a specific format to match GenBank metadata
 ## See Github for specific formatting requirements
 
 if (!is.null(opt$extra_metadata)) {
-  metadata.extra <- read.csv(opt$extra_metadata)
+  metadata.extra <- read_tsv(opt$extra_metadata)
+  metadata.df <- rbind(metadata.df,metadata.extra)
 }
 
 #Process dates
@@ -82,12 +83,6 @@ metadata.df <- metadata.df %>%
 metadata.df <- metadata.df %>%
   select(Accession, `Virus Name`, Date, Country, State, City) %>% 
   filter(!is.na(Date) & !is.na(Country)) 
-
-#combine with metadata with extra metadata if present
-
-if (!is.null(opt$extra_metadata)) {
-  metadata.df <- rbind(metadata.df,metadata.extra)
-}
 
 #functions
 
