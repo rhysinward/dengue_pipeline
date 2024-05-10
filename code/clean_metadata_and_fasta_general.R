@@ -289,7 +289,7 @@ if (!is.null(opt$extra_fasta)) {
 
 merge_fasta <- function(fasta1, fasta2) {
   seqs_merged <- c(fasta1, fasta2)
-  return(seqs)
+  return(seqs_merged)
 }
 
 if (!is.null(opt$extra_fasta)) {
