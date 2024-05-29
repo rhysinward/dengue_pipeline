@@ -196,9 +196,9 @@ The script accepts a range of command-line options to customize the input, outpu
 
 
 
-# Miscellaneous code 
+# Miscellaneous 
 
-## Step 6b (Optional): Add Rooting Sequences to Sub-sampled Datasets
+## Add Rooting Sequences to Sub-sampled Datasets
 
 Objective:
 
@@ -207,72 +207,7 @@ To enhance phylogenetic analysis, this optional step involves appending specific
 ```
 rscript Code/add_rooting_sequence.R
 ```
-
-## Step 7: Tree Building
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_1_combined.fasta -o 'EF457905.1_Dengue_virus_type1_isolate_P72-1244_complete_genome'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_2_combined.fasta -o 'EU003591.1_Dengue_virus_type_2_isolate_IBH11234_polyprotein_gene_complete_cds'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_3_combined.fasta -o 'KU050695.1_Dengue_virus_3_complete_genome'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_4_combined.fasta -o 'JF262780.1_Dengue_virus_4_isolate_P73-1120_complete_genome'
-```
-
-## Step 8: Time-Scaling
-
-```
-treetime \
-  --tree Dengue_1_combined.fasta.treefile \
-  --aln Dengue_1_combined.fasta \
-  --dates Dengue_1_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot EF457905.1_Dengue_virus_type1_isolate_P72-1244_complete_genome \
-  --outdir dengue_1
-```
-
-```
-treetime \
-  --tree Dengue_2_combined.fasta.treefile \
-  --aln Dengue_2_combined.fasta \
-  --dates Dengue_2_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot EU003591.1_Dengue_virus_type_2_isolate_IBH11234_polyprotein_gene_complete_cds \
-  --outdir dengue_2
-```
-
-```
-treetime \
-  --tree Dengue_3_combined.fasta.treefile \
-  --aln Dengue_3_combined.fasta \
-  --dates Dengue_3_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot KU050695.1_Dengue_virus_3_complete_genome \
-  --outdir dengue_3
-```
-
-```
-treetime \
-  --tree Dengue_4_combined.fasta.treefile \
-  --aln Dengue_4_combined.fasta \
-  --dates Dengue_4_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot JF262780.1_Dengue_virus_4_isolate_P73-1120,_complete_genome \
-  --outdir dengue_4
-```
-
-## Step 9: Removal of Outliers Based on Clock Filter
+## Removal of Outliers Based on Clock Filter
 
 This step involves the removal of outliers identified using the clock filter from TreeTime. You have two options: either completely remove these sequences and re-estimate the tree using IQ-TREE 2, or remove the tips from the tree using gotree. We will include the rooting sequences within the outliars so they are removed before we have the final tree. 
 
