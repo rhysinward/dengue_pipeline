@@ -174,7 +174,7 @@ The script accepts a range of command-line options to customize the input, outpu
 
 - Inferring time-calibrated trees for each Dengue virus serotype using treetime
 
-### Step 12 - 15 all utilise the nextstrain suite of tools available [here](https://docs.nextstrain.org/en/latest/install.html)
+# Step 12 - 15 all utilise the nextstrain suite of tools available [here](https://docs.nextstrain.org/en/latest/install.html)
 
 ## Step 12: Infer "ancestral" mutations across the tree
 
@@ -196,7 +196,7 @@ The script accepts a range of command-line options to customize the input, outpu
 
 
 
-### Miscellaneous code 
+# Miscellaneous code 
 
 ## Step 6b (Optional): Add Rooting Sequences to Sub-sampled Datasets
 
