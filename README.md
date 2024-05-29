@@ -73,63 +73,32 @@ nextstrain view auspice/
 
 # Step by step of the pipeline
 
-# Pipeline Workflow 
+# Pipeline Workflow - Summary of each of the steps
 
 ## Step 1: Acquisition of Genomic Data and Metadata from GenBank
 
-Process:
-- Acquire data corresponding to Dengue virus serotypes directly from GenBank.
-
-Commands:
-First, set up the required environment and tools:
-
-```
-conda create -n ncbi_datasets
-conda activate ncbi_datasets
-conda install -c conda-forge ncbi-datasets-cli
-```
-
-Next, download the Dengue virus dataset and metadata:
-
-```
-conda activate ncbi_datasets
-
-# Download the virus dataset
-datasets download virus genome taxon "Dengue Virus"  --filename virus.zip
-
-# Download and format metadata
-datasets summary virus genome taxon "Dengue Virus" --released-after 2000-01-01 --as-json-lines | dataformat tsv virus-genome > metadata.tsv
-
-# Unzip the dataset
-unzip /Users/rhysinward/Documents/Dengue_anaysis/virus.zip
-```
-
-Highlights:
-
 - This step involves downloading both FASTA format sequences and associated metadata for all Dengue virus sequences.
+- You are able to change the date from which you want to obtain sequences from
 
-## Step 2: Processing and Cleaning Metadata and Output FASTA
+## Step 2: Clean metadata and FASTA files 
 
-Process:
-
-- Utilize the Clean_metadata_and_fasta.R script to refine the metadata and generate appropriately named FASTA sequence files.
-
-Commands:
-
-- Run the R script with necessary arguments:
-
-```
-Rscript /Users/rhysinward/Documents/Dengue_anaysis/Code/Clean_metadata_and_fasta.R --metadata /Users/rhysinward/Documents/Dengue_anaysis/metadata.tsv --fasta /Users/rhysinward/Documents/Dengue_anaysis/virus/ncbi_dataset/data/genomic.fna --start-date 2000-01-01 --end-date 2023-12-01
-```
-
-Highlights:
-- The script separates sequences into serotypes Dengue 1, 2, 3, and 4.
-- It allows for the selection of data based on specified date ranges.
+- This step processes and cleans the data data fownloaded from NCBI
+- It allows for the selection of data based on specified date ranges and host type.
 - Includes functionality to integrate additional metadata and sequences not currently available on GenBank.
 - Harmonizes varying formats for dates and other metadata fields to maintain consistency across the dataset.
 
-## Step 3: Verifying Serotypes and Genotypes
+## Step 3: filter for sequences from SEA
 
+- Filter data for countries in SEA and select only sequences from china and Vietnam with known geo-coded sequences
+- This is quite a specific step for our anaysis, can be removed to make the pipeline more generalisable
+
+## Step 4: Split into serotype, add serotypes to sequence name and generate sequence specific metadata
+
+- The script separates sequences into serotypes Dengue 1, 2, 3, and 4.
+- Generates serotype specific metadata
+
+## Step 5: (Future step not currently implemented) Verifying Serotypes and Genotypes
+ 
 Objective:
 
 - Implement a method for independently verifying serotypes and genotypes, as GenBank entries may contain inconsistencies or unknown sequences.
@@ -141,48 +110,18 @@ Current Approach:
 
 Ideal Approch: 
 - Develop a robust command-line tool to independently verify and assign serotypes and genotypes and be easily be integrated within Dengue Pipelines. This tool aims to address and rectify potential errors in naming and the presence of unknown sequences often encountered in GenBank entries.
- 
-## Step 4: Sequence Alignment
 
-Process:
+## Step 6: Sequence alignment 
 
-- We employ nextalign, part of the Nextstrain suite, for aligning our sequences.
+- Sequences are aligned using nextalign
 
-Setup Instructions:
+## Step 7: Segregating E gene and Whole Genomes and performing quaility control
 
-- Detailed installation guidelines for Nextstrain are available [here](https://docs.nextstrain.org/en/latest/install.html). We recommend using Nextstrain within Docker for optimal performance.
-- To run this please use the bash script found here bash/align_sequences.sh
+- Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control.
+- Can set the threshold in which an ambiguous number of bases is acceptable within the data
+- Here both Whole Genomes (WG) and E genes with more than 31% missing bases are excluded. This threshold is set considering the [Grubaugh Lab](https://grubaughlab.com/) in Yale's sequencing criteria (69% completeness).
 
-Execution:
-
-- To align sequences, use the following bash script: bash/align_sequences.sh.
-
-```
-bash bash/align_sequences.sh
-```
-
-## Step 5: Segregating E Gene and Whole Genomes (WG) with Custom Thresholds
-
-Purpose:
-
-- This step involves dividing aligned genomes into Envelope gene (EG) segments and Whole Genomes (WG).
-
-Criteria (default):
-
-- Whole Genomes (WG) with more than 29% missing bases are excluded. This threshold is set considering the [Grubaugh Lab](https://grubaughlab.com/) in Yale's sequencing criteria (69% completeness).
-- For the Envelope gene (EG) segments, a stricter criterion is applied: sequences with more than 5% missing bases are removed.
-- Both thresholds are adjustable based on project requirements.
-
-Implementation Details:
-
-- The EG positions are determined according to each serotype's genemap.
-- To exucute this process please use the Rscript - Seperate_EG_and_WG.R
-
-```
-rscript Code/Seperate_EG_and_WG.R --WG_threshold 0.29 --EG_threshold 0.05
-```
-
-## Step 6: Sub-sampler
+## Step 8: Subsampler
 
 The selection of sequences was performed using a weighted random sampling technique. 
 
@@ -223,14 +162,43 @@ The script accepts a range of command-line options to customize the input, outpu
 | `-w`, `--sampling_method` | character | `Even` | Choose between even or proportional sampling methods. |
 | `-o`, `--outfile` | character | `subsampled` | Base name for output files. Files will be named as `<outfile>_fasta.fasta`, `<outfile>_infoTbl.tsv`, and `<outfile>_infoTbl.csv`. |
 
-To use subsampler please use the following line of code:
+## Step 9: Correct metadata and fasta files into the correct format for iqtree and treetime  
 
-```
-rscript subsampler.R --metadata --fasta --time_interval Year --location_local --location_background --number_sequences_local 100 --number_sequences_background 1000 --sampling_method Even
+- Correct metadata and fasta files into the correct format for iqtree and treetime
 
-```
+## Step 10: ML-Treebuilding
 
-## Step 6b (Optional): Add Rooting Sequences to Sub-sampled Datasets
+- Uses IQTREE2
+
+## Step 11: Build time-calibrated trees
+
+- Inferring time-calibrated trees for each Dengue virus serotype using treetime
+
+# Step 12 - 15 all utilise the nextstrain suite of tools available [here](https://docs.nextstrain.org/en/latest/install.html)
+
+## Step 12: Infer "ancestral" mutations across the tree
+
+## Step 13: Translate sequences
+
+## Step 14: Discrete trait reconstruction
+
+## Step 15: Export for visualisation in Auspice
+
+## Step 16: Extract annotated tree from nextstrain JSON format 
+
+- Extract annotated tree from the JSON file produced by the nextstrain suite of tools
+
+## Step 17: Extract information from tree 
+
+- Extract annotations from the tree
+
+## 18: Quantify number of exports and imports from desired country
+
+
+
+# Miscellaneous 
+
+## Add Rooting Sequences to Sub-sampled Datasets
 
 Objective:
 
@@ -239,72 +207,7 @@ To enhance phylogenetic analysis, this optional step involves appending specific
 ```
 rscript Code/add_rooting_sequence.R
 ```
-
-## Step 7: Tree Building
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_1_combined.fasta -o 'EF457905.1_Dengue_virus_type1_isolate_P72-1244_complete_genome'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_2_combined.fasta -o 'EU003591.1_Dengue_virus_type_2_isolate_IBH11234_polyprotein_gene_complete_cds'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_3_combined.fasta -o 'KU050695.1_Dengue_virus_3_complete_genome'
-```
-
-```
-nohup /home/zoo/zool2561/rhys/dengue_pipeline/iqtree-2.2.6-Linux/bin/iqtree2 -m MFP -s Dengue_4_combined.fasta -o 'JF262780.1_Dengue_virus_4_isolate_P73-1120_complete_genome'
-```
-
-## Step 8: Time-Scaling
-
-```
-treetime \
-  --tree Dengue_1_combined.fasta.treefile \
-  --aln Dengue_1_combined.fasta \
-  --dates Dengue_1_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot EF457905.1_Dengue_virus_type1_isolate_P72-1244_complete_genome \
-  --outdir dengue_1
-```
-
-```
-treetime \
-  --tree Dengue_2_combined.fasta.treefile \
-  --aln Dengue_2_combined.fasta \
-  --dates Dengue_2_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot EU003591.1_Dengue_virus_type_2_isolate_IBH11234_polyprotein_gene_complete_cds \
-  --outdir dengue_2
-```
-
-```
-treetime \
-  --tree Dengue_3_combined.fasta.treefile \
-  --aln Dengue_3_combined.fasta \
-  --dates Dengue_3_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot KU050695.1_Dengue_virus_3_complete_genome \
-  --outdir dengue_3
-```
-
-```
-treetime \
-  --tree Dengue_4_combined.fasta.treefile \
-  --aln Dengue_4_combined.fasta \
-  --dates Dengue_4_combined_metadata.csv \
-  --clock-filter 3 \
-  --stochastic-resolve \
-  --reroot JF262780.1_Dengue_virus_4_isolate_P73-1120,_complete_genome \
-  --outdir dengue_4
-```
-
-## Step 9: Removal of Outliers Based on Clock Filter
+## Removal of Outliers Based on Clock Filter
 
 This step involves the removal of outliers identified using the clock filter from TreeTime. You have two options: either completely remove these sequences and re-estimate the tree using IQ-TREE 2, or remove the tips from the tree using gotree. We will include the rooting sequences within the outliars so they are removed before we have the final tree. 
 
@@ -323,19 +226,6 @@ example command (can't get it to run outside docker atm):
 ```
 docker run --platform linux/amd64 -v $PWD:$PWD -w $PWD -i -t evolbioinfo/gotree:v0.2.8b prune -f dengue_1/outliers.tsv -i Dengue_1_combined_trimmed.newick --format newick > Dengue_1_combined_trimmed.newick
 ```
-
-## Step 9b: Extract upto date meta data from tree tip name 
-
-
-## Step 10: Mugration Anaysis 
-
-```
-treetime mugration --tree x.treefile --states x.csv --attribute country
-```
-
-## Step 11: Visulisation within Nextstrain - to come
-
-## Step 12: Transmission Lineages - to come
 
 
 
