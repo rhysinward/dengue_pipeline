@@ -1,6 +1,6 @@
 # List of required packages
 required_packages <- c("optparse", "dplyr", "lubridate", "tidyr",
-                       "readr", "ape","seqinr")
+                       "readr", "ape","seqinr", "stringr")
 
 options(repos = c(CRAN = "http://cran.us.r-project.org"))
 
@@ -74,9 +74,26 @@ metadata.df <- metadata.df %>%
 #extract state level information
 
 metadata.df <- metadata.df %>%
-  separate(`Geographic Location`, c("Country", "State"), sep = ":", extra = "merge", fill = "right") %>%
-  separate(State, c("State", "City"), sep = ",", extra = "merge", fill = "right") %>%
-  mutate(State = trimws(State, which = "both"), City = trimws(City, which = "both"))
+  separate_wider_delim(
+    cols = `Geographic Location`, 
+    delim = ":",
+    names = c("Country", "State"),
+    too_many = "error",
+    too_few = "align_start"
+  ) %>%
+  separate_wider_delim(
+    cols = State, 
+    delim = ",",
+    names = c("State", "City"),
+    too_many = "merge",
+    too_few = "align_start"
+  ) %>% mutate(
+    City = str_split_i(City, ",", 1)
+  ) %>% mutate(across(
+    .cols = c(Country, State, City), 
+    .fns = ~ trimws(.x, which = "both"))
+  )
+
 
 #select desired columns and remove any with NA in Date and Country
 
