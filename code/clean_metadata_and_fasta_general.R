@@ -24,8 +24,8 @@ opt_parser <- OptionParser(
     make_option(c("-j", "--outfile_tsv"), type="character", help="Outfile tsv"),
     make_option(c("-k", "--outfile_fasta"), type="character", help="Outfile fasta"),
     make_option(c("-l", "--outfile_csv"), type="character", help="Outfile csv"),
-    make_option(c("-s", "--start-date"), type="character", default="2010-01-01", help="Start date for filtering (format YYYY-MM-DD)"),
-    make_option(c("-e", "--end-date"), type="character", default="2023-12-31", help="End date for filtering (format YYYY-MM-DD)"),
+    make_option(c("-s", "--start_date"), type="character", default="2010-01-01", help="Start date for filtering (format YYYY-MM-DD)"),
+    make_option(c("-e", "--end_date"), type="character", default="2023-12-31", help="End date for filtering (format YYYY-MM-DD)"),
     make_option(c("-H", "--host"), type="character", default="Homo sapiens", help="Host Type sample for sequencing was taken from")
   )
 )
@@ -49,8 +49,13 @@ if (!is.null(opt$metadata)) {
 ## See Github for specific formatting requirements
 
 if (!is.null(opt$extra_metadata)) {
-  metadata.extra <- read_tsv(opt$extra_metadata)
-  metadata.df <- rbind(metadata.df,metadata.extra)
+  metadata.extra <- read_tsv(opt$extra_metadata, show_col_types = FALSE)
+  if (nrow(metadata.extra) == 0 || ncol(metadata.extra) == 0) {
+    warning("Extra metadata NOT included")
+  } else {
+    metadata.df <- rbind(metadata.df, metadata.extra)
+    print("Extra metadata included")
+  }
 }
 
 #Process dates
@@ -69,7 +74,7 @@ metadata.df <- process_date(metadata.df)
 
 metadata.df <- metadata.df %>%
   filter(`Host Name` == opt[["host"]]) %>%
-  filter(Date >= as.Date(opt[["start-date"]]) & Date <= as.Date(opt[["end-date"]]))
+  filter(Date >= as.Date(opt[["start_date"]]) & Date <= as.Date(opt[["end_date"]]))
 
 #extract state level information
 
@@ -290,22 +295,21 @@ invertDecimalDate <- function( decDate, formatAsTxt=FALSE, ddmmyy=FALSE ) {
 
 if (!is.null(opt$fasta)) {
   seqs <- read.fasta(opt$fasta)
-  } else {
+} else {
   cat("Input fasta file. Exiting now...")
   quit()
-  }
-
-if (!is.null(opt$extra_fasta)) {
-  seqs_extra <- read.fasta(opt$extra_fasta)
-} 
-
-merge_fasta <- function(fasta1, fasta2) {
-  seqs_merged <- c(fasta1, fasta2)
-  return(seqs_merged)
 }
 
 if (!is.null(opt$extra_fasta)) {
-  seqs <- merge_fasta(seqs,seqs_extra)
+  safe_read_fasta <- purrr::safely(\(x) read.fasta(x))
+  seqs_extra <- safe_read_fasta(opt$extra_fasta)
+  
+  if (is.null(seqs_extra$error)) {
+    seqs <- c(seqs, seqs_extra$result)
+    print("Extra fasta data included")
+  } else {
+    warning("Extra fasta data NOT included")
+  }
 } 
 
 taxa <- as.matrix(attributes(seqs)$names)
