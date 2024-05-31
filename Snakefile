@@ -124,7 +124,7 @@ rule split_genome_and_QC:
         "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
     shell:
         """
-        Rscript Code/Seperate_EG_and_WG.R --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold}  > {log} 2>&1
+        Rscript code/Seperate_EG_and_WG.R --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold}  > {log} 2>&1
         """
 
 # Step 6a: Subsampler DENV1
