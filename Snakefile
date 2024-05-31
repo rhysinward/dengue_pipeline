@@ -1,5 +1,15 @@
 # Serotypes
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
+serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
+
+# Sequence sampling sizes
+number_sequences_local = 100
+number_sequences_background = {
+    "Dengue_1" : 2000,
+    "Dengue_2" : 2000,
+    "Dengue_3" : 2000,
+    "Dengue_4" : 1500,
+}
+
 
 rule all:
     input:
@@ -42,7 +52,9 @@ rule process_genbank_data:
     input:
         script="code/clean_metadata_and_fasta_general.R",
         metadata="data/metadata.tsv",
-        fasta="data/ncbi_dataset/data/genomic.fna"
+        fasta="data/ncbi_dataset/data/genomic.fna",
+        extra_metadata="data/extra/metadata_extra.tsv",
+        extra_fasta="data/extra/genomic_extra.fna"
     output:
         fasta_files ="results/Unaligned.fasta",
         info_tables_txt ="results/infoTbl.txt",
@@ -58,7 +70,7 @@ rule process_genbank_data:
         "Processing and cleaning data downloaded from NCBI"
     shell:
         """
-        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --start-date {params.start_date} --end-date {params.end_date} --host "{params.host}" --outfile_fasta {output.fasta_files} --outfile_csv {output.info_tables_csv} --outfile_tsv {output.info_tables_txt} > {log} 2>&1
+        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --extra_metadata {input.extra_metadata} --extra_fasta {input.extra_fasta} --start_date {params.start_date} --end_date {params.end_date} --host "{params.host}" --outfile_fasta {output.fasta_files} --outfile_csv {output.info_tables_csv} --outfile_tsv {output.info_tables_txt} > {log} 2>&1
         """
 
 # Step 3: Split into serotype, add serotypes to sequence name and generate sequence specific metadata
@@ -124,7 +136,7 @@ rule split_genome_and_QC:
         "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
     shell:
         """
-        Rscript Code/Seperate_EG_and_WG.R --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold}  > {log} 2>&1
+        Rscript code/Seperate_EG_and_WG.R --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold}  > {log} 2>&1
         """
 
 # Step 6a: Subsampler DENV1
@@ -138,8 +150,8 @@ rule subsample_denv1:
         subsample_csv = "results/subsampled_Dengue_1_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_1_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_1"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv1"
@@ -163,8 +175,8 @@ rule subsample_denv2:
         subsample_csv = "results/subsampled_Dengue_2_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_2_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_2"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv2"
@@ -188,8 +200,8 @@ rule subsample_denv3:
         subsample_csv = "results/subsampled_Dengue_3_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_3_infoTbl.tsv"
     params:
-        number_sequences_local = 1,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_3"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv3"
@@ -213,8 +225,8 @@ rule subsample_denv4:
         subsample_csv = "results/subsampled_Dengue_4_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_4_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_4"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv4"
