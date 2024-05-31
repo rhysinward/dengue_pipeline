@@ -1,5 +1,15 @@
 # Serotypes
-serotype = ['Dengue_1', 'Dengue_2', 'Dengue_3', 'Dengue_4']
+serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
+
+# Sequence sampling sizes
+number_sequences_local = 100
+number_sequences_background = {
+    "Dengue_1" : 2000,
+    "Dengue_2" : 2000,
+    "Dengue_3" : 2000,
+    "Dengue_4" : 1500,
+}
+
 
 rule all:
     input:
@@ -138,8 +148,8 @@ rule subsample_denv1:
         subsample_csv = "results/subsampled_Dengue_1_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_1_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_1"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv1"
@@ -163,8 +173,8 @@ rule subsample_denv2:
         subsample_csv = "results/subsampled_Dengue_2_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_2_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_2"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv2"
@@ -188,8 +198,8 @@ rule subsample_denv3:
         subsample_csv = "results/subsampled_Dengue_3_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_3_infoTbl.tsv"
     params:
-        number_sequences_local = 1,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_3"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv3"
@@ -213,8 +223,8 @@ rule subsample_denv4:
         subsample_csv = "results/subsampled_Dengue_4_infoTbl.csv",
         subsample_txt = "results/subsampled_Dengue_4_infoTbl.tsv"
     params:
-        number_sequences_local = 10,
-        number_sequences_background = 100,
+        number_sequences_local = number_sequences_local,
+        number_sequences_background = number_sequences_background["Dengue_4"],
         time_interval = "Year",
         sampling_method = "Even",
         serotype = "denv4"
