@@ -1,37 +1,42 @@
-augur refine is using TreeTime version 0.11.2
+augur refine is using TreeTime version 0.11.3
 
-0.23	TreeTime.reroot: with method or node: least-squares
+0.16	TreeTime.reroot: with method or node: least-squares
 
-0.23	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+0.16	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
 
-0.33	TreeTime.reroot: with method or node: least-squares
+0.31	TreeTime.reroot: with method or node: least-squares
 
-0.33	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
-pruning leaf  PP204093.1|United_Arab_Emirates|Abu_Dhabi|Duba__Maldives|Dengue_2|2023-06-08|2023.43287671233
+0.31	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
+pruning leaf  PP422234.1|Philippines|NA|NA|Dengue_2|2000-07-15|2000.53424657534
+pruning leaf  KF744408.1|Philippines|NA|NA|Dengue_2|2005-06-15|2005.45205479452
+pruning leaf  OP809583.1|India|NA|NA|Dengue_2|2019-06-15|2019.45205479452
+pruning leaf  KX357981.1|Myanmar|NA|NA|Dengue_2|2015-06-15|2015.45205479452
+pruning leaf  JN029821.1|China|NA|NA|Dengue_2|2010-06-15|2010.45205479452
+pruning leaf  KJ918750.1|India|NA|NA|Dengue_2|2007-04-01|2007.24657534247
 
-0.99	TreeTime.reroot: with method or node: least-squares
+0.75	TreeTime.reroot: with method or node: least-squares
 
-0.99	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+0.75	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
 
-1.45	###TreeTime.run: INITIAL ROUND
+0.97	###TreeTime.run: INITIAL ROUND
 
-3.60	TreeTime.reroot: with method or node: least-squares
+3.86	TreeTime.reroot: with method or node: least-squares
 
-3.60	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+3.87	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
 
-3.67	###TreeTime.run: rerunning timetree after rerooting
+3.97	###TreeTime.run: rerunning timetree after rerooting
 
-5.99	###TreeTime.run: ITERATION 1 out of 2 iterations
+7.03	###TreeTime.run: ITERATION 1 out of 2 iterations
 
-6.15	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
+7.39	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
     	polytomies using the old 'greedy' mode. This is not well suited for large
     	polytomies. Stochastic resolution will become the default in future
     	versions. To switch now, rerun with the flag `--stochastic-resolve`. To
     	keep using the greedy method in the future, run with `--greedy-resolve`
 
-8.55	###TreeTime.run: ITERATION 2 out of 2 iterations
+10.82	###TreeTime.run: ITERATION 2 out of 2 iterations
 
-17.56	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
+24.40	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
      	reconstruction
 
 Inferred a time resolved phylogeny using TreeTime:

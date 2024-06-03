@@ -1,4 +1,7 @@
-Processing for Dengue serotype 1 completed.
-Processing for Dengue serotype 2 completed.
-Processing for Dengue serotype 3 completed.
-Processing for Dengue serotype 4 completed.
+Error in file(description = file.out, open = open) : 
+  cannot open the connection
+Calls: write.fasta -> file
+In addition: Warning message:
+In file(description = file.out, open = open) :
+  cannot open file 'results/WG_Dengue_1/Dengue_1_WG.fasta': No such file or directory
+Execution halted

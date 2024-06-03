@@ -1,4 +1,4 @@
-Rows: 38206 Columns: 48
+Rows: 46034 Columns: 48
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: "\t"
 chr  (17): Accession, BioProjects, BioSample accession, Completeness, Geogra...
@@ -10,11 +10,11 @@ dttm  (2): Release date, Update date
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 Virus
        Dengue virus      Dengue virus 1      Dengue virus 2      Dengue virus 3 
-               1466                1546                1027                 319 
+               2253                1805                1681                 379 
      Dengue virus 4 dengue virus type 1 dengue virus type 2 Dengue virus type 2 
-                567                3011                2290                5542 
+                574                3088                2364                7134 
 dengue virus type 3 Dengue virus type 3 dengue virus type 4 Dengue virus type 4 
-               1413                1755                 487                1387 
+               1451                3346                 528                2007 
 dengue virus type I 
-               6727 
+               9219 
 Processing metadata and sequences completed

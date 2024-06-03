@@ -1,6 +1,6 @@
 # List of required packages
 required_packages <- c("optparse", "dplyr", "lubridate", "tidyr",
-                       "readr", "ape","seqinr")
+                       "readr", "ape","seqinr", "stringr")
 
 options(repos = c(CRAN = "http://cran.us.r-project.org"))
 
@@ -24,11 +24,12 @@ opt_parser <- OptionParser(
     make_option(c("-j", "--outfile_tsv"), type="character", help="Outfile tsv"),
     make_option(c("-k", "--outfile_fasta"), type="character", help="Outfile fasta"),
     make_option(c("-l", "--outfile_csv"), type="character", help="Outfile csv"),
-    make_option(c("-s", "--start-date"), type="character", default="2010-01-01", help="Start date for filtering (format YYYY-MM-DD)"),
-    make_option(c("-e", "--end-date"), type="character", default="2023-12-31", help="End date for filtering (format YYYY-MM-DD)"),
-    make_option(c("-H", "--host"), type="character", default="Homo sapiens", help="Host Type sample for sequencing was taken from")
+    make_option(c("-s", "--start_date"), type="character", default="2000-01-01", help="Start date for filtering (format YYYY-MM-DD)"),
+    make_option(c("-e", "--end_date"), type="character", default="2024-05-31", help="End date for filtering (format YYYY-MM-DD)"),
+    make_option(c("-H", "--host"), type="character", default="Homo sapiens", help="Host type sample for sequencing was taken from")
   )
 )
+
 
 opt = parse_args(opt_parser)
 
@@ -44,12 +45,18 @@ if (!is.null(opt$metadata)) {
   quit()
 }
 
-## read in extra metadata from sequencing
+## read in and combine extra metadata from sequencing
 ## Nb will need to be in a specific format to match GenBank metadata
 ## See Github for specific formatting requirements
 
 if (!is.null(opt$extra_metadata)) {
-  metadata.extra <- read.csv(opt$extra_metadata)
+  metadata.extra <- read_tsv(opt$extra_metadata, show_col_types = FALSE)
+  if (nrow(metadata.extra) == 0 || ncol(metadata.extra) == 0) {
+    warning("Extra metadata NOT included")
+  } else {
+    metadata.df <- rbind(metadata.df, metadata.extra)
+    print("Extra metadata included")
+  }
 }
 
 #Process dates
@@ -68,26 +75,37 @@ metadata.df <- process_date(metadata.df)
 
 metadata.df <- metadata.df %>%
   filter(`Host Name` == opt[["host"]]) %>%
-  filter(Date >= as.Date(opt[["start-date"]]) & Date <= as.Date(opt[["end-date"]]))
+  filter(Date >= as.Date(opt[["start_date"]]) & Date <= as.Date(opt[["end_date"]]))
 
 #extract state level information
 
 metadata.df <- metadata.df %>%
-  separate(`Geographic Location`, c("Country", "State"), sep = ":", extra = "merge", fill = "right") %>%
-  separate(State, c("State", "City"), sep = ",", extra = "merge", fill = "right") %>%
-  mutate(State = trimws(State, which = "both"), City = trimws(City, which = "both"))
+  separate_wider_delim(
+    cols = `Geographic Location`, 
+    delim = ":",
+    names = c("Country", "State"),
+    too_many = "error",
+    too_few = "align_start"
+  ) %>%
+  separate_wider_delim(
+    cols = State, 
+    delim = ",",
+    names = c("State", "City"),
+    too_many = "merge",
+    too_few = "align_start"
+  ) %>% mutate(
+    City = str_split_i(City, ",", 1)
+  ) %>% mutate(across(
+    .cols = c(Country, State, City), 
+    .fns = ~ trimws(.x, which = "both"))
+  )
+
 
 #select desired columns and remove any with NA in Date and Country
 
 metadata.df <- metadata.df %>%
   select(Accession, `Virus Name`, Date, Country, State, City) %>% 
   filter(!is.na(Date) & !is.na(Country)) 
-
-#combine with metadata with extra metadata if present
-
-if (!is.null(opt$extra_metadata)) {
-  metadata.df <- rbind(metadata.df,metadata.extra)
-}
 
 #functions
 
@@ -278,22 +296,21 @@ invertDecimalDate <- function( decDate, formatAsTxt=FALSE, ddmmyy=FALSE ) {
 
 if (!is.null(opt$fasta)) {
   seqs <- read.fasta(opt$fasta)
-  } else {
+} else {
   cat("Input fasta file. Exiting now...")
   quit()
-  }
-
-if (!is.null(opt$extra_fasta)) {
-  seqs_extra <- read.fasta(opt$extra_fasta)
-} 
-
-merge_fasta <- function(fasta1, fasta2) {
-  seqs_merged <- c(fasta1, fasta2)
-  return(seqs)
 }
 
 if (!is.null(opt$extra_fasta)) {
-  seqs <- merge_fasta(seqs,seqs_extra)
+  safe_read_fasta <- purrr::safely(\(x) read.fasta(x))
+  seqs_extra <- safe_read_fasta(opt$extra_fasta)
+  
+  if (is.null(seqs_extra$error)) {
+    seqs <- c(seqs, seqs_extra$result)
+    print("Extra fasta data included")
+  } else {
+    warning("Extra fasta data NOT included")
+  }
 } 
 
 taxa <- as.matrix(attributes(seqs)$names)

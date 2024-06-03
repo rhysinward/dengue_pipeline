@@ -1,37 +1,38 @@
-augur refine is using TreeTime version 0.11.2
+augur refine is using TreeTime version 0.11.3
+
+0.13	TreeTime.reroot: with method or node: least-squares
+
+0.13	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
 
 0.23	TreeTime.reroot: with method or node: least-squares
 
 0.23	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
-
-0.34	TreeTime.reroot: with method or node: least-squares
-
-0.34	TreeTime.reroot: rerooting will ignore covariance and shared ancestry.
-pruning leaf  KY673724.1|China|NA|NA|Dengue_3|2012-06-15|2012.45205479452
+pruning leaf  OP164336.1|India|NA|NA|Dengue_3|2019-10-11|2019.77534246575
+pruning leaf  KY673726.1|China|NA|NA|Dengue_3|2012-06-15|2012.45205479452
 
 0.97	TreeTime.reroot: with method or node: least-squares
 
 0.97	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
 
-1.39	###TreeTime.run: INITIAL ROUND
+1.59	###TreeTime.run: INITIAL ROUND
 
-3.51	TreeTime.reroot: with method or node: least-squares
+4.16	TreeTime.reroot: with method or node: least-squares
 
-3.51	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
+4.20	TreeTime.reroot: rerooting will account for covariance and shared ancestry.
 
-3.57	###TreeTime.run: rerunning timetree after rerooting
+4.29	###TreeTime.run: rerunning timetree after rerooting
 
-5.82	###TreeTime.run: ITERATION 1 out of 2 iterations
+7.27	###TreeTime.run: ITERATION 1 out of 2 iterations
 
-5.99	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
+7.48	DEPRECATION WARNING. TreeTime.resolve_polytomies: You are resolving
     	polytomies using the old 'greedy' mode. This is not well suited for large
     	polytomies. Stochastic resolution will become the default in future
     	versions. To switch now, rerun with the flag `--stochastic-resolve`. To
     	keep using the greedy method in the future, run with `--greedy-resolve`
 
-8.10	###TreeTime.run: ITERATION 2 out of 2 iterations
+10.74	###TreeTime.run: ITERATION 2 out of 2 iterations
 
-16.61	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
+23.26	###TreeTime.run: FINAL ROUND - confidence estimation via marginal
      	reconstruction
 
 Inferred a time resolved phylogeny using TreeTime:

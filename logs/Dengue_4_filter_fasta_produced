@@ -1,0 +1,5 @@
+Usage: code/fasta_for_beast_dta_metadata.R [options]
+
+code/fasta_for_beast_dta_metadata.R: error: Error in getopt(spec = spec, opt = args) : 
+  "metadata_for_dta.log" is not a valid option, or does not support an argument
+

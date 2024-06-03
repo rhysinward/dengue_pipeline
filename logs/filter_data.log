@@ -1,0 +1,7 @@
+Warning message:
+There were 396 warnings in `mutate()`.
+The first warning was:
+ℹ In argument: `Region = case_when(...)`.
+Caused by warning in `grepl()`:
+! unable to translate 'Yunnan<ca>' to a wide string
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 395 remaining warnings. 
