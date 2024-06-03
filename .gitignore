@@ -1,2 +1,4 @@
-.snakemake/
-.snakemake
+**/**/.snakemake
+**/**/.DS_Store
+logs
+results
