@@ -1,6 +1,5 @@
 name: nextstrain
 channels:
-  - defaults
   - bioconda
   - conda-forge
 dependencies:
