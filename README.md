@@ -127,16 +127,20 @@ Each sequence in the FASTA file should use the `Sequence_name` as the header lin
 ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
 ```
 
-## Step 2b (Optional): Processing of Metadata from Outside of Genbank (example of data taken from GISAID)
+## Step 2b (Optional): Processing of Metadata from Outside of Genbank (example of data taken from GISAID - note that this data is not in the repro and if you don't want to do these steps please delete from snakefile)
 
-- You will need you own personal account to download data from [GISAID](https://gisaid.org/)
-- Harmonises
+- You will need your own personal account to download data from [GISAID](https://gisaid.org/).
+- This step harmonizes metadata and FASTA files to match the schema format.
 
-## Step 2c (Optional): Concenate sequences from GenBank and GISAID
+## Step 2c (Optional): De-duplication of Sequences and Metadata from GenBank and GISAID
 
-- Before we have our joint dataset, we need to ensure that we have no duplicates between the two sources
+- Since some sequences are present in both sources, it's necessary to remove duplicates before creating a joint dataset.
+- Due to low sampling of dengue, identical sequences across datasets are expected to be rare.
+- We identify duplicates by comparing sequences with the same country and collection date; if sequences are identical, we de-duplicate them.
 
-## Step 2d (Optional): Concenate sequences from GenBank and GISAID (is applicable to 
+## Step 2d (Optional): Concatenate Sequences from GenBank and GISAID (applicable to any metadata + FASTA following the same naming convention)
+
+- Merge FASTA and metadata from both sources.
 
 ## Step 3: filter for sequences from SEA
 
@@ -148,19 +152,13 @@ ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
 - The script separates sequences into serotypes Dengue 1, 2, 3, and 4.
 - Generates serotype specific metadata
 
-## Step 5: (Future step not currently implemented) Verifying Serotypes and Genotypes
- 
-Objective:
+## Step 5: Asign Serotypes and Genotypes (Future Step, Not Currently Implemented in Pipeline)
 
-- Implement a method for independently verifying serotypes and genotypes, as GenBank entries may contain inconsistencies or unknown sequences.
+- Assignation of genotype and serotype against reference genomes.
 
-Current Approach:
+### Future Step:
 
-- For serotype confirmation, we utilize the [Dengue Typing Tool](http://krisp.ukzn.ac.za/app/typingtool/dengue/)
-- Note: This tool is capable of processing up to 100,000 sequences at no cost, which should suffice for most datasets.
-
-Ideal Approch: 
-- Develop a robust command-line tool to independently verify and assign serotypes and genotypes and be easily be integrated within Dengue Pipelines. This tool aims to address and rectify potential errors in naming and the presence of unknown sequences often encountered in GenBank entries.
+- Incorporate Verity Hill's [dengue lineage classification](https://pmc.ncbi.nlm.nih.gov/articles/PMC11118645/) for more detailed lineage information.
 
 ## Step 6: Sequence alignment 
 
@@ -171,6 +169,8 @@ Ideal Approch:
 - Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control.
 - Can set the threshold in which an ambiguous number of bases is acceptable within the data
 - Here both Whole Genomes (WG) and E genes with more than 31% missing bases are excluded. This threshold is set considering the [Grubaugh Lab](https://grubaughlab.com/) in Yale's sequencing criteria (69% completeness).
+
+**Note:** All current steps are performed separately for Whole Genomes (WG) and E-genes.
 
 ## Step 8: Subsampler
 
@@ -217,36 +217,80 @@ The script accepts a range of command-line options to customize the input, outpu
 
 - Correct metadata and fasta files into the correct format for iqtree and treetime
 
-## Step 10: ML-Treebuilding
+# Steps 10-18: Maximum Likelihood + Nextstrain Analysis Workflow
 
-- Uses IQTREE2
+## Step 10: Maximum Likelihood (ML) Treebuilding
+
+- This step constructs a Maximum Likelihood (ML) phylogenetic tree
+- Uses IQ-TREE2, which allows users to choose the model best suited for their dataset
 
 ## Step 11: Build time-calibrated trees
 
 - Inferring time-calibrated trees for each Dengue virus serotype using treetime
 
-# Step 12 - 15 all utilise the nextstrain suite of tools available [here](https://docs.nextstrain.org/en/latest/install.html)
+## Steps 12 - 15: Nextstrain Analysis
 
-## Step 12: Infer "ancestral" mutations across the tree
+All of the following steps utilize the Nextstrain suite of tools, which provides a comprehensive pipeline for pathogen genomic analysis. Instructions for installing Nextstrain are available [here](https://docs.nextstrain.org/en/latest/install.html).
 
-## Step 13: Translate sequences
+### Step 12: Infer "Ancestral" Mutations Across the Tree
 
-## Step 14: Discrete trait reconstruction
+- Identifies and maps mutations at each ancestral node within the phylogenetic tree
 
-## Step 15: Export for visualisation in Auspice
+### Step 13: Translate Sequences
 
-## Step 16: Extract annotated tree from nextstrain JSON format 
+- Converts nucleotide sequences to amino acid sequences
 
-- Extract annotated tree from the JSON file produced by the nextstrain suite of tools
+### Step 14: Discrete Trait Reconstruction
 
-## Step 17: Extract information from tree 
+- Performs discrete trait reconstruction to infer the geographic or epidemiological traits at each node in the phylogenetic tree
 
-- Extract annotations from the tree
+### Step 15: Export for Visualization in Auspice
 
-## 18: Quantify number of exports and imports from desired country
+- Exports the processed and annotated data for visualization in Auspice
 
+## Step 16: Extract Annotated Tree from Nextstrain JSON Format
 
+- Extracts the fully annotated phylogenetic tree from the JSON file produced by Nextstrain
 
+## Step 17: Plot Tree
+
+- Plot tree
+
+## Step 18: Extract Information from Tree
+
+- Retrieves specific annotations such as the number of imports/exports
+
+## Step 19: Quantify number of exports and imports from desired country 
+
+- Plots the number of imports/exports
+
+# Steps 20-24: BEAST Analysis Workflow
+
+## Step 20: Prepare Filtered FASTA and Metadata for BEAST
+
+- Generate updated FASTA files and metadata tailored for BEAST analysis using pruned data from TreeTime.
+
+## Step 21: Generate BEAST XML Configuration Using BEAUti
+
+- Create a BEAST XML configuration file using BEAUti
+
+## Step 22: Run BEAST Analysis
+
+- Perform Bayesian phylogenetic analysis using BEAST.
+
+## 23: Analyze BEAST Output with Tracer
+
+- Assess convergence and performance of BEAST MCMC analysis using Tracer.
+
+## 24: LogCombiner (only use if running multiple runs)
+
+- Merge multiple BEAST runs.
+
+## 24: Generate Maximum Clade Credibility (MCC) Tree with TreeAnnotator
+
+- Summarise BEAST trees into an MCC tree for interpretation.
+
+## 
 # Miscellaneous 
 
 ## Add Rooting Sequences to Sub-sampled Datasets
