@@ -111,9 +111,9 @@ To ensure consistency when merging datasets from multiple sources, please adhere
 | Country        | Country where the sample was collected              | Full country name                  | Thailand                       | Required       |
 | State          | State or province where the sample was collected    | Full state/province name           | Chanthaburi_Province                             | Use NA if not available       |
 | City           | City where the sample was collected                 | Full city name                     | Chanthaburi                             | Use NA if not available       |
-| Serotype       | Serotype of the virus                               | Alphanumeric string without spaces | Dengue_1                       |                               |
+| Serotype       | Serotype of the virus                               | Alphanumeric string without spaces | Dengue_1                       |         Required         |
 | Date           | Date when the sample was collected                  | YYYY-MM-DD (ISO 8601 format)       | 2018-11-26                     |  Required    |
-| Decimal_Date   | Collection date as a decimal for computational analyses | Decimal number with up to 14 decimal places | 2018.90136986301 |               |
+| Decimal_Date   | Collection date as a decimal for computational analyses | Decimal number with up to 14 decimal places | 2018.90136986301 |    Required   |
 | Sequence_name  | Concatenated string of key metadata fields          | GenBank_ID\|Country\|State\|City\|Serotype\|Date\|Decimal_Date | PP773768.1\|Thailand\|NA\|NA\|Dengue_1\|2018-11-26\|2018.90136986301 | Required |
 
 ## FASTA File Naming Convention
@@ -122,9 +122,10 @@ Each sequence in the FASTA file should use the `Sequence_name` as the header lin
 
 ### Example of a FASTA entry:
 
-```plaintext
+```
 >PP773768.1|Thailand|Chanthaburi_Province|Chanthaburi|Dengue_1|2018-11-26|2018.90136986301
 ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
+```
 
 ## Step 2b (Optional): Processing of Metadata from Outside of Genbank (example of data taken from GISAID)
 
