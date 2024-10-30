@@ -96,7 +96,10 @@ There is a scipt in the next step that allows for the addition of metadata + seq
 - It allows for the selection of data based on specified date ranges and host type.
 - Includes functionality to integrate additional metadata and sequences not currently available on GenBank.
 - Harmonizes varying formats for dates and other metadata fields to maintain consistency across the dataset.
-
+-  Includes functionality for adding extra metadata and sequences from sources outside of GenBank.
+  - Use the following options to incorporate external data files:
+    - `make_option(c("-x", "--extra_metadata"), type="character", help="Option to add a CSV file containing additional metadata from sequencing but not available on GenBank")`
+    - `make_option(c("-z", "--extra_fasta"), type="character", help="Option to add a FASTA file containing sequences not on GenBank")`
 Please see the schema for the metadata and naming of fasta file below if you want to merge datasets taken from multiple sources
 
 ## Metadata Schema and FASTA File Naming Convention
@@ -132,15 +135,12 @@ ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
 - You will need your own personal account to download data from [GISAID](https://gisaid.org/).
 - This step harmonizes metadata and FASTA files to match the schema format.
 
-## Step 2c (Optional): De-duplication of Sequences and Metadata from GenBank and GISAID
+## Step 2c (Optional): De-duplication and merging of Sequences and Metadata from GenBank and GISAID
 
 - Since some sequences are present in both sources, it's necessary to remove duplicates before creating a joint dataset.
 - Due to low sampling of dengue, identical sequences across datasets are expected to be rare.
 - We identify duplicates by comparing sequences with the same country and collection date; if sequences are identical, we de-duplicate them.
-
-## Step 2d (Optional): Concatenate Sequences from GenBank and GISAID (applicable to any metadata + FASTA following the same naming convention)
-
-- Merge FASTA and metadata from both sources.
+- Merge de-duplicated FASTA and metadata from both sources.
 
 ## Step 3: filter for sequences from SEA
 
