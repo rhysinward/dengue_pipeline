@@ -264,7 +264,7 @@ All of the following steps utilize the Nextstrain suite of tools, which provides
 
 - Plots the number of imports/exports
 
-# Steps 20-24: BEAST Analysis Workflow
+# Steps 20-25: BEAST Analysis Workflow
 
 ## Step 20: Prepare Filtered FASTA and Metadata for BEAST
 
@@ -278,15 +278,15 @@ All of the following steps utilize the Nextstrain suite of tools, which provides
 
 - Perform Bayesian phylogenetic analysis using BEAST.
 
-## 23: Analyze BEAST Output with Tracer
+## Step 23: Analyze BEAST Output with Tracer
 
 - Assess convergence and performance of BEAST MCMC analysis using Tracer.
 
-## 24: LogCombiner (only use if running multiple runs)
+## Step 24: LogCombiner (only use if running multiple runs)
 
 - Merge multiple BEAST runs.
 
-## 24: Generate Maximum Clade Credibility (MCC) Tree with TreeAnnotator
+## Step 25: Generate Maximum Clade Credibility (MCC) Tree with TreeAnnotator
 
 - Summarise BEAST trees into an MCC tree for interpretation.
 
