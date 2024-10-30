@@ -83,17 +83,59 @@ nextstrain view auspice/
 
 # Pipeline Workflow - Summary of each of the steps
 
-## Step 1: Acquisition of Genomic Data and Metadata from GenBank
+## Step 1a: Acquisition of Genomic Data and Metadata from GenBank
 
 - This step involves downloading both FASTA format sequences and associated metadata for all Dengue virus sequences.
 - You are able to change the date from which you want to obtain sequences from
 
-## Step 2: Clean metadata and FASTA files 
+There is a scipt in the next step that allows for the addition of metadata + sequences outside of GenBank e.g. GISAID
 
-- This step processes and cleans the data data fownloaded from NCBI
+## Step 2a: Clean metadata and FASTA files 
+
+- This step processes and cleans the data data downloaded from NCBI
 - It allows for the selection of data based on specified date ranges and host type.
 - Includes functionality to integrate additional metadata and sequences not currently available on GenBank.
 - Harmonizes varying formats for dates and other metadata fields to maintain consistency across the dataset.
+
+Please see the schema for the metadata and naming of fasta file below if you want to merge datasets taken from multiple sources
+
+## Metadata Schema and FASTA File Naming Convention
+
+To ensure consistency when merging datasets from multiple sources, please adhere to the following metadata schema and FASTA file naming conventions.
+
+## Metadata Fields
+
+| Field          | Description                                         | Format                             | Example                        | Note                         |
+|----------------|-----------------------------------------------------|------------------------------------|--------------------------------|-------------------------------|
+| GenBank_ID     | Unique identifier assigned by GenBank to each sequence | Alphanumeric string                | PP773768.1                     | Required                      |
+| Country        | Country where the sample was collected              | Full country name                  | Thailand                       | Required       |
+| State          | State or province where the sample was collected    | Full state/province name           | Chanthaburi_Province                             | Use NA if not available       |
+| City           | City where the sample was collected                 | Full city name                     | Chanthaburi                             | Use NA if not available       |
+| Serotype       | Serotype of the virus                               | Alphanumeric string without spaces | Dengue_1                       |                               |
+| Date           | Date when the sample was collected                  | YYYY-MM-DD (ISO 8601 format)       | 2018-11-26                     |  Required    |
+| Decimal_Date   | Collection date as a decimal for computational analyses | Decimal number with up to 14 decimal places | 2018.90136986301 |               |
+| Sequence_name  | Concatenated string of key metadata fields          | GenBank_ID\|Country\|State\|City\|Serotype\|Date\|Decimal_Date | PP773768.1\|Thailand\|NA\|NA\|Dengue_1\|2018-11-26\|2018.90136986301 | Required |
+
+## FASTA File Naming Convention
+
+Each sequence in the FASTA file should use the `Sequence_name` as the header line.
+
+### Example of a FASTA entry:
+
+```plaintext
+>PP773768.1|Thailand|Chanthaburi_Province|Chanthaburi|Dengue_1|2018-11-26|2018.90136986301
+ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
+
+## Step 2b (Optional): Processing of Metadata from Outside of Genbank (example of data taken from GISAID)
+
+- You will need you own personal account to download data from [GISAID](https://gisaid.org/)
+- Harmonises
+
+## Step 2c (Optional): Concenate sequences from GenBank and GISAID
+
+- Before we have our joint dataset, we need to ensure that we have no duplicates between the two sources
+
+## Step 2d (Optional): Concenate sequences from GenBank and GISAID (is applicable to 
 
 ## Step 3: filter for sequences from SEA
 
