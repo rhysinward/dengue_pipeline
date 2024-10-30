@@ -217,7 +217,7 @@ The script accepts a range of command-line options to customize the input, outpu
 
 - Correct metadata and fasta files into the correct format for iqtree and treetime
 
-# Steps 10-18: Maximum Likelihood + Nextstrain Analysis Workflow
+# Steps 10-19: Maximum Likelihood + Nextstrain Analysis Workflow
 
 ## Step 10: Maximum Likelihood (ML) Treebuilding
 
