@@ -135,13 +135,6 @@ ATGCGTACGTTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGC...
 - You will need your own personal account to download data from [GISAID](https://gisaid.org/).
 - This step harmonizes metadata and FASTA files to match the schema format.
 
-## Step 2c (Optional): De-duplication and merging of Sequences and Metadata from GenBank and GISAID
-
-- Since some sequences are present in both sources, it's necessary to remove duplicates before creating a joint dataset.
-- Due to low sampling of dengue, identical sequences across datasets are expected to be rare.
-- We identify duplicates by comparing sequences with the same country and collection date; if sequences are identical, we de-duplicate them.
-- Merge de-duplicated FASTA and metadata from both sources.
-
 ## Step 3: filter for sequences from SEA
 
 - Filter data for countries in SEA and select only sequences from china and Vietnam with known geo-coded sequences
