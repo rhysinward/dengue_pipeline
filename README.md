@@ -55,11 +55,15 @@ snakemake --help
 
 ### Running the Pipeline
 
-Within the cloned repository, execute the following command to run the pipeline:
+Within the cloned repository, execute the following command to run the pipeline (please adjust :
+
+For Mac:
 
 ```
 CONDA_SUBDIR=osx-64 snakemake --use-conda --cores 4
 ```
+
+For Linux:
 
 Adjust the --cores parameter based on your system's capabilities.
 
