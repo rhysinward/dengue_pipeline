@@ -1,32 +1,22 @@
 # Step 8: Translate sequences
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-
-
-def resource(name=""):
-    from snakemake.remote import AUTO
-
-    filename = srcdir(f"../resources/{name}")
-    try:
-        return AUTO.remote(filename)
-    except TypeError:
-        return filename
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule translation:
     input:
-        mutations=f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
-        time_tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
-        ref_genomes=resource(f"reference_genomes/reference_{{serotype}}.gb"),
+        mutations=input("subsampled_{serotype}_mutations.json", "mutations"),
+        time_tree=input("timetree_{serotype}.tree", "treetime"),
+        ref_genomes=resource("reference_genomes/reference_{serotype}.gb"),
     output:
-        amino=f"results/{outdir}/aa_muts_{{serotype}}.json",
+        amino=output("aa_muts_{serotype}.json"),
     conda:
-        "envs/nextstrain_all.yaml"
+        env("nextstrain_all.yaml")
     log:
-        "logs/translations_{serotype}.log",
+        log("translations_{serotype}.log")
     params:
         genes="E",
     message:
@@ -45,7 +35,7 @@ rule translation:
 
 rule _test:
     input:
-        f"results/{outdir}/aa_muts_Dengue_1.json",
-        f"results/{outdir}/aa_muts_Dengue_2.json",
-        f"results/{outdir}/aa_muts_Dengue_3.json",
-        f"results/{outdir}/aa_muts_Dengue_4.json",
+        output("aa_muts_Dengue_1.json"),
+        output("aa_muts_Dengue_2.json"),
+        output("aa_muts_Dengue_3.json"),
+        output("aa_muts_Dengue_4.json"),

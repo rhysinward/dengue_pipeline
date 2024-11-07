@@ -1,0 +1,7 @@
+input_namespace: null
+output_namespace: out
+params:
+  "Sequence": virus genome taxon "Dengue Virus"
+  "Data format": virus-genome
+  "Date": "01/01/2010"
+  "Command line arguments": []

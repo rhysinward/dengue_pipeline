@@ -8,56 +8,42 @@ Params:
   Serotypes (list of str): List of serotype names (e.g. Dengue_1, etc.)
 """
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-params = config["params"]
-
-
-def script(name=""):
-    from snakemake.remote import AUTO
-
-    filename = srcdir(f"scripts/{name}")
-    try:
-        return AUTO.remote(filename)
-    except TypeError:
-        return filename
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule split_genome_and_QC:
     input:
         fasta_files=expand(
-            "results/{indir}/Aligned_{serotype}/nextalign.aligned.fasta",
-            indir=indir,
-            serotype=params["Serotypes"],
+            input("Aligned_{serotype}/nextalign.aligned.fasta"),
+            serotype=params("Serotypes"),
         ),
         script=script("Seperate_EG_and_WG.R"),
     output:
         E_gene_dir=expand(
-            "results/{outdir}/{serotype}_EG.fasta",
-            outdir=outdir,
-            serotype=params["Serotypes"],
+            output("{serotype}_EG.fasta"),
+            serotype=params("Serotypes"),
         ),
         WG_gene_dir=expand(
-            "results/{outdir}/{serotype}_WG.fasta",
-            outdir=outdir,
-            serotype=params["Serotypes"],
+            output("{serotype}_WG.fasta"),
+            serotype=params("Serotypes"),
         ),
     params:
-        wg_threshold=params["WG Threshold"],
-        eg_threshold=params["EG Threshold"],
-        indir=f"results/{indir}",
-        outdir=f"results/{outdir}",
+        wg_threshold=params("WG Threshold"),
+        eg_threshold=params("EG Threshold"),
+        indir=input(''),
+        outdir=output(),
     log:
-        "logs/split_genome_and_QC.log",
+        log("split_genome_and_QC.log")
     message:
         (
             "Segregating E gene and whole genomes from aligned Dengue virus sequences "
             "and performing quality control."
         )
     conda:
-        "envs/conda.yaml"
+        env("conda.yaml")
     shell:
         """
         Rscript {input.script} \
@@ -71,7 +57,7 @@ rule split_genome_and_QC:
 
 rule _test:
     input:
-        f"results/{outdir}/Dengue_1_EG.fasta",
-        f"results/{outdir}/Dengue_2_EG.fasta",
-        f"results/{outdir}/Dengue_3_EG.fasta",
-        f"results/{outdir}/Dengue_4_EG.fasta",
+        output("Dengue_1_EG.fasta"),
+        output("Dengue_2_EG.fasta"),
+        output("Dengue_3_EG.fasta"),
+        output("Dengue_4_EG.fasta"),

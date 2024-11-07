@@ -1,25 +1,25 @@
 # Step 7: Infer "ancestral" mutations across the tree
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule mutations:
     input:
-        aln=f"results/{indir['metadata']}/subsampled_{{serotype}}.fasta",
-        time_tree=f"results/{indir['fasta']}/timetree_{{serotype}}.tree",
+        aln=input("subsampled_{serotype}.fasta", "metadata"),
+        time_tree=input("timetree_{serotype}.tree", "fasta"),
     output:
-        mutations=f"results/{outdir}/subsampled_{{serotype}}_mutations.json",
+        mutations=output("subsampled_{serotype}_mutations.json"),
     conda:
-        "envs/nextstrain_all.yaml"
+        env("nextstrain_all.yaml")
     log:
-        "logs/mutations_{serotype}.log",
+        log("mutations_{serotype}.log")
     message:
         "Infer ancestral mutations across the tree"
     params:
-        outdir=f"results/{outdir}",
+        outdir=output(),
     shell:
         """
         augur ancestral \
@@ -32,7 +32,7 @@ rule mutations:
 
 rule _test:
     input:
-        f"results/{outdir}/subsampled_Dengue_1_mutations.json",
-        f"results/{outdir}/subsampled_Dengue_2_mutations.json",
-        f"results/{outdir}/subsampled_Dengue_3_mutations.json",
-        f"results/{outdir}/subsampled_Dengue_4_mutations.json",
+        output("subsampled_Dengue_1_mutations.json"),
+        output("subsampled_Dengue_2_mutations.json"),
+        output("subsampled_Dengue_3_mutations.json"),
+        output("subsampled_Dengue_4_mutations.json"),

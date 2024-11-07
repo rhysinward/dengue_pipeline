@@ -3,30 +3,27 @@
 Params:
     Clock filter IQD (number): Interquartile range for clock filter
 """
-
-
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-params = config["params"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule treetime:
     input:
-        aln=f"results/{indir['metadata']}/subsampled_{{serotype}}.fasta",
-        ml_tree=f"results/{indir['fasta']}/subsampled_{{serotype}}.fasta.treefile",
-        metadata=f"results/{indir['metadata']}/subsampled_{{serotype}}_infoTbl.csv",
+        aln=input("subsampled_{serotype}.fasta", "metadata"),
+        ml_tree=input("subsampled_{serotype}.fasta.treefile", "fasta"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "metadata"),
     output:
-        tree=f"results/{outdir}/timetree_{{serotype}}.tree",
-        branch_lengths=f"results/{outdir}/{{serotype}}_branch_lengths.json",
+        tree=output("timetree_{serotype}.tree"),
+        branch_lengths=output("{serotype}_branch_lengths.json"),
     params:
-        clock_filter=params["Clock filter IQD"],
+        clock_filter=params("Clock filter IQD"),
     conda:
-        "envs/nextstrain_all.yaml"
+        env("nextstrain_all.yaml")
     log:
-        "logs/treetime_{serotype}.log",
+        log("treetime_{serotype}.log"),
     message:
         "Inferring time-calibrated trees for each Dengue virus serotype."
     shell:
@@ -48,7 +45,7 @@ rule treetime:
 
 rule _test:
     input:
-        f"results/{outdir}/timetree_Dengue_1.tree",
-        f"results/{outdir}/timetree_Dengue_2.tree",
-        f"results/{outdir}/timetree_Dengue_3.tree",
-        f"results/{outdir}/timetree_Dengue_4.tree",
+        output("timetree_Dengue_1.tree"),
+        output("timetree_Dengue_2.tree"),
+        output("timetree_Dengue_3.tree"),
+        output("timetree_Dengue_4.tree"),

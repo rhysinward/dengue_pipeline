@@ -1,21 +1,21 @@
 # Step 9: Discrete trait reconstruction
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule mugration:
     input:
-        time_tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
-        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
+        time_tree=input("timetree_{serotype}.tree", "treetime"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "subsample"),
     output:
-        traits=f"results/{outdir}/traits_{{serotype}}.json",
+        traits=output("traits_{serotype}.json"),
     conda:
-        "envs/nextstrain_all.yaml"
+        env("nextstrain_all.yaml")
     log:
-        "logs/mugration_{serotype}.log",
+        log("mugration_{serotype}.log"),
     message:
         "Use Discrete Trait Reconstruction for country and state"
     shell:
@@ -31,7 +31,7 @@ rule mugration:
 
 rule _test:
     input:
-        f"results/{outdir}/traits_Dengue_1.json",
-        f"results/{outdir}/traits_Dengue_2.json",
-        f"results/{outdir}/traits_Dengue_3.json",
-        f"results/{outdir}/traits_Dengue_4.json",
+        output("traits_Dengue_1.json"),
+        output("traits_Dengue_2.json"),
+        output("traits_Dengue_3.json"),
+        output("traits_Dengue_4.json"),
