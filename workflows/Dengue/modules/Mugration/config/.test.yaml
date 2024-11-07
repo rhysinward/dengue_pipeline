@@ -1,0 +1,4 @@
+input_namespace:
+  treetime: treetime
+  subsample: reformatting
+output_namespace: out

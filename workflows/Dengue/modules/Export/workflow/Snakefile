@@ -1,27 +1,16 @@
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
-
-
-def resource(name=""):
-    from snakemake.remote import AUTO
-
-    filename = srcdir(f"../resources/{name}")
-    try:
-        return AUTO.remote(filename)
-    except TypeError:
-        return filename
 
 
 rule all:
     input:
         expand(
-            "results/{outdir}/dengue_{serotype}.json",
-            outdir=outdir,
+            output(f"dengue_{serotype}.json"),
             serotype=serotype,
         ),
 
@@ -31,19 +20,19 @@ rule all:
 
 rule export:
     input:
-        tree=f"results/{indir['treetime']}/timetree_{{serotype}}.tree",
-        metadata=f"results/{indir['subsample']}/subsampled_{{serotype}}_infoTbl.csv",
-        branch_lengths=f"results/{indir['treetime']}/{{serotype}}_branch_lengths.json",
-        traits=f"results/{indir['mugrations']}/traits_{{serotype}}.json",
-        aa_muts=f"results/{indir['translation']}/aa_muts_{{serotype}}.json",
-        nt_muts=f"results/{indir['mutations']}/subsampled_{{serotype}}_mutations.json",
+        tree=input("timetree_{serotype}.tree", "treetime"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "subsample"),
+        branch_lengths=input("{serotype}_branch_lengths.json", "treetime"),
+        traits=input("traits_{serotype}.json", "mugrations"),
+        aa_muts=input("aa_muts_{serotype}.json", "translation"),
+        nt_muts=input("subsampled_{serotype}_mutations.json", "mutations"),
         auspice_config=resource("auspice_config.json"),
     output:
-        auspice_json=f"results/{outdir}/dengue_{{serotype}}.json",
+        auspice_json=output("dengue_{serotype}.json"),
     conda:
-        "envs/nextstrain_all.yaml"
+        env("nextstrain_all.yaml")
     log:
-        "logs/export_{serotype}.log",
+        log("export_{serotype}.log")
     message:
         "Export for visualisation in Auspice"
     shell:
@@ -59,7 +48,7 @@ rule export:
 
 rule _test:
     input:
-        f"results/{outdir}/dengue_Dengue_1.json",
-        f"results/{outdir}/dengue_Dengue_2.json",
-        f"results/{outdir}/dengue_Dengue_3.json",
-        f"results/{outdir}/dengue_Dengue_4.json",
+        output("dengue_Dengue_1.json"),
+        output("dengue_Dengue_2.json"),
+        output("dengue_Dengue_3.json"),
+        output("dengue_Dengue_4.json"),

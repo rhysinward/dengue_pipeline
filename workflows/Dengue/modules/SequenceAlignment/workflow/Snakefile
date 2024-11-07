@@ -1,45 +1,27 @@
 """Sequence alignment for Dengue serotypes"""
-
-
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-from snakemake.remote import AUTO
-
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-workflow_srcdir = srcdir("")
-
-
-def resource(name=""):
-    import os
-    from snakemake.remote import AUTO
-
-    try:
-        return AUTO.remote("/".join([workflow_srcdir, "..", "resources", name]))
-    except TypeError:
-        import os
-
-        return os.path.join(workflow_srcdir, "..", "resources", name)
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule sequence_alignment:
     input:
-        sequences=f"results/{indir}/Unaligned_{{serotype}}.fasta",
+        sequences=input("Unaligned_{serotype}.fasta"),
         reference=resource("reference_genomes/reference_{serotype}.fasta"),
         genemap=resource("genemap/genemap_{serotype}.gff"),
     output:
-        fasta=f"results/{outdir}/Aligned_{{serotype}}/nextalign.aligned.fasta",
+        fasta=output("Aligned_{serotype}/nextalign.aligned.fasta"),
     log:
-        "logs/sequence_alignment_{serotype}.log",
+        log("sequence_alignment_{serotype}.log"),
     conda:
-        "envs/alignment.yaml"
+        env("alignment.yaml")
     message:
         "Running sequence alignment for Dengue serotypes"
     params:
-        output_serotype=f"results/{outdir}/Aligned_{{serotype}}",
-        resources_dir=resource(),
+        output_serotype=output("Aligned_{serotype}"),
+        resources_dir=resource(''),
     shell:
         """
         mkdir -p {params.output_serotype}
@@ -53,7 +35,7 @@ rule sequence_alignment:
 
 rule _test:
     input:
-        f"results/{outdir}/Aligned_Dengue_1/nextalign.aligned.fasta",
-        f"results/{outdir}/Aligned_Dengue_2/nextalign.aligned.fasta",
-        f"results/{outdir}/Aligned_Dengue_3/nextalign.aligned.fasta",
-        f"results/{outdir}/Aligned_Dengue_4/nextalign.aligned.fasta",
+        output("Aligned_Dengue_1/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_2/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_3/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_4/nextalign.aligned.fasta"),

@@ -1,35 +1,12 @@
 # Step 5a: Subsampler DENV
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-params = config["params"]
-
-
-def script(name=""):
-    from snakemake.remote import AUTO
-
-    filename = srcdir(f"scripts/{name}")
-    try:
-        return AUTO.remote(filename)
-    except TypeError:
-        return filename
-
-
-def resource(name=""):
-    import os
-    from snakemake.remote import AUTO
-
-    try:
-        return AUTO.remote("/".join([srcdir("."), "..", "resources", name]))
-    except TypeError:
-        import os
-
-        return os.path.join(srcdir("."), "..", "resources", name)
-
-
-for serotype_item in params["Serotypes"]:
+for serotype_item in params("Serotypes"):
     serotype_code = serotype_item["Serotype"]
     denv_name = serotype_item["Filename"]
 
@@ -37,28 +14,28 @@ for serotype_item in params["Serotypes"]:
         name:
             f"subsample_{denv_name}"
         input:
-            fasta_file=f"results/{indir['fasta']}/{denv_name}_EG.fasta",
-            metadata_file=f"results/{indir['metadata']}/Unaligned_{denv_name}_infoTbl.csv",
+            fasta_file=input(f"{denv_name}_EG.fasta", "fasta"),
+            metadata_file=input(f"Unaligned_{denv_name}_infoTbl.csv", "metadata"),
             location_local=resource("number_of_sequences.csv"),
             script=script("subsampler.R"),
         output:
-            subsample_fasta=f"results/{outdir}/subsampled_{denv_name}.fasta",
-            subsample_csv=f"results/{outdir}/subsampled_{denv_name}_infoTbl.csv",
-            subsample_tsv=f"results/{outdir}/subsampled_{denv_name}_infoTbl.tsv",
+            subsample_fasta=output(f"subsampled_{denv_name}.fasta"),
+            subsample_csv=output(f"subsampled_{denv_name}_infoTbl.csv"),
+            subsample_tsv=output(f"subsampled_{denv_name}_infoTbl.tsv"),
         params:
-            number_sequences_local=params["Number of sequences (local)"],
-            number_sequences_background=params["Number of sequences (background)"],
-            time_interval=params["Time Interval"],
-            sampling_method=params["Sampling Method"],
+            number_sequences_local=params("Number of sequences (local)"),
+            number_sequences_background=params("Number of sequences (background)"),
+            time_interval=params("Time Interval"),
+            sampling_method=params("Sampling Method"),
             serotype=serotype_code,
             denv_name=denv_name,
-            output_dir=f"results/{outdir}/",
+            output_dir=output(""),
         log:
-            f"logs/subsample_{denv_name}.log",
+            log(f"subsample_{denv_name}.log"),
         message:
             f"Subsampling {denv_name} sequences based on specified criteria."
         conda:
-            "envs/conda.yaml"
+            env("conda.yaml")
         shell:
             """
             Rscript {input.script} \
@@ -77,7 +54,7 @@ for serotype_item in params["Serotypes"]:
 
 rule _test:
     input:
-        f"results/{outdir}/subsampled_Dengue_1.fasta",
-        f"results/{outdir}/subsampled_Dengue_2.fasta",
-        f"results/{outdir}/subsampled_Dengue_3.fasta",
-        f"results/{outdir}/subsampled_Dengue_4.fasta",
+        output("subsampled_Dengue_1.fasta"),
+        output("subsampled_Dengue_2.fasta"),
+        output("subsampled_Dengue_3.fasta"),
+        output("subsampled_Dengue_4.fasta"),

@@ -7,29 +7,26 @@ Params:
     Command line arguments (str): Additional command line arguments for IQ-TREE
         For example: "-nt AUTO" to use all available cores
 """
-
-
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-indir = config["input_namespace"]
-outdir = config["output_namespace"]
-params = config["params"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule treebuilding:
     input:
-        aln=f"results/{indir}/subsampled_{{serotype}}.fasta",
+        aln=input("subsampled_{serotype}.fasta"),
     output:
-        tree=f"results/{outdir}/subsampled_{{serotype}}.fasta.treefile",
+        tree=output("subsampled_{serotype}.fasta.treefile"),
     conda:
-        "envs/treebuilding.yaml"
+        env("treebuilding.yaml")
     params:
-        model=params["Model"],
-        cli=params["Command line arguments"],
-        outdir=f"results/{outdir}",
+        model=params("Model"),
+        cli=params("Command line arguments"),
+        outdir=output(),
     log:
-        "logs/iqtree_{serotype}.log",
+        log("iqtree_{serotype}.log"),
     message:
         (
             "Inferring maximum likelihood phylogenetic trees for using IQ-TREE "
@@ -45,7 +42,7 @@ rule treebuilding:
 
 rule _test:
     input:
-        f"results/{outdir}/subsampled_Dengue_1.fasta.treefile",
-        f"results/{outdir}/subsampled_Dengue_2.fasta.treefile",
-        f"results/{outdir}/subsampled_Dengue_3.fasta.treefile",
-        f"results/{outdir}/subsampled_Dengue_4.fasta.treefile",
+        output("subsampled_Dengue_1.fasta.treefile"),
+        output("subsampled_Dengue_2.fasta.treefile"),
+        output("subsampled_Dengue_3.fasta.treefile"),
+        output("subsampled_Dengue_4.fasta.treefile"),

@@ -8,32 +8,30 @@ Params:
     Date (str): The date after which the data was released (e.g. '01/01/2010')
     Command line arguments (list): Additional command line arguments to be passed to the NCBI datasets command
 """
-
-
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
-
-outdir = config["output_namespace"]
-params = config["params"]
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
 
 rule acquire_data:
     output:
-        zip=f"results/{outdir}/genbank_data.zip",
-        metadata=f"results/{outdir}/metadata.tsv",
-        fasta=f"results/{outdir}/ncbi_dataset/data/genomic.fna",
+        zip=output("genbank_data.zip"),
+        metadata=output("metadata.tsv"),
+        fasta=output("ncbi_dataset/data/genomic.fna"),
     log:
-        "logs/acquire_data.log",
+        log("acquire_data.log"),
     message:
         "Acquiring Genomic Data and Metadata from NCBI database"
     conda:
-        "envs/ncbi_datasets_env.yaml"
+        env("ncbi_datasets_env.yaml")
     params:
-        outdir=f"results/{outdir}",
-        sequence=params["Sequence"],
-        cli=" ".join(params["Command line arguments"]),
-        dataformat=params["Data format"],
-        date=params["Date"],
+        outdir=output(),
+        sequence=params("Sequence"),
+        cli=" ".join(params("Command line arguments")),
+        dataformat=params("Data format"),
+        date=params("Date"),
     shell:
         """
         # Download the data and metadata
@@ -54,4 +52,4 @@ rule acquire_data:
 
 rule _test:
     input:
-        f"results/{outdir}/ncbi_dataset/data/genomic.fna",
+        output("ncbi_dataset/data/genomic.fna"),

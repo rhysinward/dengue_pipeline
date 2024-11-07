@@ -1,45 +1,35 @@
 """Split input data into Dengue serotypes, add serotypes to sequence name and generate
 sequence specific metadata.
 """
-
-
 configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
 
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
 
-indir = config["input_namespace"]
 outdir = config["output_namespace"]
-
-
-def script(name=""):
-    from snakemake.remote import AUTO
-
-    filename = srcdir(f"scripts/{name}")
-    try:
-        return AUTO.remote(filename)
-    except TypeError:
-        return filename
 
 
 rule process_dengue_data:
     input:
         script=script("split_dengue.R"),
-        metadata=f"results/{indir}/infoTbl.csv",
-        fasta=f"results/{indir}/Unaligned.fasta",
+        metadata=input("infoTbl.csv"),
+        fasta=input("Unaligned.fasta"),
     output:
-        fasta=f"results/{outdir}/Unaligned_{{serotype}}.fasta",
-        csv=f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.csv",
-        tsv=f"results/{outdir}/Unaligned_{{serotype}}_infoTbl.txt",
+        fasta=output("Unaligned_{serotype}.fasta"),
+        csv=output("Unaligned_{serotype}_infoTbl.csv"),
+        tsv=output("Unaligned_{serotype}_infoTbl.txt"),
     params:
-        output_dir=directory(f"results/{outdir}"),
+        output_dir=output(),
     log:
-        "logs/process_data_{serotype}.log",
+        log("process_data_{serotype}.log"),
     message:
         (
             "Split into serotype, add serotypes to sequence name and generate "
             "sequence specific metadata ({wildcards.serotype})"
         )
     conda:
-        "envs/dengue.yaml"
+        env("dengue.yaml")
     shell:
         """
         mkdir -p {params.output_dir}
@@ -53,7 +43,7 @@ rule process_dengue_data:
 
 rule _test:
     input:
-        f"results/{outdir}/Unaligned_Dengue_1.fasta",
-        f"results/{outdir}/Unaligned_Dengue_2.fasta",
-        f"results/{outdir}/Unaligned_Dengue_3.fasta",
-        f"results/{outdir}/Unaligned_Dengue_4.fasta",
+        output("Unaligned_Dengue_1.fasta"),
+        output("Unaligned_Dengue_2.fasta"),
+        output("Unaligned_Dengue_3.fasta"),
+        output("Unaligned_Dengue_4.fasta"),
