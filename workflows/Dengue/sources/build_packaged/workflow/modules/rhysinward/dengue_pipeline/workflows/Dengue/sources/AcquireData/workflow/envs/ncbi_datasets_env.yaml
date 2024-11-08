@@ -1,0 +1,7 @@
+name: ncbi_datasets
+channels:
+- bioconda
+- conda-forge
+dependencies:
+- ncbi-datasets-cli
+- unzip

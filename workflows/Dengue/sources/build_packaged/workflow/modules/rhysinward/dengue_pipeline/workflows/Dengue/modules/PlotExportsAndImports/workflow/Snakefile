@@ -1,0 +1,59 @@
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule plot_exports_and_imports:
+    input:
+        metadata=input("dengue_{serotype}_timetree_extracted.tsv"),
+        script=script("plot_exports_and_imports.R"),
+    output:
+        imports=output("imports_{serotype}.csv"),
+        exports=output("exports_{serotype}.csv"),
+    params:
+        country=params("Country"),
+        serotype="{serotype}",
+        outdir=output(),
+    conda:
+        env("conda.yaml")
+    log:
+        log("exports_and_imports_{serotype}.log")
+    message:
+        "Quantify number of exports and imports from desired country ({wildcards.serotype})"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --output_dir {params.outdir} \
+            --output_dir_export {output.exports} \
+            --output_dir_import {output.imports} \
+            --country {params.country} \
+            --serotype {params.serotype} \
+            > {log} 2>&1
+        """
+
+
+rule target:
+    input:
+        output("imports_Dengue_1.csv"),
+        output("exports_Dengue_1.csv"),
+        output("imports_Dengue_2.csv"),
+        output("exports_Dengue_2.csv"),
+        output("imports_Dengue_3.csv"),
+        output("exports_Dengue_3.csv"),
+        output("imports_Dengue_4.csv"),
+        output("exports_Dengue_4.csv"),
+
+
+rule _test:
+    input:
+        output("imports_Dengue_1.csv"),
+        output("exports_Dengue_1.csv"),
+        output("imports_Dengue_2.csv"),
+        output("exports_Dengue_2.csv"),
+        output("imports_Dengue_3.csv"),
+        output("exports_Dengue_3.csv"),
+        output("imports_Dengue_4.csv"),
+        output("exports_Dengue_4.csv"),

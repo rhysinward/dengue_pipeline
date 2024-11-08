@@ -1,0 +1,60 @@
+# Step 5a: Subsampler DENV
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+for serotype_item in params("Serotypes"):
+    serotype_code = serotype_item["Serotype"]
+    denv_name = serotype_item["Filename"]
+
+    rule:
+        name:
+            f"subsample_{denv_name}"
+        input:
+            fasta_file=input(f"{denv_name}_EG.fasta", "fasta"),
+            metadata_file=input(f"Unaligned_{denv_name}_infoTbl.csv", "metadata"),
+            location_local=resource("number_of_sequences.csv"),
+            script=script("subsampler.R"),
+        output:
+            subsample_fasta=output(f"subsampled_{denv_name}.fasta"),
+            subsample_csv=output(f"subsampled_{denv_name}_infoTbl.csv"),
+            subsample_tsv=output(f"subsampled_{denv_name}_infoTbl.tsv"),
+        params:
+            number_sequences_local=params("Number of sequences (local)"),
+            number_sequences_background=params("Number of sequences (background)"),
+            time_interval=params("Time Interval"),
+            sampling_method=params("Sampling Method"),
+            serotype=serotype_code,
+            denv_name=denv_name,
+            output_dir=output(""),
+        log:
+            log(f"subsample_{denv_name}.log"),
+        message:
+            f"Subsampling {denv_name} sequences based on specified criteria."
+        conda:
+            env("conda.yaml")
+        shell:
+            """
+            Rscript {input.script} \
+                --metadata {input.metadata_file} \
+                --fasta {input.fasta_file} \
+                --location_local {input.location_local} \
+                --number_sequences_local {params.number_sequences_local} \
+                --number_sequences_background {params.number_sequences_background} \
+                --time_interval {params.time_interval} \
+                --sampling_method {params.sampling_method} \
+                --outfile {params.output_dir}/subsampled_{params.denv_name} \
+                --output_dir {params.output_dir} \
+                --serotype {params.serotype} > {log} 2>&1
+            """
+
+
+rule _test:
+    input:
+        output("subsampled_Dengue_1.fasta"),
+        output("subsampled_Dengue_2.fasta"),
+        output("subsampled_Dengue_3.fasta"),
+        output("subsampled_Dengue_4.fasta"),

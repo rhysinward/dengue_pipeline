@@ -1,0 +1,6 @@
+input_namespace: in
+output_namespace: out
+params:
+  "Start date": 2000-01-01
+  "End date": 2023-12-24
+  "Host": "Homo sapiens"

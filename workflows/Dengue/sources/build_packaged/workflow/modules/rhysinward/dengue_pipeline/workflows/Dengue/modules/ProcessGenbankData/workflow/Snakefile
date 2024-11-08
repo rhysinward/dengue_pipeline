@@ -1,0 +1,55 @@
+"""Process data from Genbank
+
+Params:
+    Start date (str): Start date for the data to be processed (e.g. "2000-01-01")
+    End date (str): End date for the data to be processed (e.g. "2023-12-24")
+    Host (str): Host for the data to be processed (e.g. "Homo sapiens")
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule process_genbank_data:
+    input:
+        metadata=input("metadata.tsv"),
+        fasta=input("ncbi_dataset/data/genomic.fna"),
+        script=script("clean_metadata_and_fasta_general.R"),
+    output:
+        fasta_files=output("Unaligned.fasta"),
+        info_tables_txt=output("infoTbl.txt"),
+        info_tables_csv=output("infoTbl.csv"),
+    params:
+        outdir=output(),
+        start_date=params("Start date"),
+        end_date=params("End date"),
+        host=params("Host"),
+    log:
+        log("process_genomic_data.log"),
+    message:
+        "Processing and cleaning Dengue data downloaded from NCBI"
+    conda:
+        env("genbank.yaml")
+    shell:
+        """
+        mkdir -p {params.outdir}
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --start-date {params.start_date} \
+            --end-date {params.end_date} \
+            --host "{params.host}" \
+            --outfile_fasta {output.fasta_files} \
+            --outfile_csv {output.info_tables_csv} \
+            --outfile_tsv {output.info_tables_txt} \
+            > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("Unaligned.fasta"),
+        output("infoTbl.txt"),
+        output("infoTbl.csv"),

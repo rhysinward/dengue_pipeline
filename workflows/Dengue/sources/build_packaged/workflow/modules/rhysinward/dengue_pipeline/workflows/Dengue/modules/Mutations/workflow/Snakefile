@@ -1,0 +1,38 @@
+# Step 7: Infer "ancestral" mutations across the tree
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule mutations:
+    input:
+        aln=input("subsampled_{serotype}.fasta", "metadata"),
+        time_tree=input("timetree_{serotype}.tree", "fasta"),
+    output:
+        mutations=output("subsampled_{serotype}_mutations.json"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("mutations_{serotype}.log")
+    message:
+        "Infer ancestral mutations across the tree"
+    params:
+        outdir=output(),
+    shell:
+        """
+        augur ancestral \
+            --tree {input.time_tree} \
+            --alignment {input.aln} \
+            --inference joint \
+            --output-node-data {output.mutations} > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("subsampled_Dengue_1_mutations.json"),
+        output("subsampled_Dengue_2_mutations.json"),
+        output("subsampled_Dengue_3_mutations.json"),
+        output("subsampled_Dengue_4_mutations.json"),

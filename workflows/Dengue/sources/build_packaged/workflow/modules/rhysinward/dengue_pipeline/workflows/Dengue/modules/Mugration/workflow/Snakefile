@@ -1,0 +1,37 @@
+# Step 9: Discrete trait reconstruction
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule mugration:
+    input:
+        time_tree=input("timetree_{serotype}.tree", "treetime"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "subsample"),
+    output:
+        traits=output("traits_{serotype}.json"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("mugration_{serotype}.log"),
+    message:
+        "Use Discrete Trait Reconstruction for country and state"
+    shell:
+        """
+        augur traits \
+            --tree {input.time_tree} \
+            --metadata {input.metadata} \
+            --columns Country State \
+            --confidence \
+            --output {output.traits} > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("traits_Dengue_1.json"),
+        output("traits_Dengue_2.json"),
+        output("traits_Dengue_3.json"),
+        output("traits_Dengue_4.json"),

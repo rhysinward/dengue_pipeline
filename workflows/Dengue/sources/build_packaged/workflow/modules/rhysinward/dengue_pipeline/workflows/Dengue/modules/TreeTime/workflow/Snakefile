@@ -1,0 +1,51 @@
+"""Inferring time-calibrated trees for each Dengue virus serotype
+
+Params:
+    Clock filter IQD (number): Interquartile range for clock filter
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule treetime:
+    input:
+        aln=input("subsampled_{serotype}.fasta", "metadata"),
+        ml_tree=input("subsampled_{serotype}.fasta.treefile", "fasta"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "metadata"),
+    output:
+        tree=output("timetree_{serotype}.tree"),
+        branch_lengths=output("{serotype}_branch_lengths.json"),
+    params:
+        clock_filter=params("Clock filter IQD"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("treetime_{serotype}.log"),
+    message:
+        "Inferring time-calibrated trees for each Dengue virus serotype."
+    shell:
+        """
+        augur refine \
+            --tree {input.ml_tree} \
+            --alignment {input.aln} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.branch_lengths} \
+            --timetree \
+            --coalescent opt \
+            --date-confidence \
+            --clock-filter-iqd {params.clock_filter} \
+            --root best \
+            > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("timetree_Dengue_1.tree"),
+        output("timetree_Dengue_2.tree"),
+        output("timetree_Dengue_3.tree"),
+        output("timetree_Dengue_4.tree"),

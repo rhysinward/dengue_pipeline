@@ -1,0 +1,167 @@
+"input_namespace": null
+"output_namespace": "plotexportsandimports"
+"acquiredata":
+  "name": "acquiredata"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/sources/AcquireData/workflow/Snakefile"
+  "config":
+    "input_namespace": null
+    "output_namespace": "acquiredata"
+    "params":
+      "Sequence": "virus genome taxon \"Dengue Virus\""
+      "Data format": "virus-genome"
+      "Date": "01/01/2010"
+      "Command line arguments": []
+"processgenbankdata":
+  "name": "processgenbankdata"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/ProcessGenbankData/workflow/Snakefile"
+  "config":
+    "input_namespace": "acquiredata"
+    "output_namespace": "processgenbankdata"
+    "params":
+      "Start date": "2000-01-01T00:00:00.000Z"
+      "End date": "2023-12-24T00:00:00.000Z"
+      "Host": "Homo sapiens"
+"processdenguedata":
+  "name": "processdenguedata"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/ProcessDengueData/workflow/Snakefile"
+  "config":
+    "input_namespace": "processgenbankdata"
+    "output_namespace": "processdenguedata"
+"sequencealignment":
+  "name": "sequencealignment"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/SequenceAlignment/workflow/Snakefile"
+  "config":
+    "input_namespace": "processdenguedata"
+    "output_namespace": "sequencealignment"
+"splitgenomeandqc":
+  "name": "splitgenomeandqc"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/SplitGenomeAndQC/workflow/Snakefile"
+  "config":
+    "input_namespace": "sequencealignment"
+    "output_namespace": "splitgenomeandqc"
+    "params":
+      "WG Threshold": 0.29
+      "EG Threshold": 0.29
+      "Serotypes":
+      - "Dengue_1"
+      - "Dengue_2"
+      - "Dengue_3"
+      - "Dengue_4"
+"subsample_denv":
+  "name": "subsample_denv"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Subsample_DENV/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "metadata": "processdenguedata"
+      "fasta": "splitgenomeandqc"
+    "output_namespace": "subsample_denv"
+    "params":
+      "Number of sequences (local)": 10
+      "Number of sequences (background)": 100
+      "Time Interval": "Year"
+      "Sampling Method": "Even"
+      "Serotypes":
+      - "Serotype": "denv1"
+        "Filename": "Dengue_1"
+      - "Serotype": "denv2"
+        "Filename": "Dengue_2"
+      - "Serotype": "denv3"
+        "Filename": "Dengue_3"
+      - "Serotype": "denv4"
+        "Filename": "Dengue_4"
+"reformatting":
+  "name": "reformatting"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Reformatting/workflow/Snakefile"
+  "config":
+    "input_namespace": "subsample_denv"
+    "output_namespace": "reformatting"
+"treebuilding":
+  "name": "treebuilding"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/TreeBuilding/workflow/Snakefile"
+  "config":
+    "input_namespace": "reformatting"
+    "output_namespace": "treebuilding"
+    "params":
+      "Model": "GTR+F+I"
+      "Command line arguments": "-nt AUTO"
+"treetime":
+  "name": "treetime"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/TreeTime/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "treebuilding"
+      "metadata": "reformatting"
+    "output_namespace": "treetime"
+    "params":
+      "Clock filter IQD": 3
+"mutations":
+  "name": "mutations"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Mutations/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "treetime"
+      "metadata": "reformatting"
+    "output_namespace": "mutations"
+"translation":
+  "name": "translation"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Translation/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "mutations": "mutations"
+    "output_namespace": "translation"
+"mugration":
+  "name": "mugration"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Mugration/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "subsample": "reformatting"
+    "output_namespace": "mugration"
+"export":
+  "name": "export"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/Export/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "translation": "translation"
+      "subsample": "reformatting"
+      "mutations": "mutations"
+      "mugrations": "mugration"
+    "output_namespace": "export"
+"extractphylotree":
+  "name": "extractphylotree"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/ExtractPhyloTree/workflow/Snakefile"
+  "config":
+    "input_namespace": "export"
+    "output_namespace": "extractphylotree"
+"treebreakdown":
+  "name": "treebreakdown"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/TreeBreakdown/workflow/Snakefile"
+  "config":
+    "input_namespace": "extractphylotree"
+    "output_namespace": "treebreakdown"
+"plotexportsandimports":
+  "name": "plotexportsandimports"
+  "type": "module"
+  "snakefile": "modules/rhysinward/dengue_pipeline/workflows/Dengue/modules/PlotExportsAndImports/workflow/Snakefile"
+  "config":
+    "input_namespace": "treebreakdown"
+    "output_namespace": "plotexportsandimports"
+    "params":
+      "Country": "Vietnam"

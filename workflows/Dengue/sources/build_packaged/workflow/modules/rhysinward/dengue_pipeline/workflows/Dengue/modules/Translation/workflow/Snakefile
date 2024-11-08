@@ -1,0 +1,41 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule translation:
+    input:
+        mutations=input("subsampled_{serotype}_mutations.json", "mutations"),
+        time_tree=input("timetree_{serotype}.tree", "treetime"),
+        ref_genomes=resource("reference_genomes/reference_{serotype}.gb"),
+    output:
+        amino=output("aa_muts_{serotype}.json"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("translations_{serotype}.log")
+    params:
+        genes="E",
+    message:
+        "Translate sequences"
+    shell:
+        """
+        augur translate \
+            --tree {input.time_tree} \
+            --ancestral-sequences {input.mutations} \
+            --reference-sequence {input.ref_genomes} \
+            --genes {params.genes} \
+            --output {output.amino} \
+            > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("aa_muts_Dengue_1.json"),
+        output("aa_muts_Dengue_2.json"),
+        output("aa_muts_Dengue_3.json"),
+        output("aa_muts_Dengue_4.json"),

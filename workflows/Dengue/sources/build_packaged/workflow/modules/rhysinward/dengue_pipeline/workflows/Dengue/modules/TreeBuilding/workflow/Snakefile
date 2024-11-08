@@ -1,0 +1,48 @@
+"""Tree building with IQ-TREE
+
+Uses IQ-TREE multicore version 2.2.6 COVID-edition [https://github.com/iqtree/iqtree2]
+
+Params:
+    Model (str) - Model of nucleotide substitution (e.g. )
+    Command line arguments (str): Additional command line arguments for IQ-TREE
+        For example: "-nt AUTO" to use all available cores
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule treebuilding:
+    input:
+        aln=input("subsampled_{serotype}.fasta"),
+    output:
+        tree=output("subsampled_{serotype}.fasta.treefile"),
+    conda:
+        env("treebuilding.yaml")
+    params:
+        model=params("Model"),
+        cli=params("Command line arguments"),
+        outdir=output(),
+    log:
+        log("iqtree_{serotype}.log"),
+    message:
+        (
+            "Inferring maximum likelihood phylogenetic trees for using IQ-TREE "
+            "({wildcards.serotype})"
+        )
+    shell:
+        """
+        mkdir -p {params.outdir}
+        iqtree2 -s {input.aln} -m {params.model} {params.cli} -redo  > {log} 2>&1
+        mv {input.aln}.* {params.outdir}
+        """
+
+
+rule _test:
+    input:
+        output("subsampled_Dengue_1.fasta.treefile"),
+        output("subsampled_Dengue_2.fasta.treefile"),
+        output("subsampled_Dengue_3.fasta.treefile"),
+        output("subsampled_Dengue_4.fasta.treefile"),

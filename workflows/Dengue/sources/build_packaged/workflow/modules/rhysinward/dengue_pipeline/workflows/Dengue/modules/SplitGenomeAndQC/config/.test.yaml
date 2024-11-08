@@ -1,0 +1,10 @@
+input_namespace: in
+output_namespace: out
+params:
+  "WG Threshold": 0.29
+  "EG Threshold": 0.29
+  Serotypes:
+    - Dengue_1
+    - Dengue_2
+    - Dengue_3
+    - Dengue_4

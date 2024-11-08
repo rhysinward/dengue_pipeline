@@ -1,0 +1,41 @@
+"""Sequence alignment for Dengue serotypes"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule sequence_alignment:
+    input:
+        sequences=input("Unaligned_{serotype}.fasta"),
+        reference=resource("reference_genomes/reference_{serotype}.fasta"),
+        genemap=resource("genemap/genemap_{serotype}.gff"),
+    output:
+        fasta=output("Aligned_{serotype}/nextalign.aligned.fasta"),
+    log:
+        log("sequence_alignment_{serotype}.log"),
+    conda:
+        env("alignment.yaml")
+    message:
+        "Running sequence alignment for Dengue serotypes"
+    params:
+        output_serotype=output("Aligned_{serotype}"),
+        resources_dir=resource(''),
+    shell:
+        """
+        mkdir -p {params.output_serotype}
+        nextalign run \
+            {input.sequences} \
+            --reference={input.reference} \
+            --genemap={input.genemap} \
+            --output-fasta={output.fasta} > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("Aligned_Dengue_1/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_2/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_3/nextalign.aligned.fasta"),
+        output("Aligned_Dengue_4/nextalign.aligned.fasta"),

@@ -1,0 +1,31 @@
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule tree_breakdown:
+    input:
+        tree_file=input("dengue_{serotype}_timetree.nexus"),
+        script=script("DENV_tree_breakdown.py"),
+    output:
+        tsv_file=output("dengue_{serotype}_timetree_extracted.tsv"),
+    conda:
+        env("python_env.yaml")
+    log:
+        log("extract_information_from_tree_{serotype}.log")
+    message:
+        "Extract information from annotated tree ({wildcards.serotype})"
+    shell:
+        """
+        python {input.script} {input.tree_file} {output.tsv_file} > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("dengue_Dengue_1_timetree_extracted.tsv"),
+        output("dengue_Dengue_2_timetree_extracted.tsv"),
+        output("dengue_Dengue_3_timetree_extracted.tsv"),
+        output("dengue_Dengue_4_timetree_extracted.tsv"),

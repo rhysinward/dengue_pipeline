@@ -1,0 +1,54 @@
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
+
+
+rule all:
+    input:
+        expand(
+            output(f"dengue_{serotype}.json"),
+            serotype=serotype,
+        ),
+
+
+"""Exporting data files for auspice"""
+
+
+rule export:
+    input:
+        tree=input("timetree_{serotype}.tree", "treetime"),
+        metadata=input("subsampled_{serotype}_infoTbl.csv", "subsample"),
+        branch_lengths=input("{serotype}_branch_lengths.json", "treetime"),
+        traits=input("traits_{serotype}.json", "mugrations"),
+        aa_muts=input("aa_muts_{serotype}.json", "translation"),
+        nt_muts=input("subsampled_{serotype}_mutations.json", "mutations"),
+        auspice_config=resource("auspice_config.json"),
+    output:
+        auspice_json=output("dengue_{serotype}.json"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("export_{serotype}.log")
+    message:
+        "Export for visualisation in Auspice"
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
+            --auspice-config {input.auspice_config} \
+            --output {output.auspice_json} > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("dengue_Dengue_1.json"),
+        output("dengue_Dengue_2.json"),
+        output("dengue_Dengue_3.json"),
+        output("dengue_Dengue_4.json"),

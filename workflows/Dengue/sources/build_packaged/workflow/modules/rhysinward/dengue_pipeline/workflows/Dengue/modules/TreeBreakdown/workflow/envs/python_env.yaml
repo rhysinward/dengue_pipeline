@@ -1,0 +1,13 @@
+name: py_env
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
+
+dependencies:
+  - python=3.8
+  - ete3
+  - pandas
+  - dendropy
+  - tqdm

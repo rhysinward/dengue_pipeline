@@ -1,0 +1,4 @@
+input_namespace:
+  fasta: treetime
+  metadata: reformatting
+output_namespace: out

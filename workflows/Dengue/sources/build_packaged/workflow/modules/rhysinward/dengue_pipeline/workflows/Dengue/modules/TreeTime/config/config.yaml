@@ -1,0 +1,6 @@
+input_namespace:
+  fasta: treebuilding
+  metadata: reformatting
+output_namespace: out
+params:
+  "Clock filter IQD": 3

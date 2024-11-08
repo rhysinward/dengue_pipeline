@@ -1,0 +1,30 @@
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule extract_phylogenetic_tree:
+    input:
+        json_file=input("dengue_{serotype}.json"),
+        script=script("extract_tree_from_json.py"),
+    output:
+        nexus_file=output("dengue_{serotype}_timetree.nexus"),
+    conda:
+        env("python_env.yaml")
+    log:
+        log("extract_tree_{serotype}.log")
+    message:
+        "Extract annotated tree from nextstrain JSON format ({wildcards.serotype})"
+    shell:
+        """
+        python {input.script} {input.json_file} {output.nexus_file} > {log} 2>&1
+        """
+
+rule _test:
+    input:
+        output("dengue_Dengue_1_timetree.nexus"),
+        output("dengue_Dengue_2_timetree.nexus"),
+        output("dengue_Dengue_3_timetree.nexus"),
+        output("dengue_Dengue_4_timetree.nexus"),

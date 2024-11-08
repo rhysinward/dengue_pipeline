@@ -1,0 +1,38 @@
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule reformatting:
+    input:
+        fasta_file=input("subsampled_{serotype}.fasta"),
+        metadata_file=input("subsampled_{serotype}_infoTbl.csv"),
+        script=script("reformatting_iqtree_treetime.R"),
+    output:
+        cleaned_fasta=output("subsampled_{serotype}.fasta"),
+        cleaned_metadata=output("subsampled_{serotype}_infoTbl.csv"),
+    log:
+        log("reformatting_{serotype}.log"),
+    conda:
+        env("reformatting.yaml")
+    message:
+        "Reformat metadata and fasta files into the correct format for iqtree and treetime"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata_file} \
+            --fasta {input.fasta_file} \
+            --output_dir_fasta {output.cleaned_fasta} \
+            --output_dir_csv {output.cleaned_metadata} \
+            > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("subsampled_Dengue_1.fasta"),
+        output("subsampled_Dengue_2.fasta"),
+        output("subsampled_Dengue_3.fasta"),
+        output("subsampled_Dengue_4.fasta"),

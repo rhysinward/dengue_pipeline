@@ -1,0 +1,63 @@
+"""Segregating E gene and Whole Genomes and performing quaility control
+
+This module takes aligned virus sequences and segregates the envelope gene (EG) and whole genomes (WG). It then performs quality control on the sequences.
+
+Params:
+  WG Threshold (number): Whole Genome Threshold
+  EG Threshold (number): Envelope Gene Threshold
+  Serotypes (list of str): List of serotype names (e.g. Dengue_1, etc.)
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule split_genome_and_QC:
+    input:
+        fasta_files=expand(
+            input("Aligned_{serotype}/nextalign.aligned.fasta"),
+            serotype=params("Serotypes"),
+        ),
+        script=script("Seperate_EG_and_WG.R"),
+    output:
+        E_gene_dir=expand(
+            output("{serotype}_EG.fasta"),
+            serotype=params("Serotypes"),
+        ),
+        WG_gene_dir=expand(
+            output("{serotype}_WG.fasta"),
+            serotype=params("Serotypes"),
+        ),
+    params:
+        wg_threshold=params("WG Threshold"),
+        eg_threshold=params("EG Threshold"),
+        indir=input(''),
+        outdir=output(),
+    log:
+        log("split_genome_and_QC.log")
+    message:
+        (
+            "Segregating E gene and whole genomes from aligned Dengue virus sequences "
+            "and performing quality control."
+        )
+    conda:
+        env("conda.yaml")
+    shell:
+        """
+        Rscript {input.script} \
+            --WG_threshold {params.wg_threshold} \
+            --EG_threshold {params.eg_threshold} \
+            --input_dir {params.indir} \
+            --output_dir {params.outdir} \
+            > {log} 2>&1
+        """
+
+
+rule _test:
+    input:
+        output("Dengue_1_EG.fasta"),
+        output("Dengue_2_EG.fasta"),
+        output("Dengue_3_EG.fasta"),
+        output("Dengue_4_EG.fasta"),

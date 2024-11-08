@@ -1,0 +1,7 @@
+input_namespace:
+  treetime: treetime
+  translation: translation
+  subsample: reformatting
+  mutations: mutations
+  mugrations: mugration
+output_namespace: out

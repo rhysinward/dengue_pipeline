@@ -1,0 +1,5 @@
+input_namespace: in
+output_namespace: out
+params:
+  Model: "GTR+F+I"
+  "Command line arguments": "-nt AUTO"
