@@ -1,0 +1,84 @@
+# Set working directory
+setwd("~/rhys/Brazil_phylo/results")
+
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(viridis)
+
+# Read data
+dengue_1 <- read.csv("Unaligned_output/Unaligned_Dengue_1_infoTbl_with_genotype.csv")
+dengue_2 <- read.csv("Unaligned_output/Unaligned_Dengue_2_infoTbl_with_genotype.csv")
+dengue_3 <- read.csv("Unaligned_output/Unaligned_Dengue_3_infoTbl_with_genotype.csv")
+dengue_4 <- read.csv("Unaligned_output/Unaligned_Dengue_4_infoTbl_with_genotype.csv")
+
+# Combine datasets
+all_dengue <- rbind(dengue_1, dengue_2, dengue_3, dengue_4)
+
+# Filter for Brazil data, excluding rows with NA in the "State" column
+brazil_data <- all_dengue %>%
+  filter(Country == "Brazil" & !is.na(State))
+
+
+
+# Calculate yearly cases per genotype per state and compute proportions
+brazil_monthly_data <- brazil_data %>%
+  mutate(Month = floor_date(as.Date(Date), "year")) %>%
+  group_by(State, Month, genotype) %>%
+  summarise(n = n(), .groups = 'drop') %>%
+  mutate(proportion = n / sum(n))  %>%
+  filter(genotype != "unassigned")
+
+write.csv(brazil_data, "brazil_data.csv", row.names = FALSE)
+
+# Save 'brazil_monthly_data' to 'brazil_monthly_data.csv'
+write.csv(brazil_monthly_data, "brazil_monthly_data.csv", row.names = FALSE)
+
+# Create the faceted plot with improved aesthetics
+main_plot <- ggplot(brazil_monthly_data, aes(x = Month, y = proportion, fill = genotype)) +
+  geom_area(position = "fill", colour = "black", linewidth = 0.2) +
+  theme_bw() + 
+  labs(x = "Year", y = 'Proportion of DENV Serotype') +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        text = element_text(size = 12)) + # Adjusted size for clarity
+  facet_wrap(~ State, ncol = 5) # Adjust number of columns as needed
+
+# Print the plot
+print(main_plot)
+
+ggsave("dengue_genotype_proportions.png", main_plot, width = 12, height = 8, dpi = 300)
+
+brazil_data <- brazil_data %>%
+  mutate(Year = year(as.Date(Date, format = "%Y-%m-%d"))) %>%
+  filter(!is.na(Year))
+
+# Calculate the number of sequences per year
+yearly_sequence_counts <- brazil_data %>%
+  group_by(Year) %>%
+  summarise(Sequence_Count = n()) %>%
+  ungroup()
+
+# Create the bar chart with improved aesthetics
+sequence_plot <- ggplot(yearly_sequence_counts, aes(x = Year, y = Sequence_Count)) +
+  geom_bar(stat = "identity", fill = "#69b3a2", color = "black") +
+  scale_x_continuous(breaks = seq(min(yearly_sequence_counts$Year), max(yearly_sequence_counts$Year), by = 1)) +
+  labs(title = "Number of Dengue Virus Sequences Over Time in Brazil",
+       x = "Year",
+       y = "Number of Sequences") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.line = element_line(colour = "black"),
+        text = element_text(family = "Arial"),
+        plot.title = element_text(hjust = 0.5, face = "bold"))
+
+# Print the plot
+print(sequence_plot)
+
+# Save the plot to a file (optional)
+ggsave("dengue_sequence_counts_brazil.png", sequence_plot, width = 10, height = 6, dpi = 300)

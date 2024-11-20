@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - rust-script=0.22
+  - r-base=4.3.2
+  - r-optparse
+  - r-essentials
+  - r-argparse
+  - r-dplyr
+  - r-ggplot2

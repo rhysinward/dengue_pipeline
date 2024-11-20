@@ -1,0 +1,901 @@
+import pandas as pd
+import glob
+import os
+import sys
+import yaml
+import logging
+import csv
+
+def get_max_date(infoTbl):
+    """
+    Reads a CSV file and returns the maximum decimal date from the 'date' column.
+
+    Parameters:
+        infoTbl (str): Path to the CSV file.
+
+    Returns:
+        str or None: The maximum date as a string (e.g., "2020.234") or None if no dates are found.
+    """
+    max_date = None
+    try:
+        with open(infoTbl, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                date_str = row.get('date')
+                if date_str:
+                    try:
+                        date = float(date_str)
+                        if (max_date is None) or (date > max_date):
+                            max_date = date
+                    except ValueError:
+                        # Skip rows with invalid date formats
+                        continue
+    except FileNotFoundError:
+        # Handle the case where the file doesn't exist
+        return None
+
+    if max_date:
+        return str(max_date)
+    else:
+        return None
+        
+# Read configuration
+configfile: "config.yaml"
+
+serotypes = config['serotypes']
+major_lineages = config['major_lineages']
+
+# Setup logging
+logging.basicConfig(
+    filename='logs/snakefile.log',
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s:%(message)s'
+)
+
+logging.info(f"Extracted Major Lineages: {major_lineages}")
+
+# Serotypes
+
+rule all:
+    input:
+        expand("auspice/dengue_{major_lineages}.json", major_lineages=major_lineages),
+        expand("results/fertree/transmission_lineages_{major_lineages}.csv", major_lineages=major_lineages),
+        expand("results/subsampled_{major_lineages}/subsampled_{major_lineages}_pruned.fasta", major_lineages=major_lineages),
+        #expand("results/E_gene_Dengue/{serotype}_EG_filtered.fasta", serotype=serotypes),
+        #expand("results/BEAST_trees/{serotype}/{serotype}_filtered.tre", serotype=serotype),
+        #expand("results/tracer_output/{serotype}/output.pdf", serotype=serotype)
+
+# Rule for creating necessary directories
+
+# Step 1: Acquisition of Genomic Data and Metadata from GenBank
+rule acquire_data:
+    output:
+        zip="data/genbank_data.zip",
+        metadata="data/metadata.tsv",
+        fasta="data/ncbi_dataset/data/genomic.fna"
+    params:
+        date = "01/01/2000"
+    log:
+        "logs/acquire_data.log"
+    message:
+        "Acquiring Genomic Data and Metadata from NCBI database"
+    conda:
+        "config/ncbi_datasets_env.yaml"
+    shell:
+        """
+        datasets download virus genome taxon "Dengue Virus" --filename {output.zip} --released-after {params.date} &> {log}
+        datasets summary virus genome taxon "Dengue Virus" --released-after {params.date} --as-json-lines | dataformat tsv virus-genome > {output.metadata} 2>> {log}
+        
+        # Unzip the downloaded data
+        unzip -o -d data {output.zip}
+        """
+
+
+# Step 2a: Clean metadata and FASTA
+rule process_genbank_data:
+    input:
+        script="code/clean_metadata_and_fasta_general.R",
+        metadata="data/metadata.tsv",
+        fasta="data/ncbi_dataset/data/genomic.fna"
+    output:
+        fasta_files ="results/clean_metadata_and_fasta/Unaligned.fasta",
+        info_tables_txt ="results/clean_metadata_and_fasta/infoTbl.txt",
+        info_tables_csv ="results/clean_metadata_and_fasta/infoTbl.csv"
+    params:
+        start_date = "2000-01-01",
+        end_date = "2024-11-18",
+        host = "Homo sapiens"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/process_genomic_data_genbank.log"
+    message:
+        "Processing and cleaning data downloaded from NCBI"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --start_date {params.start_date} \
+            --end_date {params.end_date} \
+            --host "{params.host}" \
+            --outfile_fasta {output.fasta_files} \
+            --outfile_csv {output.info_tables_csv} \
+            --outfile_tsv {output.info_tables_txt} \
+            > {log} 2>&1
+        """
+
+# Step 2b (optional): Clean metadata and FASTA from GISAID
+rule process_data_GISAID:
+    input:
+        script="code/clean_metadata_and_fasta_GISAID.R",
+        metadata="data/gisaid_arbo_2024_11_18_17.tsv",
+        fasta="data/gisaid_arbo_2024_11_18_17.fasta"
+    output:
+        fasta_files ="results/clean_metadata_and_fasta_gisaid/Unaligned_gisaid.fasta",
+        info_tables_txt ="results/clean_metadata_and_fasta_gisaid/infoTbl_gisaid.txt",
+        info_tables_csv ="results/clean_metadata_and_fasta_gisaid/infoTbl_gisaid.csv"
+    params:
+        start_date = "2000-01-01",
+        end_date = "2024-11-18",
+        host = "Human"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/process_genomic_data_gisaid.log"
+    message:
+        "Processing and cleaning data downloaded from GISAID"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --start_date {params.start_date} \
+            --end_date {params.end_date} \
+            --host "{params.host}" \
+            --outfile_fasta {output.fasta_files} \
+            --outfile_csv {output.info_tables_csv} \
+            --outfile_tsv {output.info_tables_txt} \
+            > {log} 2>&1
+        """
+        
+# Step 2c: Merge GenBank and GISAID data and remove duplicates
+rule merge_genbank_gisaid_data:
+    input:
+        fasta_genbank="results/clean_metadata_and_fasta/Unaligned.fasta",
+        metadata_genbank="results/clean_metadata_and_fasta/infoTbl.csv",
+        fasta_gisaid="results/clean_metadata_and_fasta_gisaid/Unaligned_gisaid.fasta",
+        metadata_gisaid="results/clean_metadata_and_fasta_gisaid/infoTbl_gisaid.csv",
+        script="code/remove_duplicates_genbank_gisaid.R"
+    output:
+        merged_fasta="results/merged_data/merged_sequences.fasta",
+        merged_metadata="results/merged_data/merged_metadata.csv"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/merge_genbank_gisaid_data.log"
+    message:
+        "Merging GenBank and GISAID data, removing duplicates across sources."
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata_genbank {input.metadata_genbank} \
+            --metadata_gisaid {input.metadata_gisaid} \
+            --fasta_genbank {input.fasta_genbank} \
+            --fasta_gisaid {input.fasta_gisaid} \
+            --outfile_fasta {output.merged_fasta} \
+            --outfile_csv {output.merged_metadata} \
+            > {log} 2>&1
+        """
+        
+# Step 4: Split into serotype, add serotypes to sequence name and generate sequence specific metadata
+rule process_dengue_data:
+    input:
+        script="code/split_dengue.R",
+        metadata="results/merged_data/merged_metadata.csv",
+        fasta="results/merged_data/merged_sequences.fasta"
+    output:
+        fasta = "results/Unaligned_output/Unaligned_{serotype}.fasta",
+        csv = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
+        tsv = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.txt"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/process_data_{serotype}.log"
+    message:
+        "Split into serotype, add serotypes to sequence name and generate sequence specific metadata"
+    shell:
+        """
+        mkdir -p results/Unaligned_output/
+        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --outfile results/Unaligned_output/Unaligned_ > {log} 2>&1
+        """
+
+# Step 5: Asign Genotype Using Nextclade
+rule assign_serotype_and_genotype_nextclade:
+    input:
+        dataset="dengue-lineages-workflow/datasets/{serotype}",
+        fasta = "results/Unaligned_output/Unaligned_{serotype}.fasta"
+    output:
+        csv="results/nextclade_output_{serotype}/nextclade.csv"
+    params:
+        outdir = "results/nextclade_output_{serotype}/"
+    conda:
+        "config/nextstrain_all.yaml"
+    log:
+        "logs/assign_serotype_and_genotype_{serotype}.log"
+    message:
+        "Split into serotype, add serotypes to sequence name and generate sequence specific metadata"
+    shell:
+        """
+        mkdir -p {params.outdir}
+        nextclade run \
+            --input-dataset {input.dataset} \
+            --output-all={params.outdir} \
+            {input.fasta} > {log} 2>&1
+        """
+
+# Step 6: add genotype + lineage information to metadata
+rule add_genotype_information:
+    input:
+        script="code/add_genotype_information_to_metadata.R",
+        metadata="results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
+        genotype="results/nextclade_output_{serotype}/nextclade.csv"
+    output:
+        csv="results/Unaligned_output/Unaligned_{serotype}_infoTbl_with_genotype.csv"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/Unaligned_{serotype}_add_genotype.log"
+    message:
+        "Add genotype information to metadata for {wildcards.serotype}"
+    shell:
+        """
+        Rscript {input.script} --metadata {input.metadata} --genotype {input.genotype} --outfile_csv {output.csv} > {log} 2>&1
+        """
+
+# Step 7: Sequence alignment
+rule sequence_alignment:
+    input:
+        sequences="results/Unaligned_output/Unaligned_{serotype}.fasta",
+        reference="reference_genomes/reference_{serotype}.fasta",
+        genemap="genemap/genemap_{serotype}.gff"
+    output:
+        fasta="results/Aligned_{serotype}/nextalign.aligned.fasta"
+    log:
+        "logs/sequence_alignment_{serotype}.log"
+    conda:
+        "config/alignment.yaml"
+    message:
+        "Running sequence alignment for Dengue serotypes"
+    shell:
+        """
+        mkdir -p results/Aligned_{wildcards.serotype}/data
+        nextalign run \
+            {input.sequences} \
+            --reference={input.reference} \
+            --genemap={input.genemap} \
+            --output-fasta={output.fasta} > {log} 2>&1
+        """
+
+# Step 8: Segregating E gene and Whole Genomes and performing quaility control
+rule split_genome_and_QC:
+    input:
+        fasta_files = "results/Aligned_{serotype}/nextalign.aligned.fasta"
+    output:
+        E_gene_dir = "results/E_gene_Dengue/{serotype}_EG.fasta",
+        WG_gene_dir = "results/WG_Dengue/{serotype}_WG.fasta"
+    params:
+        wg_threshold = 0.31,
+        eg_threshold = 0.31
+    log:
+        "logs/Segregating_{serotype}.log"
+    conda:
+        "config/alignment.yaml"
+    message:
+        "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
+    shell:
+        """
+        Rscript code/Seperate_EG_and_WG.R --fasta {input.fasta_files} --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold} --outfile_fasta_eg {output.E_gene_dir} --outfile_fasta_wg {output.WG_gene_dir} > {log} 2>&1
+        """
+        
+# Step 9: remove small serotypes, genotypes, major or minor lineages based on target country
+rule filter_genotypes_data:
+    input:
+        script="code/filter_classification.R",
+        metadata="results/Unaligned_output/Unaligned_{serotype}_infoTbl_with_genotype.csv",
+        fasta="results/E_gene_Dengue/{serotype}_EG.fasta"
+    output:
+        fasta = "results/E_gene_Dengue/{serotype}_EG_filtered.fasta",
+        csv = "results/Unaligned_output/Unaligned_{serotype}_infoTbl_with_genotype_filtered.csv"
+    params:
+        min_count = 100,
+        target = "Africa",
+        classification = "Major_Lineage"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/filter_genotype_data_{serotype}.log"
+    message:
+        "Filtering small genotypes {wildcards.serotype}"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --fasta_outfile {output.fasta} \
+            --min_count {params.min_count} \
+            --target {params.target} \
+            --classification {params.classification} \
+            --csv_outfile {output.csv} \
+            > {log} 2>&1
+        """
+
+# Step 9: Partition into Genotypes 
+
+# Define the mapping of major lineages to serotypes
+major_lineage_serotype_map = {
+    'unassigned': 'Dengue_1',
+    '1III_A': 'Dengue_1',
+    '1III_B': 'Dengue_1',
+    '1IV_A': 'Dengue_1',
+    '1IV_B': 'Dengue_1',
+    '1IV_C': 'Dengue_1',
+    '1I_A': 'Dengue_1',
+    '1I_B': 'Dengue_1',
+    '1I_C': 'Dengue_1',
+    '1I_D': 'Dengue_1',
+    '1I_E': 'Dengue_1',
+    '1I_F': 'Dengue_1',
+    '1I_G': 'Dengue_1',
+    '1I_H': 'Dengue_1',
+    '1I_J': 'Dengue_1',
+    '1I_K': 'Dengue_1',
+    '1VII_A': 'Dengue_1',
+    '1VII_B': 'Dengue_1',
+    '1V_A': 'Dengue_1',
+    '1V_B': 'Dengue_1',
+    '1V_C': 'Dengue_1',
+    '1V_D': 'Dengue_1',
+    '1V_E': 'Dengue_1',
+    '1V_F': 'Dengue_1',
+    '1V_G': 'Dengue_1',
+    '1V_H': 'Dengue_1',
+    '1V_J': 'Dengue_1',
+    '2III_A': 'Dengue_2',
+    '2III_B': 'Dengue_2',
+    '2III_C': 'Dengue_2',
+    '2III_D': 'Dengue_2',
+    '2III_E': 'Dengue_2',
+    '2II_A': 'Dengue_2',
+    '2II_B': 'Dengue_2',
+    '2II_C': 'Dengue_2',
+    '2II_D': 'Dengue_2',
+    '2II_E': 'Dengue_2',
+    '2II_F': 'Dengue_2',
+    '2V_A': 'Dengue_2',
+    '2V_B': 'Dengue_2',
+    '2V_C': 'Dengue_2',
+    '2V_D': 'Dengue_2',
+    '2V_E': 'Dengue_2',
+    '3III_A': 'Dengue_3',
+    '3III_B': 'Dengue_3',
+    '3III_C': 'Dengue_3',
+    '3II_A': 'Dengue_3',
+    '3II_B': 'Dengue_3',
+    '3I_A': 'Dengue_3',
+    '3I_B': 'Dengue_3',
+    '3I_C': 'Dengue_3',
+    '4II_A': 'Dengue_4',
+    '4II_B': 'Dengue_4',
+    '4I_A': 'Dengue_4',
+    '4I_B': 'Dengue_4',
+}
+
+rule split_genotype:
+    input:
+        metadata=lambda wildcards: f"results/Unaligned_output/Unaligned_{major_lineage_serotype_map[wildcards.major_lineages]}_infoTbl_with_genotype_filtered.csv",
+        fasta=lambda wildcards: f"results/E_gene_Dengue/{major_lineage_serotype_map[wildcards.major_lineages]}_EG_filtered.fasta"
+    output:
+        fasta="results/major_lineages_specific/{major_lineages}.fasta",
+        metadata_tsv="results/major_lineages_specific/{major_lineages}_infoTbl.tsv",
+        metadata_csv="results/major_lineages_specific/{major_lineages}_infoTbl.csv"
+    params:
+        outfile="results/major_lineages_specific/"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/split_genotype_{major_lineages}.log"
+    shell:
+        """
+        Rscript code/split_genotype.r \
+          --metadata {input.metadata} \
+          --fasta {input.fasta} \
+          --outfile {params.outfile} > {log} 2>&1
+        """
+        
+# Rule: Sampling (Background)
+
+rule subsample:
+    input:
+        fasta_file = "results/major_lineages_specific/{major_lineages}.fasta",
+        metadata_file = "results/major_lineages_specific/{major_lineages}_infoTbl.csv",
+        location_local = "data/number_of_sequences.csv"
+    output:
+        subsample_fasta = "results/subsampled_{major_lineages}/subsampled_{major_lineages}.fasta",
+        subsample_csv = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl.csv"
+    params:
+        number_sequences_local = "all",
+        number_sequences_background =0.3,
+        time_interval = "Year",
+        sampling_method = "Even",
+        outfile_fasta_csv = "results/subsampled_{major_lineages}/subsampled_{major_lineages}",
+        outfile_plots = "results/subsampled_{major_lineages}/{major_lineages}_"
+    log:
+        "logs/subsample_{major_lineages}.log"
+    conda:
+        "config/r_env.yaml" 
+    message:
+        "Subsampling major_lineages virus E gene sequences based on specified criteria."
+    shell:
+        """
+        Rscript code/subsampler_genotype.R \
+          --metadata {input.metadata_file} \
+          --fasta {input.fasta_file} \
+          --time_interval {params.time_interval} \
+          --location_local {input.location_local} \
+          --number_sequences_local {params.number_sequences_local} \
+          --number_sequences_background {params.number_sequences_background} \
+          --sampling_method {params.sampling_method} \
+          --outfile_plots {params.outfile_plots} \
+          --outfile_fasta_csv {params.outfile_fasta_csv}  > {log} 2>&1
+        """
+
+# Rule: Reformat for IQTREE
+
+rule reformatting:
+    input:
+        fasta_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}.fasta",
+        metadata_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl.csv"
+    output:
+        cleaned_fasta = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
+        cleaned_metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    conda:
+        "config/r_env.yaml"
+    log:
+        "logs/reformatting_{major_lineages}.log"    
+    message:
+        "Correcting metadata and FASTA files into the correct format for IQ-TREE and TreeTime for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        Rscript code/reformatting_iqtree_treetime.R --metadata {input.metadata_file} --fasta {input.fasta_file} --output_dir_fasta {output.cleaned_fasta} --output_dir_csv {output.cleaned_metadata} > {log} 2>&1
+        """
+
+# Rule: Tree Building with IQ-TREE
+rule treebuilding:
+    input:
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta"
+    output:
+        tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile"
+    params:
+        prefix = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned",
+        model = "HKY+F+I"
+    conda:
+        "config/iqtree.yaml"
+    log:
+        "logs/iqtree_{major_lineages}.log"
+    message:
+        "Inferring maximum likelihood phylogenetic trees for major_lineages {wildcards.major_lineages} using IQ-TREE."
+    shell:
+        """
+        iqtree2 -s {input.aln} -m {params.model} -pre {params.prefix} -redo > {log} 2>&1
+        """
+
+# Rule: Building Time-Calibrated Trees
+rule treetime:
+    input:
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
+        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        tree = "results/timetrees/timetree_{major_lineages}.tree",
+        branch_lengths = "results/timetrees/{major_lineages}_branch_lengths.json"
+    conda:
+        "config/nextstrain_all.yaml"
+    params:
+        clock_filter = 3,
+        clock_rate = 8.0e-4,      
+        clock_rate_std = 4e-4
+    log:
+        "logs/treetime_{major_lineages}.log"
+    message:
+        "Inferring time-calibrated trees for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        augur refine \
+            --tree {input.ml_tree} \
+            --alignment {input.aln} \
+            --metadata {input.metadata} \
+            --output-tree {output.tree} \
+            --output-node-data {output.branch_lengths} \
+            --timetree \
+            --coalescent opt \
+            --date-confidence \
+            --clock-filter-iqd {params.clock_filter} \
+            --root best > {log} 2>&1
+        """
+
+# Rule: Mutations
+rule mutations:
+    input:
+        aln = "results/major_lineages_specific/{major_lineages}.fasta",
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree"
+    output:
+        mutations = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json"
+    conda:
+        "config/nextstrain_all.yaml"
+    log:
+        "logs/mutations_{major_lineages}.log"
+    message:
+        "Infer ancestral mutations across the tree for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        augur ancestral \
+            --tree {input.time_tree} \
+            --alignment {input.aln} \
+            --output-node-data {output.mutations} \
+            --inference joint > {log} 2>&1
+        """
+
+# Rule: Translate Sequences
+rule translation:
+    input:
+        mutations = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json",
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree",
+        ref_genomes = lambda wildcards: f"reference_genomes/reference_{major_lineage_serotype_map[wildcards.major_lineages]}.gb"
+    output:
+        amino = "results/auspice_files/aa_muts_{major_lineages}.json"
+    conda:
+        "config/nextstrain_all.yaml"
+    log:
+        "logs/translations_{major_lineages}.log"
+    params:
+        genes = "E"
+    message:
+        "Translating sequences for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        augur translate \
+            --tree {input.time_tree} \
+            --ancestral-sequences {input.mutations} \
+            --reference-sequence {input.ref_genomes} \
+            --genes {params.genes} \
+            --output {output.amino} > {log} 2>&1
+        """
+        
+# Rule: Discrete Trait Reconstruction (Mugration)
+rule mugration:
+    input:
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        traits = "results/auspice_files/traits_{major_lineages}.json"
+    conda:
+        "config/nextstrain_all.yaml"
+    log:
+        "logs/mugration_{major_lineages}.log"
+    message:
+        "Performing discrete trait reconstruction for genotype {wildcards.major_lineages}."
+    shell:
+        """
+        augur traits \
+            --tree {input.time_tree} \
+            --metadata {input.metadata} \
+            --columns Country State \
+            --confidence \
+            --output {output.traits} > {log} 2>&1
+        """
+
+# Rule: Exporting Data for Auspice Visualization
+rule export:
+    input:
+        tree = "results/timetrees/timetree_{major_lineages}.tree",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv",
+        branch_lengths = "results/timetrees/{major_lineages}_branch_lengths.json",
+        traits = "results/auspice_files/traits_{major_lineages}.json",
+        aa_muts = "results/auspice_files/aa_muts_{major_lineages}.json",
+        nt_muts = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json",
+        auspice_config = "config/auspice_config.json",
+    output:
+        auspice_json = "auspice/dengue_{major_lineages}.json"
+    conda:
+        "config/nextstrain_all.yaml"
+    log:
+        "logs/export_{major_lineages}.log"
+    message:
+        "Exporting data for visualization in Auspice for genotype {wildcards.major_lineages}."
+    shell:
+        """
+        augur export v2 \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
+            --auspice-config {input.auspice_config} \
+            --output {output.auspice_json} > {log} 2>&1
+        """
+        
+#Rule: Run tree time outside of nextstrain
+
+rule treetime_non_nextstrain:
+    input:
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
+        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/timetree.nexus",
+        outliers = "results/timetrees_non_nextstrain/timetree_{major_lineages}/outliers.tsv",
+    conda:
+        "config/treetime.yaml"
+    params:
+        clock_filter = 0,
+        clock_rate = 8.0e-4,      
+        clock_rate_std = 4e-4
+    log:
+        "logs/treetime_non_nextstrain_{major_lineages}.log"
+    message:
+        "Inferring time-calibrated trees for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        treetime \
+            --aln {input.aln} \
+            --tree {input.ml_tree} \
+            --dates {input.metadata} \
+            --clock-rate {params.clock_rate} \
+            --clock-std-dev {params.clock_rate_std} \
+            --clock-filter 0 \
+            --outdir results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages} \
+            > {log} 2>&1
+            
+                    if [ ! -s results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv ]; then
+            echo -e "given_date\tapparent_date\tresidual" > results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv
+        fi
+        """
+        
+#Rule: Remove outliars
+
+rule prune_tree:
+    input:
+        outliers = "results/timetrees_non_nextstrain/timetree_{major_lineages}/outliers.tsv",
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/timetree.nexus"
+    output:
+        pruned_tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus"
+    log:
+        "logs/prune_{major_lineages}_tree.log"
+    container:
+        "docker://evolbioinfo/gotree:v0.2.8b"
+    shell:
+        """
+        gotree prune \
+            -f {input.outliers} \
+            -i {input.tree} \
+            --format nexus 1> {output.pruned_tree} 2> {log}
+        """
+        
+#Rule: updated metadata and fasta file without incongurent sequences
+
+rule remove_incongruent_sequences:
+    input:
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
+        ml_tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        pruned_fasta = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_pruned.fasta",
+        pruned_csv = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl_pruned.csv"
+    log:
+        "logs/remove_incongruent_sequences_{major_lineages}.log"
+    conda:
+        "config/r_env.yaml"
+    shell:
+        """
+        Rscript code/remove_incongruent_sequences.R \
+            --fasta {input.aln} \
+            --tree {input.ml_tree} \
+            --metadata {input.metadata} \
+            --outfile results/subsampled_{wildcards.major_lineages}/subsampled_{wildcards.major_lineages} \
+            > {log} 2>&1
+        """
+        
+#Rule: Run treetime mugration model - country
+
+rule mugration_country:
+    input:
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        mugration = "results/mugration/mugration_country_{major_lineages}/annotated_tree.nexus"
+    conda:
+        "config/treetime.yaml"
+    params:
+        # The name of the metadata column representing the discrete trait (e.g., 'Country')
+        attribute = "Country"
+    log:
+        "logs/mugration_{major_lineages}_country.log"
+    message:
+        "Performing mugration analysis for major_lineages {wildcards.major_lineages} using the 'country' trait."
+    shell:
+        """
+        mkdir -p results/mugration/mugration_country_{wildcards.major_lineages}
+        treetime mugration \
+            --tree {input.tree} \
+            --states {input.metadata} \
+            --attribute {params.attribute} \
+            --outdir results/mugration/mugration_country_{wildcards.major_lineages} \
+            > {log} 2>&1
+        """
+
+#Rule: Run treetime mugration model - state
+
+rule mugration_state:
+    input:
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        mugration = "results/mugration/mugration_state_{major_lineages}/annotated_tree.nexus"
+    conda:
+        "config/treetime.yaml"
+    params:
+        # The name of the metadata column representing the discrete trait (e.g., 'State')
+        attribute = "State"
+    log:
+        "logs/mugration_{major_lineages}_state.log"
+    message:
+        "Performing mugration analysis for major_lineages {wildcards.major_lineages} using the 'state' trait."
+    shell:
+        """
+        mkdir -p results/mugration/mugration_state_{wildcards.major_lineages}
+        treetime mugration \
+            --tree {input.tree} \
+            --states {input.metadata} \
+            --attribute {params.attribute} \
+            --outdir results/mugration/mugration_state_{wildcards.major_lineages} \
+            > {log} 2>&1
+        """
+
+
+# Rule: Extract imports and exports for the 'country' trait
+rule extract_tree_events_country:
+    input:
+        tree_file="results/mugration/mugration_country_{major_lineages}/annotated_tree.nexus",
+        metadata="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        events_file="results/tree_events/{major_lineages}/annotated_tree_events_country.csv"
+    conda:
+      "config/python.yaml"
+    log:
+        "logs/extract_tree_events_country_{major_lineages}.log"
+    shell:
+        """
+        python code/AncestralChanges.py \
+            --input {input.tree_file} \
+            --metadata {input.metadata} \
+            --output {output.events_file} \
+            --trait Country \
+            > {log} 2>&1
+        """
+
+# Rule: Extract imports and exports for the 'State' trait
+rule extract_tree_events_state:
+    input:
+        tree_file="results/mugration/mugration_state_{major_lineages}/annotated_tree.nexus",
+        metadata="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        events_file="results/tree_events/{major_lineages}/annotated_tree_events_state.csv"
+    conda:
+      "config/python.yaml"
+    log:
+        "logs/extract_tree_events_state_{major_lineages}.log"
+    shell:
+        """
+        python code/AncestralChanges.py \
+            --input {input.tree_file} \
+            --metadata {input.metadata} \
+            --output {output.events_file} \
+            --trait State \
+            > {log} 2>&1
+        """
+
+# Rule: Plot viral movements using the processed events file
+rule plot_viral_movements:
+    input:
+        events_file="results/tree_events/{major_lineages}/annotated_tree_events_country.csv"
+    output:
+        plot_file="results/plots/{major_lineages}/viral_movements_map.png"
+    conda:
+        "config/r_env_maps.yaml"  
+    log:
+        "logs/plot_viral_movements_{major_lineages}.log"
+    params:
+        script="code/plot_viral_movements.R"
+    shell:
+        """
+        Rscript {params.script} \
+            --input {input.events_file} \
+            --output {output.plot_file} \
+            > {log} 2>&1
+        """
+        
+# Rule: Continent level mugration 
+
+rule mugration_Continent:
+    input:
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+    output:
+        mugration = "results/mugration/mugration_continent_{major_lineages}/annotated_tree.nexus"
+    conda:
+        "config/treetime.yaml"
+    params:
+        # The name of the metadata column representing the discrete trait (e.g., 'Country')
+        attribute = "Continent"
+    log:
+        "logs/mugration_{major_lineages}_Continent.log"
+    message:
+        "Performing mugration analysis for major_lineages {wildcards.major_lineages} using the 'Continent' trait."
+    shell:
+        """
+        treetime mugration \
+            --tree {input.tree} \
+            --states {input.metadata} \
+            --attribute {params.attribute} \
+            --outdir results/mugration/mugration_continent_{wildcards.major_lineages} \
+            > {log} 2>&1
+        """
+        
+# Use Fertree to extract transmission lineages within each major lineage (removes singletons)
+rule Fertree:
+    input:
+        process_script="code/process_fertree_output.R",
+        dta_tree="results/mugration/mugration_continent_{major_lineages}/annotated_tree.nexus",
+        infoTbl="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv",
+    output:
+        tl_table="results/fertree/transmission_lineages_{major_lineages}.csv",
+    conda:
+        "config/rust.yaml"
+    params:
+        spatial_scale="Continent",
+        location="Africa",
+        outfile="results/fertree/transmission_lineages_{major_lineages}.csv",
+        origin_time=lambda wildcards, input: get_max_date(input.infoTbl),
+    log:
+        "logs/fertree_{major_lineages}.log"
+    message:
+        "Extracting transmission lineages for major_lineages {wildcards.major_lineages} using Fertree."
+    shell:
+        """
+        rm -rf fertree
+        git clone https://github.com/jtmccr1/fertree.git
+        # Step 1: Clone the fertree repository
+        cd fertree
+
+        # Step 2: Checkout the specific commit to avoid installation bugs
+        git checkout 5c7947d
+
+        # Step 3: Install fertree using Cargo
+        cargo install --path . --root "$PWD/../fertree_install"
+
+        # Step 4: Define the path to the installed fertree binary
+        fertree_bin="$PWD/../fertree_install/bin/fertree"
+
+        cd ..
+
+        # Step 5: Run fertree to extract transmission lineages
+        "$fertree_bin" transmission-lineages \
+            -k {params.spatial_scale} \
+            -t {params.location} \
+            -o {params.origin_time} \
+            -i {input.dta_tree} --taxa -n > {params.outfile} 2> {log}
+        """
+
+#retrive and select sequences and metadata from large transmission lineages with the major lineages
+
+#need to think about this more .... 
+

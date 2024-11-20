@@ -1,0 +1,12 @@
+input_namespace:
+  file: file
+  end: end
+output_namespace: out
+params:
+  filename: data.txt
+  cols: ""
+  joint: ""
+  interval: 60
+  "Update on modify": true
+  "End trigger file": trigger
+  "Ready trigger file": ready

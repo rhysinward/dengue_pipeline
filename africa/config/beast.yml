@@ -1,0 +1,8 @@
+channels:
+  - bioconda/label/cf201901
+  - conda-forge
+dependencies:
+  - java-jdk==8.0.112
+  - beagle==4.1_21Jan17.6cc.jar
+  - beast==1.10.4
+  - python==3.9

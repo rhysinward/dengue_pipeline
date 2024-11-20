@@ -1,0 +1,8 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - openjdk
+  - beagle-lib=3.1.2
+  - beast=1.10.4
+
