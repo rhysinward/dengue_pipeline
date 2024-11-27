@@ -1,0 +1,267 @@
+configfile: "config/config.yaml"
+
+module plotviralmovements_1:
+    snakefile:
+        config["plotviralmovements_1"]["snakefile"]
+    config:
+        config["plotviralmovements_1"]["config"]
+use rule * from plotviralmovements_1 exclude _test as plotviralmovements_1_*
+
+module treetimemugrationcontinent:
+    snakefile:
+        config["treetimemugrationcontinent"]["snakefile"]
+    config:
+        config["treetimemugrationcontinent"]["config"]
+use rule * from treetimemugrationcontinent exclude _test as treetimemugrationcontinent_*
+
+module treetimemugrationstate:
+    snakefile:
+        config["treetimemugrationstate"]["snakefile"]
+    config:
+        config["treetimemugrationstate"]["config"]
+use rule * from treetimemugrationstate exclude _test as treetimemugrationstate_*
+
+module determinetargets_1:
+    snakefile:
+        config["determinetargets_1"]["snakefile"]
+    config:
+        config["determinetargets_1"]["config"]
+use rule * from determinetargets_1 exclude _test as determinetargets_1_*
+
+module determinetargets:
+    snakefile:
+        config["determinetargets"]["snakefile"]
+    config:
+        config["determinetargets"]["config"]
+use rule * from determinetargets exclude _test as determinetargets_*
+
+module mergegenbankgisaid:
+    snakefile:
+        config["mergegenbankgisaid"]["snakefile"]
+    config:
+        config["mergegenbankgisaid"]["config"]
+use rule * from mergegenbankgisaid exclude _test as mergegenbankgisaid_*
+
+module processdenguedata:
+    snakefile:
+        config["processdenguedata"]["snakefile"]
+    config:
+        config["processdenguedata"]["config"]
+use rule * from processdenguedata exclude _test as processdenguedata_*
+
+module processgenbankdata:
+    snakefile:
+        config["processgenbankdata"]["snakefile"]
+    config:
+        config["processgenbankdata"]["config"]
+use rule * from processgenbankdata exclude _test as processgenbankdata_*
+
+module downloadgenbank:
+    snakefile:
+        config["downloadgenbank"]["snakefile"]
+    config:
+        config["downloadgenbank"]["config"]
+use rule * from downloadgenbank exclude _test as downloadgenbank_*
+
+module linklocalfolder:
+    snakefile:
+        config["linklocalfolder"]["snakefile"]
+    config:
+        config["linklocalfolder"]["config"]
+use rule * from linklocalfolder exclude _test as linklocalfolder_*
+
+module sequencealignment:
+    snakefile:
+        config["sequencealignment"]["snakefile"]
+    config:
+        config["sequencealignment"]["config"]
+use rule * from sequencealignment exclude _test as sequencealignment_*
+
+module splitgenomeandqc:
+    snakefile:
+        config["splitgenomeandqc"]["snakefile"]
+    config:
+        config["splitgenomeandqc"]["config"]
+use rule * from splitgenomeandqc exclude _test as splitgenomeandqc_*
+
+module assignserotypeandgenotypenextclade:
+    snakefile:
+        config["assignserotypeandgenotypenextclade"]["snakefile"]
+    config:
+        config["assignserotypeandgenotypenextclade"]["config"]
+use rule * from assignserotypeandgenotypenextclade exclude _test as assignserotypeandgenotypenextclade_*
+
+module addgenotypeinformation:
+    snakefile:
+        config["addgenotypeinformation"]["snakefile"]
+    config:
+        config["addgenotypeinformation"]["config"]
+use rule * from addgenotypeinformation exclude _test as addgenotypeinformation_*
+
+module filtergenotypesdata:
+    snakefile:
+        config["filtergenotypesdata"]["snakefile"]
+    config:
+        config["filtergenotypesdata"]["config"]
+use rule * from filtergenotypesdata exclude _test as filtergenotypesdata_*
+
+module partitionintogenotypes:
+    snakefile:
+        config["partitionintogenotypes"]["snakefile"]
+    config:
+        config["partitionintogenotypes"]["config"]
+use rule * from partitionintogenotypes exclude _test as partitionintogenotypes_*
+
+module subsamplelineages:
+    snakefile:
+        config["subsamplelineages"]["snakefile"]
+    config:
+        config["subsamplelineages"]["config"]
+use rule * from subsamplelineages exclude _test as subsamplelineages_*
+
+module processgisaiddata:
+    snakefile:
+        config["processgisaiddata"]["snakefile"]
+    config:
+        config["processgisaiddata"]["config"]
+use rule * from processgisaiddata exclude _test as processgisaiddata_*
+
+module reformatting:
+    snakefile:
+        config["reformatting"]["snakefile"]
+    config:
+        config["reformatting"]["config"]
+use rule * from reformatting exclude _test as reformatting_*
+
+module treebuilding:
+    snakefile:
+        config["treebuilding"]["snakefile"]
+    config:
+        config["treebuilding"]["config"]
+use rule * from treebuilding exclude _test as treebuilding_*
+
+module treetime:
+    snakefile:
+        config["treetime"]["snakefile"]
+    config:
+        config["treetime"]["config"]
+use rule * from treetime exclude _test as treetime_*
+
+module mutations:
+    snakefile:
+        config["mutations"]["snakefile"]
+    config:
+        config["mutations"]["config"]
+use rule * from mutations exclude _test as mutations_*
+
+module rename:
+    snakefile:
+        config["rename"]["snakefile"]
+    config:
+        config["rename"]["config"]
+use rule * from rename exclude _test as rename_*
+
+module triggermark:
+    snakefile:
+        config["triggermark"]["snakefile"]
+    config:
+        config["triggermark"]["config"]
+use rule * from triggermark exclude _test as triggermark_*
+
+module mugration:
+    snakefile:
+        config["mugration"]["snakefile"]
+    config:
+        config["mugration"]["config"]
+use rule * from mugration exclude _test as mugration_*
+
+module export:
+    snakefile:
+        config["export"]["snakefile"]
+    config:
+        config["export"]["config"]
+use rule * from export exclude _test as export_*
+
+module translation:
+    snakefile:
+        config["translation"]["snakefile"]
+    config:
+        config["translation"]["config"]
+use rule * from translation exclude _test as translation_*
+
+module treetimebioconda:
+    snakefile:
+        config["treetimebioconda"]["snakefile"]
+    config:
+        config["treetimebioconda"]["config"]
+use rule * from treetimebioconda exclude _test as treetimebioconda_*
+
+module prunetree:
+    snakefile:
+        config["prunetree"]["snakefile"]
+    config:
+        config["prunetree"]["config"]
+use rule * from prunetree exclude _test as prunetree_*
+
+module removeincongruentsequences:
+    snakefile:
+        config["removeincongruentsequences"]["snakefile"]
+    config:
+        config["removeincongruentsequences"]["config"]
+use rule * from removeincongruentsequences exclude _test as removeincongruentsequences_*
+
+module treetimemugrationcountry:
+    snakefile:
+        config["treetimemugrationcountry"]["snakefile"]
+    config:
+        config["treetimemugrationcountry"]["config"]
+use rule * from treetimemugrationcountry exclude _test as treetimemugrationcountry_*
+
+module extracttreeeventscountry:
+    snakefile:
+        config["extracttreeeventscountry"]["snakefile"]
+    config:
+        config["extracttreeeventscountry"]["config"]
+use rule * from extracttreeeventscountry exclude _test as extracttreeeventscountry_*
+
+module extracttreeeventsstate:
+    snakefile:
+        config["extracttreeeventsstate"]["snakefile"]
+    config:
+        config["extracttreeeventsstate"]["config"]
+use rule * from extracttreeeventsstate exclude _test as extracttreeeventsstate_*
+
+module plotviralmovements:
+    snakefile:
+        config["plotviralmovements"]["snakefile"]
+    config:
+        config["plotviralmovements"]["config"]
+use rule * from plotviralmovements exclude _test as plotviralmovements_*
+
+module fertree:
+    snakefile:
+        config["fertree"]["snakefile"]
+    config:
+        config["fertree"]["config"]
+use rule * from fertree exclude _test as fertree_*
+
+module determinetargets_2:
+    snakefile:
+        config["determinetargets_2"]["snakefile"]
+    config:
+        config["determinetargets_2"]["config"]
+use rule * from determinetargets_2 exclude _test as determinetargets_2_*
+
+module determinetargets_3:
+    snakefile:
+        config["determinetargets_3"]["snakefile"]
+    config:
+        config["determinetargets_3"]["config"]
+use rule * from determinetargets_3 exclude _test as determinetargets_3_*
+
+module determinetargets_4:
+    snakefile:
+        config["determinetargets_4"]["snakefile"]
+    config:
+        config["determinetargets_4"]["config"]
+use rule * from determinetargets_4 exclude _test as determinetargets_4_*

@@ -1,0 +1,422 @@
+"input_namespace": null
+"output_namespace": "determinetargets_1"
+"plotviralmovements_1":
+  "name": "PlotViralMovements_1"
+  "type": "module"
+  "snakefile": "../../../modules/PlotViralMovements/workflow/Snakefile"
+  "config":
+    "input_namespace": "extracttreeeventsstate"
+    "output_namespace": "plotviralmovements_1"
+"treetimemugrationcontinent":
+  "name": "TreeTimeMugrationContinent"
+  "type": "module"
+  "snakefile": "../../../modules/TreeTimeMugration/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "prunetree"
+      "metadata": "reformatting"
+    "output_namespace": "treetimemugrationcontinent"
+    "params":
+      "Attribute": "Continent"
+"treetimemugrationstate":
+  "name": "TreeTimeMugrationState"
+  "type": "module"
+  "snakefile": "../../../modules/TreeTimeMugration/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "prunetree"
+      "metadata": "reformatting"
+    "output_namespace": "treetimemugrationstate"
+    "params":
+      "Attribute": "State"
+"determinetargets_1":
+  "name": "DetermineTargets_1"
+  "type": "module"
+  "snakefile": "../../../modules/DetermineTargets/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "generator": "partitionintogenotypes"
+      "target": "removeincongruentsequences"
+    "output_namespace": "determinetargets_1"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "subsampled_{sample}.fasta"
+      "Triggers":
+        "Parse inputs": "mark"
+"determinetargets":
+  "name": "DetermineTargets"
+  "type": "module"
+  "snakefile": "../../../modules/DetermineTargets/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "generator": "partitionintogenotypes"
+      "target": "export"
+    "output_namespace": "determinetargets"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "dengue_{sample}.json"
+      "Triggers":
+        "Parse inputs": "mark"
+"mergegenbankgisaid":
+  "name": "MergeGenbankGISAID"
+  "type": "module"
+  "snakefile": "../../../modules/MergeGenbankGISAID/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "genbank": "processgenbankdata"
+      "gisaid": "processgisaiddata"
+    "output_namespace": "mergegenbankgisaid"
+"processdenguedata":
+  "name": "ProcessDengueData"
+  "type": "module"
+  "snakefile": "../../../modules/ProcessDengueData/workflow/Snakefile"
+  "config":
+    "input_namespace": "mergegenbankgisaid"
+    "output_namespace": "processdenguedata"
+"processgenbankdata":
+  "name": "ProcessGenbankData"
+  "type": "module"
+  "snakefile": "../../../modules/ProcessGenbankData/workflow/Snakefile"
+  "config":
+    "input_namespace": "downloadgenbank"
+    "output_namespace": "processgenbankdata"
+    "params":
+      "Start date": "2000-01-01T00:00:00.000Z"
+      "End date": "2023-12-24T00:00:00.000Z"
+      "Host": "Homo sapiens"
+"downloadgenbank":
+  "name": "DownloadGenbank"
+  "type": "module"
+  "snakefile": "../../../sources/DownloadGenbank/workflow/Snakefile"
+  "config":
+    "input_namespace": null
+    "output_namespace": "downloadgenbank"
+    "params":
+      "Sequence": "virus genome taxon \"Dengue Virus\""
+      "Data format": "virus-genome"
+      "Date": "01/01/2010"
+      "Command line arguments": []
+"linklocalfolder":
+  "name": "LinkLocalFolder"
+  "type": "module"
+  "snakefile":
+    "function": "github"
+    "args":
+    - "kraemer-lab/vneyard"
+    "kwargs":
+      "path": "workflows/Utility/sources/LinkLocalFolder/workflow/Snakefile"
+      "commit": "d33a1016287ea9b75b79362b77871641cfc66949"
+  "config":
+    "input_namespace": null
+    "output_namespace": "linklocalfolder"
+    "params":
+      "folder": "../../../modules/ProcessGisaidData/results/in"
+      ":folder":
+        "type": "Folder"
+"sequencealignment":
+  "name": "SequenceAlignment"
+  "type": "module"
+  "snakefile": "../../../modules/SequenceAlignment/workflow/Snakefile"
+  "config":
+    "input_namespace": "processdenguedata"
+    "output_namespace": "sequencealignment"
+"splitgenomeandqc":
+  "name": "SplitGenomeAndQC"
+  "type": "module"
+  "snakefile": "../../../modules/SplitGenomeAndQC/workflow/Snakefile"
+  "config":
+    "input_namespace": "sequencealignment"
+    "output_namespace": "splitgenomeandqc"
+    "params":
+      "WG Threshold": "0.31"
+      "EG Threshold": "0.31"
+      "Serotypes":
+      - "Dengue_1"
+      - "Dengue_2"
+      - "Dengue_3"
+      - "Dengue_4"
+"assignserotypeandgenotypenextclade":
+  "name": "AssignSerotypeAndGenotypeNextclade"
+  "type": "module"
+  "snakefile": "../../../modules/AssignSerotypeAndGenotypeNextclade/workflow/Snakefile"
+  "config":
+    "input_namespace": "processdenguedata"
+    "output_namespace": "assignserotypeandgenotypenextclade"
+"addgenotypeinformation":
+  "name": "AddGenotypeInformation"
+  "type": "module"
+  "snakefile": "../../../modules/AddGenotypeInformation/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "genotype": "assignserotypeandgenotypenextclade"
+      "metadata": "processdenguedata"
+    "output_namespace": "addgenotypeinformation"
+"filtergenotypesdata":
+  "name": "FilterGenotypesData"
+  "type": "module"
+  "snakefile": "../../../modules/FilterGenotypesData/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "splitgenomeandqc"
+      "metadata": "addgenotypeinformation"
+    "output_namespace": "filtergenotypesdata"
+    "params":
+      "Min count": 100
+      "Target": "Africa"
+      "Classification": "Major_Lineage"
+      "Serotype targets":
+      - "Dengue_1"
+      - "Dengue_2"
+      - "Dengue_3"
+      - "Dengue_4"
+"partitionintogenotypes":
+  "name": "PartitionIntoGenotypes"
+  "type": "module"
+  "snakefile": "../../../modules/PartitionIntoGenotypes/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "filtergenotypesdata"
+      "metadata": "filtergenotypesdata"
+    "output_namespace": "partitionintogenotypes"
+    "params":
+      "Serotypes":
+      - "Dengue_1"
+      - "Dengue_2"
+      - "Dengue_3"
+      - "Dengue_4"
+"subsamplelineages":
+  "name": "SubsampleLineages"
+  "type": "module"
+  "snakefile": "../../../modules/SubsampleLineages/workflow/Snakefile"
+  "config":
+    "input_namespace": "partitionintogenotypes"
+    "output_namespace": "subsamplelineages"
+    "params":
+      "Number sequences (local)": "all"
+      "Number sequences (background)": 0.3
+      "Time interval": "Year"
+      "Sampling method": "Even"
+      "Triggers":
+        "Parse inputs": "mark"
+"processgisaiddata":
+  "name": "ProcessGisaidData"
+  "type": "module"
+  "snakefile": "../../../modules/ProcessGisaidData/workflow/Snakefile"
+  "config":
+    "input_namespace": "linklocalfolder"
+    "output_namespace": "processgisaiddata"
+    "params":
+      "Filename": "gisaid_arbo_2024_11_18_17"
+      "Start date": "2000-01-01"
+      "End date": "2024-11-18"
+      "Host": "Human"
+"reformatting":
+  "name": "Reformatting"
+  "type": "module"
+  "snakefile": "../../../modules/Reformatting/workflow/Snakefile"
+  "config":
+    "input_namespace": "subsamplelineages"
+    "output_namespace": "reformatting"
+"treebuilding":
+  "name": "TreeBuilding"
+  "type": "module"
+  "snakefile": "../../../modules/TreeBuilding/workflow/Snakefile"
+  "config":
+    "input_namespace": "reformatting"
+    "output_namespace": "treebuilding"
+    "params":
+      "Model": "HKY+F+I"
+      "Command line arguments": ""
+"treetime":
+  "name": "TreeTime"
+  "type": "module"
+  "snakefile": "../../../modules/TreeTime/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "treebuilding"
+      "metadata": "reformatting"
+    "output_namespace": "treetime"
+    "params":
+      "Clock filter IQD": 3
+"mutations":
+  "name": "Mutations"
+  "type": "module"
+  "snakefile": "../../../modules/Mutations/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "treetime"
+      "metadata": "rename"
+    "output_namespace": "mutations"
+"rename":
+  "name": "Rename"
+  "type": "module"
+  "snakefile": "../../../modules/Rename/workflow/Snakefile"
+  "config":
+    "input_namespace": "partitionintogenotypes"
+    "output_namespace": "rename"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "subsampled_{sample}.fasta"
+      "Triggers":
+        "Parse inputs": "mark"
+"triggermark":
+  "name": "TriggerMark"
+  "type": "module"
+  "snakefile": "../../../modules/TriggerMark/workflow/Snakefile"
+  "config":
+    "input_namespace": "rename"
+    "output_namespace": "triggermark"
+    "params":
+      "Trigger": "mark"
+"mugration":
+  "name": "Mugration"
+  "type": "module"
+  "snakefile": "../../../modules/Mugration/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "subsample": "reformatting"
+    "output_namespace": "mugration"
+"export":
+  "name": "Export"
+  "type": "module"
+  "snakefile": "../../../modules/Export/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "translation": "translation"
+      "subsample": "reformatting"
+      "mutations": "mutations"
+      "mugrations": "mugration"
+    "output_namespace": "export"
+"translation":
+  "name": "Translation"
+  "type": "module"
+  "snakefile": "../../../modules/Translation/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "treetime": "treetime"
+      "mutations": "mutations"
+    "output_namespace": "translation"
+"treetimebioconda":
+  "name": "TreeTimeBioconda"
+  "type": "module"
+  "snakefile": "../../../modules/TreeTimeBioconda/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "treebuilding"
+      "metadata": "reformatting"
+    "params":
+      "Clock rate": 0.0008
+      "Clock rate (SD)": 0.0004
+    "output_namespace": "treetimebioconda"
+"prunetree":
+  "name": "PruneTree"
+  "type": "module"
+  "snakefile": "../../../modules/PruneTree/workflow/Snakefile"
+  "config":
+    "input_namespace": "treetimebioconda"
+    "output_namespace": "prunetree"
+"removeincongruentsequences":
+  "name": "RemoveIncongruentSequences"
+  "type": "module"
+  "snakefile": "../../../modules/RemoveIncongruentSequences/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "fasta": "prunetree"
+      "metadata": "reformatting"
+    "output_namespace": "removeincongruentsequences"
+"treetimemugrationcountry":
+  "name": "TreeTimeMugrationCountry"
+  "type": "module"
+  "snakefile": "../../../modules/TreeTimeMugration/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "prunetree"
+      "metadata": "reformatting"
+    "output_namespace": "treetimemugrationcountry"
+    "params":
+      "Attribute": "Country"
+"extracttreeeventscountry":
+  "name": "ExtractTreeEventsCountry"
+  "type": "module"
+  "snakefile": "../../../modules/ExtractTreeEvents/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "treetimemugrationcountry"
+      "metadata": "reformatting"
+    "output_namespace": "extracttreeeventscountry"
+    "params":
+      "Trait": "Country"
+"extracttreeeventsstate":
+  "name": "ExtractTreeEventsState"
+  "type": "module"
+  "snakefile": "../../../modules/ExtractTreeEvents/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "treetimemugrationstate"
+      "metadata": "reformatting"
+    "output_namespace": "extracttreeeventsstate"
+    "params":
+      "Trait": "State"
+"plotviralmovements":
+  "name": "PlotViralMovements"
+  "type": "module"
+  "snakefile": "../../../modules/PlotViralMovements/workflow/Snakefile"
+  "config":
+    "input_namespace": "extracttreeeventscountry"
+    "output_namespace": "plotviralmovements"
+"fertree":
+  "name": "Fertree"
+  "type": "module"
+  "snakefile": "../../../modules/Fertree/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "nexus": "treetimemugrationcontinent"
+      "metadata": "reformatting"
+    "output_namespace": "fertree"
+    "params":
+      "Spatial scale": "Continent"
+      "Location": "Africa"
+"determinetargets_2":
+  "name": "DetermineTargets_2"
+  "type": "module"
+  "snakefile": "../../../modules/DetermineTargets/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "generator": "partitionintogenotypes"
+      "target": "plotviralmovements"
+    "output_namespace": "determinetargets_2"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "{sample}.png"
+      "Triggers":
+        "Parse inputs": "mark"
+"determinetargets_3":
+  "name": "DetermineTargets_3"
+  "type": "module"
+  "snakefile": "../../../modules/DetermineTargets/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "generator": "partitionintogenotypes"
+      "target": "plotviralmovements_1"
+    "output_namespace": "determinetargets_3"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "{sample}.png"
+      "Triggers":
+        "Parse inputs": "mark"
+"determinetargets_4":
+  "name": "DetermineTargets_4"
+  "type": "module"
+  "snakefile": "../../../modules/DetermineTargets/workflow/Snakefile"
+  "config":
+    "input_namespace":
+      "generator": "partitionintogenotypes"
+      "target": "fertree"
+    "output_namespace": "determinetargets_4"
+    "params":
+      "Input Pattern": "{sample}.fasta"
+      "Output Pattern": "transmission_lineages_{sample}.csv"
+      "Triggers":
+        "Parse inputs": "mark"

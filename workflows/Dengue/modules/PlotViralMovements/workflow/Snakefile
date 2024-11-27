@@ -1,0 +1,36 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule plot_viral_movements:
+    input:
+        events_file=input("{major_lineages}/annotated_tree_events.csv"),
+        script=script("plot_viral_movements.R"),
+    output:
+        plot_file=output("{major_lineages}.png"),
+    conda:
+        env("r_env_maps.yaml")
+    log:
+        log("{major_lineages}.log")
+    shell:
+        """
+        Rscript {input.script} \
+            --input {input.events_file} \
+            --output {output.plot_file} \
+            2>&1 | tee {log}
+        """
+
+
+rule _test:
+    input:
+        expand(
+            output(
+                "{major_lineages}/annotated_tree_events.csv",
+            ),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

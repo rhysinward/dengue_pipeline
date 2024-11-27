@@ -1,0 +1,6 @@
+input_namespace: in
+output_namespace: out
+params:
+  "Min count": 100
+  Target: "Africa"
+  Classification: "Major_lineage"

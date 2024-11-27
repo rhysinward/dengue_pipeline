@@ -1,0 +1,8 @@
+input_namespace:
+  fasta: fasta
+  metadata: metadata
+output_namespace: out
+params:
+  "Min count": 100
+  Target: "Africa"
+  Classification: "Major_Lineage"

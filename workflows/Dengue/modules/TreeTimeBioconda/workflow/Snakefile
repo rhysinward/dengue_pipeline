@@ -1,0 +1,50 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule treetime:
+    input:
+        ml_tree = input("subsampled_{major_lineages}.treefile", "fasta"),
+        aln = input("subsampled_{major_lineages}.fasta", "metadata"),
+        metadata = input("subsampled_{major_lineages}_infoTbl.csv", "metadata"),
+    output:
+        tree = output("timetree_{major_lineages}/timetree.nexus"),
+        outliers = output("timetree_{major_lineages}/outliers.tsv"),
+    conda:
+        env("treetime.yaml")
+    params:
+        clock_rate = param("Clock rate"),
+        clock_rate_std = param("Clock rate (SD)"),
+        outdir = output(),
+    log:
+        log("treetime_non_nextstrain_{major_lineages}.log")
+    message:
+        "Inferring time-calibrated trees for major_lineages {wildcards.major_lineages}."
+    shell:
+        """
+        treetime \
+            --aln {input.aln} \
+            --tree {input.ml_tree} \
+            --dates {input.metadata} \
+            --clock-rate {params.clock_rate} \
+            --clock-std-dev {params.clock_rate_std} \
+            --clock-filter 0 \
+            --outdir {params.outdir}/timetree_{wildcards.major_lineages} \
+            2>&1 | tee {log}
+            
+            if [ ! -s results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv ]; then
+            echo -e "given_date\tapparent_date\tresidual" > {params.outdir}/timetree_{wildcards.major_lineages}/outliers.tsv
+        fi
+        """
+
+rule _test:
+    input:
+        expand(
+            output("timetree_{major_lineages}/timetree.nexus"),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

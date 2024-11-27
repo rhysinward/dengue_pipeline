@@ -26,7 +26,8 @@ rule mutations:
             --tree {input.time_tree} \
             --alignment {input.aln} \
             --inference joint \
-            --output-node-data {output.mutations} > {log} 2>&1
+            --output-node-data {output.mutations} \
+            2>&1 | tee {log}
         """
 
 

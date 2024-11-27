@@ -1,0 +1,8 @@
+input_namespace:
+  generator: generator
+  target: target
+output_namespace: out
+params:
+  "Pattern": "*.fasta"
+  "Triggers":
+    "Parse inputs": "mark"

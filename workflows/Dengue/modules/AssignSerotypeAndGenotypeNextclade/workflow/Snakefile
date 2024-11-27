@@ -1,0 +1,38 @@
+"""Assign Genotype Using Nextclade
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule assign_serotype_and_genotype_nextclade:
+    input:
+        dataset=resource("datasets/{serotype}"),
+        fasta=input("Unaligned_{serotype}.fasta"),
+    output:
+        csv=output("nextclade_output_{serotype}/nextclade.csv"),
+    params:
+        outdir=output("nextclade_output_{serotype}/"),
+    conda:
+        env("nextstrain_all.yaml")
+    log:
+        log("assign_serotype_and_genotype_{serotype}.log")
+    message:
+        "Split into serotype, add serotypes to sequence name and generate sequence specific metadata"
+    shell:
+        """
+        mkdir -p {params.outdir}
+        nextclade run \
+            --input-dataset {input.dataset} \
+            --output-all={params.outdir} \
+            {input.fasta} > {log} 2>&1
+        """
+
+rule _test:
+    input:
+        output("nextclade_output_Dengue_1/nextclade.csv"),
+        output("nextclade_output_Dengue_2/nextclade.csv"),
+        output("nextclade_output_Dengue_3/nextclade.csv"),
+        output("nextclade_output_Dengue_4/nextclade.csv"),

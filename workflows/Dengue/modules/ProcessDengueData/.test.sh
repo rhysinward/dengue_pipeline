@@ -3,6 +3,7 @@
 if [ ! -d "results" ]; then
     mkdir results
 fi
+unlink results/in || true
 if [ ! -d "results/in" ]; then
     ln -s ../../ProcessGenbankData/results/out results/in
 fi

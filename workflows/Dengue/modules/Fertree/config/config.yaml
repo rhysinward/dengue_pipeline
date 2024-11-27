@@ -1,0 +1,7 @@
+input_namespace:
+  nexus: nexus
+  metadata: metadata
+output_namespace: out
+params:
+  "Spatial scale": "Continent"
+  "Location": "Africa"

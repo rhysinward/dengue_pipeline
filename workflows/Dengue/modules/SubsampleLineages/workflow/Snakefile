@@ -1,0 +1,82 @@
+"""Sampling (Background)
+"""
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+# Wildcard rule
+
+rule subsample:
+    input:
+        fasta_file = input("{major_lineages}.fasta"),
+        metadata_file = input("{major_lineages}_infoTbl.csv"),
+        location_local = resource("number_of_sequences.csv"),
+        script = script("subsampler_genotype.R"),
+    output:
+        subsample_fasta = output("subsampled_{major_lineages}.fasta"),
+        subsample_csv = output("subsampled_{major_lineages}_infoTbl.csv"),
+    params:
+        number_sequences_local = param("Number sequences (local)"),
+        number_sequences_background = param("Number sequences (background)"),
+        time_interval = param("Time interval"),
+        sampling_method = param("Sampling method"),
+        outfile_fasta_csv = output("subsampled_{major_lineages}"),
+        outfile_plots = output("subsampled_{major_lineages}/{major_lineages}_"),
+        outdir_plots = output("subsampled_{major_lineages}"),
+    log:
+        log("subsample_{major_lineages}.log"),
+    conda:
+        env("r_env.yaml"),
+    message:
+        "Subsampling major_lineages virus E gene sequences based on specified criteria."
+    shell:
+        """
+        mkdir -p {params.outdir_plots}
+        Rscript {input.script} \
+          --metadata {input.metadata_file} \
+          --fasta {input.fasta_file} \
+          --time_interval {params.time_interval} \
+          --location_local {input.location_local} \
+          --number_sequences_local {params.number_sequences_local} \
+          --number_sequences_background {params.number_sequences_background} \
+          --sampling_method {params.sampling_method} \
+          --outfile_plots {params.outfile_plots} \
+          --outfile_fasta_csv {params.outfile_fasta_csv} \
+          2>&1 | tee {log}
+        """
+
+# Read files from the input folder
+
+if False:
+    checkpoint wait_for_input_trigger:
+        input:
+            input(param('Triggers', 'Parse inputs'))  # Input trigger to execute workflow
+        output:
+            trigger = touch(output("trigger")),
+            input_mark = touch(input(".mark")),  # Places a marker in the input folder; required to carry the input namespace into the get_folder_list() function; otherwise, input() is evaluated according to the first rule in the 'entire' workflow.
+
+    def get_folder_list(wc):
+        input_mark = checkpoints.wait_for_input_trigger.get().output.input_mark
+        input_folder = os.path.dirname(input_mark)
+        ext = '.fasta'
+        lineage = [f[:-len(ext)] for f in os.listdir(input_folder) if f.endswith(ext)]
+        return lineage
+
+    rule target:
+        input:
+            expand(
+                output("{lineage}.fasta"),
+                lineage=get_folder_list,
+            )
+        output:
+            touch(output(param('Triggers', 'Parse inputs')))
+
+    # Test rule
+
+    rule _test:
+        input:
+            output(param('Triggers', 'Parse inputs'))

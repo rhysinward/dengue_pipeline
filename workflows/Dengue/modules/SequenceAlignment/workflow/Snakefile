@@ -6,6 +6,19 @@ grapevne = import_grapevne(workflow)
 globals().update(vars(grapevne))
 
 
+# Set up a rule if concrete targets are specified
+try:
+    if param('targets'):
+        rule target:
+            input:
+                expand(
+                    output("Aligned_{target}/nextalign.aligned.fasta"),
+                    target=param('targets')
+                ),
+except ValueError:
+    pass
+
+
 rule sequence_alignment:
     input:
         sequences=input("Unaligned_{serotype}.fasta"),

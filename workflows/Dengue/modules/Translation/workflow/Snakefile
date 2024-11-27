@@ -1,16 +1,86 @@
 # Step 8: Translate sequences
 configfile: "config/config.yaml"
+import os
 from grapevne_helper import import_grapevne
 
 grapevne = import_grapevne(workflow)
 globals().update(vars(grapevne))
 
+serotype_map = {
+    'Dengue_1': 'Dengue_1',
+    'Dengue_2': 'Dengue_2',
+    'Dengue_3': 'Dengue_3',
+    'Dengue_4': 'Dengue_4',
+    'unassigned': 'Dengue_1',
+    '1III_A': 'Dengue_1',
+    '1III_B': 'Dengue_1',
+    '1IV_A': 'Dengue_1',
+    '1IV_B': 'Dengue_1',
+    '1IV_C': 'Dengue_1',
+    '1I_A': 'Dengue_1',
+    '1I_B': 'Dengue_1',
+    '1I_C': 'Dengue_1',
+    '1I_D': 'Dengue_1',
+    '1I_E': 'Dengue_1',
+    '1I_F': 'Dengue_1',
+    '1I_G': 'Dengue_1',
+    '1I_H': 'Dengue_1',
+    '1I_J': 'Dengue_1',
+    '1I_K': 'Dengue_1',
+    '1VII_A': 'Dengue_1',
+    '1VII_B': 'Dengue_1',
+    '1V_A': 'Dengue_1',
+    '1V_B': 'Dengue_1',
+    '1V_C': 'Dengue_1',
+    '1V_D': 'Dengue_1',
+    '1V_E': 'Dengue_1',
+    '1V_F': 'Dengue_1',
+    '1V_G': 'Dengue_1',
+    '1V_H': 'Dengue_1',
+    '1V_J': 'Dengue_1',
+    '2III_A': 'Dengue_2',
+    '2III_B': 'Dengue_2',
+    '2III_C': 'Dengue_2',
+    '2III_D': 'Dengue_2',
+    '2III_E': 'Dengue_2',
+    '2II_A': 'Dengue_2',
+    '2II_B': 'Dengue_2',
+    '2II_C': 'Dengue_2',
+    '2II_D': 'Dengue_2',
+    '2II_E': 'Dengue_2',
+    '2II_F': 'Dengue_2',
+    '2V_A': 'Dengue_2',
+    '2V_B': 'Dengue_2',
+    '2V_C': 'Dengue_2',
+    '2V_D': 'Dengue_2',
+    '2V_E': 'Dengue_2',
+    '3III_A': 'Dengue_3',
+    '3III_B': 'Dengue_3',
+    '3III_C': 'Dengue_3',
+    '3II_A': 'Dengue_3',
+    '3II_B': 'Dengue_3',
+    '3I_A': 'Dengue_3',
+    '3I_B': 'Dengue_3',
+    '3I_C': 'Dengue_3',
+    '4II_A': 'Dengue_4',
+    '4II_B': 'Dengue_4',
+    '4I_A': 'Dengue_4',
+    '4I_B': 'Dengue_4',
+}
+
+# Store a local copy of the resource folder for use in the lambda function, below.
+# Note: The resource() function will redirect to the wrong location when run within a
+#       lambda or regular function evaluated at runtime.
+resource_folder = resource('')
 
 rule translation:
     input:
         mutations=input("subsampled_{serotype}_mutations.json", "mutations"),
         time_tree=input("timetree_{serotype}.tree", "treetime"),
-        ref_genomes=resource("reference_genomes/reference_{serotype}.gb"),
+        ref_genomes=lambda wc: os.path.join(
+            resource_folder,
+            f"reference_genomes/reference_{serotype_map[wc.serotype]}.gb"
+        ),
     output:
         amino=output("aa_muts_{serotype}.json"),
     conda:
@@ -29,7 +99,7 @@ rule translation:
             --reference-sequence {input.ref_genomes} \
             --genes {params.genes} \
             --output {output.amino} \
-            > {log} 2>&1
+            2>&1 | tee {log}
         """
 
 

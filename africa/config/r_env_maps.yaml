@@ -2,7 +2,6 @@ name: r_env_maps
 channels:
   - conda-forge
   - bioconda
-  - defaults
 
 dependencies:
   - r-base=4.3.3

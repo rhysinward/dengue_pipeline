@@ -1,0 +1,9 @@
+input_namespace: in
+output_namespace: out
+params:
+  "Number sequences (local)": "all"
+  "Number sequences (background)": 0.3
+  "Time interval": "Year"
+  "Sampling method": "Even"
+  "Triggers":
+    "Parse inputs": "mark"

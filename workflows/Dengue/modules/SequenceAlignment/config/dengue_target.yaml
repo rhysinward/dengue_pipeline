@@ -1,0 +1,9 @@
+name: Dengue Target
+input_namespace: in
+output_namespace: out
+params:
+  targets:
+    - Dengue_1
+    - Dengue_2
+    - Dengue_3
+    - Dengue_4

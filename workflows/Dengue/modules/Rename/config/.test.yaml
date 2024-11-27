@@ -1,0 +1,6 @@
+input_namespace: in
+output_namespace: out
+params:
+  "Pattern": "*.fasta"
+  "Triggers":
+    "Parse inputs": "mark"

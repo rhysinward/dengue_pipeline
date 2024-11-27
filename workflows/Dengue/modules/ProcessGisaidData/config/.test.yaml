@@ -1,0 +1,7 @@
+input_namespace: in
+output_namespace: out
+params:
+  "Filename": "gisaid_arbo_2024_11_18_17"
+  "Start date": "2000-01-01"
+  "End date": "2024-11-18"
+  "Host": "Human"
