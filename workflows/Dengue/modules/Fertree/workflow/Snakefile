@@ -1,0 +1,104 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+def get_max_date(infoTbl):
+    """
+    Reads a CSV file and returns the maximum decimal date from the 'date' column.
+
+    Parameters:
+        infoTbl (str): Path to the CSV file.
+
+    Returns:
+        str or None: The maximum date as a string (e.g., "2020.234") or None if no dates are found.
+    """
+    import csv
+    max_date = None
+    try:
+        with open(infoTbl, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                date_str = row.get('date')
+                if date_str:
+                    try:
+                        date = float(date_str)
+                        if (max_date is None) or (date > max_date):
+                            max_date = date
+                    except ValueError:
+                        # Skip rows with invalid date formats
+                        continue
+    except FileNotFoundError:
+        # Handle the case where the file doesn't exist
+        return None
+
+    if max_date:
+        return str(max_date)
+    else:
+        return None
+
+
+def workspace(path=None, workspace=None):
+    name = os.path.basename(output())
+    if path:
+        return os.path.join("workspace", name, path)
+    else:
+        return os.path.join("workspace", name)
+
+rule Fertree:
+    input:
+        dta_tree=input("{major_lineages}/annotated_tree.nexus", "nexus"),
+        infoTbl=input("subsampled_{major_lineages}_infoTbl.csv", "metadata"),
+        process_script=script("process_fertree_output.R"),
+    output:
+        outfile=output("transmission_lineages_{major_lineages}.csv"),
+    conda:
+        env("rust.yaml")
+    params:
+        spatial_scale=param("Spatial scale"),
+        location=param("Location"),
+        origin_time=lambda wc, input: get_max_date(input.infoTbl),
+        workspace=workspace()
+    log:
+        "logs/fertree_{major_lineages}.log"
+    message:
+        "Extracting transmission lineages for major_lineages {wildcards.major_lineages} using Fertree."
+    shell:
+        """
+        fertree="{params.workspace}/fertree_install/bin/fertree"
+        if [ ! -f ${{fertree}} ]; then
+            # Step 1: Clone the fertree repository
+            mkdir -p {params.workspace}
+            pushd {params.workspace}
+            rm -rf fertree
+            git clone https://github.com/jtmccr1/fertree.git fertree
+            cd fertree
+
+            # Step 2: Checkout the specific commit to avoid installation bugs
+            git checkout 5c7947d
+
+            # Step 3: Install fertree using Cargo
+            cargo install --path . --root "../fertree_install"
+            popd
+        fi
+
+        # Step 5: Run fertree to extract transmission lineages
+        ${{fertree}} transmission-lineages \
+            -k {params.spatial_scale} \
+            -t {params.location} \
+            -o {params.origin_time} \
+            -i {input.dta_tree} \
+            --taxa -n > {output.outfile} 2> {log}
+        """
+
+rule _test:
+    input:
+        expand(
+            output(
+                "transmission_lineages_{major_lineages}.csv",
+            ),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

@@ -210,7 +210,7 @@ rule process_dengue_data:
         Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --outfile results/Unaligned_output/Unaligned_ > {log} 2>&1
         """
 
-# Step 5: Asign Genotype Using Nextclade
+# Step 5: Assign Genotype Using Nextclade
 rule assign_serotype_and_genotype_nextclade:
     input:
         dataset="dengue-lineages-workflow/datasets/{serotype}",
@@ -238,8 +238,8 @@ rule assign_serotype_and_genotype_nextclade:
 rule add_genotype_information:
     input:
         script="code/add_genotype_information_to_metadata.R",
-        metadata="results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
-        genotype="results/nextclade_output_{serotype}/nextclade.csv"
+        metadata="results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",  # dengue
+        genotype="results/nextclade_output_{serotype}/nextclade.csv"  # assign
     output:
         csv="results/Unaligned_output/Unaligned_{serotype}_infoTbl_with_genotype.csv"
     conda:
@@ -256,7 +256,7 @@ rule add_genotype_information:
 # Step 7: Sequence alignment
 rule sequence_alignment:
     input:
-        sequences="results/Unaligned_output/Unaligned_{serotype}.fasta",
+        sequences="results/Unaligned_output/Unaligned_{serotype}.fasta",  # dengue
         reference="reference_genomes/reference_{serotype}.fasta",
         genemap="genemap/genemap_{serotype}.gff"
     output:
@@ -454,8 +454,8 @@ rule subsample:
 
 rule reformatting:
     input:
-        fasta_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}.fasta",
-        metadata_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl.csv"
+        fasta_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}.fasta",  # subsample
+        metadata_file = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl.csv"  # subsample
     output:
         cleaned_fasta = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
         cleaned_metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
@@ -467,7 +467,11 @@ rule reformatting:
         "Correcting metadata and FASTA files into the correct format for IQ-TREE and TreeTime for major_lineages {wildcards.major_lineages}."
     shell:
         """
-        Rscript code/reformatting_iqtree_treetime.R --metadata {input.metadata_file} --fasta {input.fasta_file} --output_dir_fasta {output.cleaned_fasta} --output_dir_csv {output.cleaned_metadata} > {log} 2>&1
+        Rscript code/reformatting_iqtree_treetime.R \
+            --metadata {input.metadata_file} \
+            --fasta {input.fasta_file} \
+            --output_dir_fasta {output.cleaned_fasta} \
+            --output_dir_csv {output.cleaned_metadata} > {log} 2>&1
         """
 
 # Rule: Tree Building with IQ-TREE
@@ -493,9 +497,9 @@ rule treebuilding:
 # Rule: Building Time-Calibrated Trees
 rule treetime:
     input:
-        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
-        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",
-        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",  # reformatting
+        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",  # treebuilding
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"  # reformatting
     output:
         tree = "results/timetrees/timetree_{major_lineages}.tree",
         branch_lengths = "results/timetrees/{major_lineages}_branch_lengths.json"
@@ -503,8 +507,6 @@ rule treetime:
         "config/nextstrain_all.yaml"
     params:
         clock_filter = 3,
-        clock_rate = 8.0e-4,      
-        clock_rate_std = 4e-4
     log:
         "logs/treetime_{major_lineages}.log"
     message:
@@ -527,8 +529,8 @@ rule treetime:
 # Rule: Mutations
 rule mutations:
     input:
-        aln = "results/major_lineages_specific/{major_lineages}.fasta",
-        time_tree = "results/timetrees/timetree_{major_lineages}.tree"
+        aln = "results/major_lineages_specific/{major_lineages}.fasta",  # split_genotype / partition
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree"  # treetime
     output:
         mutations = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json"
     conda:
@@ -549,8 +551,8 @@ rule mutations:
 # Rule: Translate Sequences
 rule translation:
     input:
-        mutations = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json",
-        time_tree = "results/timetrees/timetree_{major_lineages}.tree",
+        mutations = "results/auspice_files/subsampled_{major_lineages}_cleaned_mutations.json",  # mutations
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree",  # treetime
         ref_genomes = lambda wildcards: f"reference_genomes/reference_{major_lineage_serotype_map[wildcards.major_lineages]}.gb"
     output:
         amino = "results/auspice_files/aa_muts_{major_lineages}.json"
@@ -575,8 +577,8 @@ rule translation:
 # Rule: Discrete Trait Reconstruction (Mugration)
 rule mugration:
     input:
-        time_tree = "results/timetrees/timetree_{major_lineages}.tree",
-        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        time_tree = "results/timetrees/timetree_{major_lineages}.tree",  # treetime
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"  # reformatting
     output:
         traits = "results/auspice_files/traits_{major_lineages}.json"
     conda:
@@ -627,16 +629,15 @@ rule export:
 
 rule treetime_non_nextstrain:
     input:
-        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
-        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",
-        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        ml_tree = "results/subsampled_{major_lineages}_ml_tree/subsampled_{major_lineages}_cleaned.treefile",  # treebuilding
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",  # reformatting
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv",  # reformatting
     output:
         tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/timetree.nexus",
         outliers = "results/timetrees_non_nextstrain/timetree_{major_lineages}/outliers.tsv",
     conda:
         "config/treetime.yaml"
     params:
-        clock_filter = 0,
         clock_rate = 8.0e-4,      
         clock_rate_std = 4e-4
     log:
@@ -655,7 +656,7 @@ rule treetime_non_nextstrain:
             --outdir results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages} \
             > {log} 2>&1
             
-                    if [ ! -s results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv ]; then
+        if [ ! -s results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv ]; then
             echo -e "given_date\tapparent_date\tresidual" > results/timetrees_non_nextstrain/timetree_{wildcards.major_lineages}/outliers.tsv
         fi
         """
@@ -684,9 +685,9 @@ rule prune_tree:
 
 rule remove_incongruent_sequences:
     input:
-        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",
-        ml_tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
-        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        aln = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned.fasta",  # reformatting
+        ml_tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",  # prunetree
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv", # reformatting 
     output:
         pruned_fasta = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_pruned.fasta",
         pruned_csv = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_infoTbl_pruned.csv"
@@ -708,8 +709,8 @@ rule remove_incongruent_sequences:
 
 rule mugration_country:
     input:
-        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",
-        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        tree = "results/timetrees_non_nextstrain/timetree_{major_lineages}/pruned_tree.nexus",  # prunetree
+        metadata = "results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"  # reformatting
     output:
         mugration = "results/mugration/mugration_country_{major_lineages}/annotated_tree.nexus"
     conda:
@@ -764,8 +765,8 @@ rule mugration_state:
 # Rule: Extract imports and exports for the 'country' trait
 rule extract_tree_events_country:
     input:
-        tree_file="results/mugration/mugration_country_{major_lineages}/annotated_tree.nexus",
-        metadata="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv"
+        tree_file="results/mugration/mugration_country_{major_lineages}/annotated_tree.nexus",  # mugration_country
+        metadata="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv", # reformatting
     output:
         events_file="results/tree_events/{major_lineages}/annotated_tree_events_country.csv"
     conda:
@@ -854,8 +855,8 @@ rule mugration_Continent:
 rule Fertree:
     input:
         process_script="code/process_fertree_output.R",
-        dta_tree="results/mugration/mugration_continent_{major_lineages}/annotated_tree.nexus",
-        infoTbl="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv",
+        dta_tree="results/mugration/mugration_continent_{major_lineages}/annotated_tree.nexus",  # mugration_continent
+        infoTbl="results/subsampled_{major_lineages}/subsampled_{major_lineages}_cleaned_infoTbl.csv",  # reformatting
     output:
         tl_table="results/fertree/transmission_lineages_{major_lineages}.csv",
     conda:

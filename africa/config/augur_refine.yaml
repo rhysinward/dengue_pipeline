@@ -1,14 +1,11 @@
 name: treetime_refine_env
 channels:
   - bioconda
-- conda-forge
-- defaults
+  - conda-forge
 dependencies:
   - python=3.9
-- treetime
-- biopython
-- argparse
-- pip
-- pip:
-
-  
+  - treetime
+  - biopython
+  - argparse
+  - pip
+  - pip:

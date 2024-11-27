@@ -1,0 +1,4 @@
+input_namespace:
+  genotype: genotype
+  metadata: metadata
+output_namespace: out

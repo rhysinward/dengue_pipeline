@@ -1,0 +1,41 @@
+"""Merge GenBank and GISAID data and remove duplicates
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule merge_genbank_gisaid_data:
+    input:
+        fasta_genbank=input("Unaligned.fasta", "genbank"),
+        metadata_genbank=input("infoTbl.csv", "genbank"),
+        fasta_gisaid=input("Unaligned_gisaid.fasta", "gisaid"),
+        metadata_gisaid=input("infoTbl_gisaid.csv", "gisaid"),
+        script=script("remove_duplicates_genbank_gisaid.R"),
+    output:
+        merged_fasta=output("Unaligned.fasta"),
+        merged_metadata=output("infoTbl.csv"),
+    conda:
+        env("r_env.yaml")
+    log:
+        log("merge_genbank_gisaid_data.log")
+    message:
+        "Merging GenBank and GISAID data, removing duplicates across sources."
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata_genbank {input.metadata_genbank} \
+            --metadata_gisaid {input.metadata_gisaid} \
+            --fasta_genbank {input.fasta_genbank} \
+            --fasta_gisaid {input.fasta_gisaid} \
+            --outfile_fasta {output.merged_fasta} \
+            --outfile_csv {output.merged_metadata} \
+            > {log} 2>&1
+        """
+
+rule _test:
+    input:
+        merged_fasta=output("Unaligned.fasta"),
+        merged_metadata=output("infoTbl.csv"),

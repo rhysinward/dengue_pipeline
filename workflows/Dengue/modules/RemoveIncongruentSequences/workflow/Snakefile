@@ -1,0 +1,39 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule remove_incongruent_sequences:
+    input:
+        ml_tree = input("timetree_{major_lineages}/timetree.nexus", "fasta"),
+        aln = input("subsampled_{major_lineages}.fasta", "metadata"),
+        metadata = input("subsampled_{major_lineages}_infoTbl.csv", "metadata"),
+        script = script("remove_incongruent_sequences.R")
+    output:
+        pruned_fasta = output("subsampled_{major_lineages}.fasta"),
+        pruned_csv = output("subsampled_{major_lineages}_infoTbl.csv"),
+    log:
+        log("remove_incongruent_sequences_{major_lineages}.log")
+    conda:
+        env("r_env.yaml")
+    params:
+        outdir = output(),
+    shell:
+        """
+        Rscript {input.script} \
+            --fasta {input.aln} \
+            --tree {input.ml_tree} \
+            --metadata {input.metadata} \
+            --outfile {params.outdir}/subsampled_{wildcards.major_lineages} \
+            2>&1 | tee {log}
+        """
+
+rule _test:
+    input:
+        expand(
+            output("subsampled_{major_lineages}.fasta"),
+            major_lineages = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

@@ -11,4 +11,4 @@ if [ ! -d "results/in" ]; then
     exit 1
 fi
 rm -rf results/out
-snakemake --use-conda --cores 1 --configfile=config/.test.yaml _test
+snakemake --use-conda --cores 8 --configfile=config/.test.yaml _test

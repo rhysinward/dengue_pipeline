@@ -12,9 +12,9 @@ outdir = config["output_namespace"]
 
 rule process_dengue_data:
     input:
-        script=script("split_dengue.R"),
         metadata=input("infoTbl.csv"),
         fasta=input("Unaligned.fasta"),
+        script=script("split_dengue.R"),
     output:
         fasta=output("Unaligned_{serotype}.fasta"),
         csv=output("Unaligned_{serotype}_infoTbl.csv"),

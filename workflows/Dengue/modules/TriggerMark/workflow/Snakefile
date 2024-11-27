@@ -1,0 +1,15 @@
+"""Provides a target trigger to initiate a rule
+"""
+configfile: "config/config.yaml"
+import os
+import re
+from fnmatch import fnmatch
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule target:
+    input:
+        input(param("Trigger"))

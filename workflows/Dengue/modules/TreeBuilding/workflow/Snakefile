@@ -18,12 +18,13 @@ rule treebuilding:
     input:
         aln=input("subsampled_{serotype}.fasta"),
     output:
-        tree=output("subsampled_{serotype}.fasta.treefile"),
+        tree=output("subsampled_{serotype}.treefile"),
     conda:
         env("treebuilding.yaml")
     params:
         model=params("Model"),
         cli=params("Command line arguments"),
+        prefix=output("subsampled_{serotype}"),
         outdir=output(),
     log:
         log("iqtree_{serotype}.log"),
@@ -34,15 +35,19 @@ rule treebuilding:
         )
     shell:
         """
-        mkdir -p {params.outdir}
-        iqtree2 -s {input.aln} -m {params.model} {params.cli} -redo  > {log} 2>&1
-        mv {input.aln}.* {params.outdir}
+        iqtree2 \
+            -s {input.aln} \
+            -m {params.model} \
+            -pre {params.prefix} \
+            {params.cli} \
+            -redo \
+            2>&1 | tee {log}
         """
 
 
 rule _test:
     input:
-        output("subsampled_Dengue_1.fasta.treefile"),
-        output("subsampled_Dengue_2.fasta.treefile"),
-        output("subsampled_Dengue_3.fasta.treefile"),
-        output("subsampled_Dengue_4.fasta.treefile"),
+        output("subsampled_Dengue_1.treefile"),
+        output("subsampled_Dengue_2.treefile"),
+        output("subsampled_Dengue_3.treefile"),
+        output("subsampled_Dengue_4.treefile"),

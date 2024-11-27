@@ -1,0 +1,82 @@
+"""Sampling (Background)
+"""
+configfile: "config/config.yaml"
+import os
+import re
+import shutil
+from fnmatch import fnmatch
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+# Checkpoints must be globally unqiue
+cp_name = "wait_for_input_trigger"
+unique_cp_name = cp_name
+index = 1
+while unique_cp_name in dir(checkpoints):
+    unique_cp_name = f"{cp_name}_{index}"
+    index += 1
+
+
+# Read files from the input folder
+
+checkpoint:
+    name:
+        # Checkpoints must be globally unique
+        unique_cp_name
+    input:
+        # Input trigger to execute workflow
+        input(param('Triggers', 'Parse inputs')),
+    output:
+        trigger = touch(output("trigger")),
+        # Places a marker in the input folder. This is required to carry the input
+        # namespace into the get_folder_list() function; otherwise, input() is
+        # evaluated according to the first rule in the 'entire' workflow.
+        input_mark = touch(input(".mark")),
+
+def get_folder_list(wc):
+    trigger_file = getattr(checkpoints, unique_cp_name).get().output.trigger 
+    output_folder = os.path.dirname(trigger_file)
+    input_mark = getattr(checkpoints, unique_cp_name).get().output.input_mark
+    input_folder = os.path.dirname(input_mark)
+
+    input_pattern = config['params']["Input Pattern"]  # (params references the wrong workspace?)
+    output_pattern = config['params']["Output Pattern"]
+
+    # Convert the input pattern into a regex to extract wildcard fields
+    regex_pattern = re.escape(input_pattern)
+    regex_pattern = regex_pattern.replace(r"\*", ".*").replace(r"\?", ".")
+    regex_pattern = re.sub(r"\\\{(\w+)\\\}", r"(?P<\1>.+?)", regex_pattern)
+
+    # Prepare results
+    matched_files = []
+    for filename in os.listdir(input_folder):
+        match = re.match(regex_pattern, filename)
+        if match:
+            # Generate new filename based on the output pattern
+            new_filename = output_pattern.format(**match.groupdict())
+            matched_files.append((filename, new_filename))
+    print("Source folder: ", input_folder)
+    print("Destination folder: ", output_folder)
+    for orig, mapped in matched_files:
+        print(f" {orig} -> {mapped}")
+        shutil.copyfile(os.path.join(input_folder, orig), os.path.join(output_folder, mapped))
+    return [mapped for orig, mapped in matched_files]
+
+rule target:
+    input:
+        expand(
+            output("{lineage}"),
+            lineage=get_folder_list,
+        )
+    output:
+        directory(output()),
+        touch(output(param('Triggers', 'Parse inputs')))
+
+# Test rule
+
+rule _test:
+    input:
+        output(param('Triggers', 'Parse inputs'))

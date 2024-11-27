@@ -1,0 +1,37 @@
+"""Add genotype and lineage information to metadata
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule add_genotype_information:
+    input:
+        genotype=input("nextclade_output_{serotype}/nextclade.csv", "genotype"),
+        metadata=input("Unaligned_{serotype}_infoTbl.csv", "metadata"),
+        script=script("add_genotype_information_to_metadata.R"),
+    output:
+        csv=output("Unaligned_{serotype}_infoTbl.csv"),
+    conda:
+        env("r_env.yaml")
+    log:
+        log("Unaligned_{serotype}_add_genotype.log")
+    message:
+        "Add genotype information to metadata for {wildcards.serotype}"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --genotype {input.genotype} \
+            --outfile_csv {output.csv} \
+            > {log} 2>&1
+        """
+
+rule _test:
+    input:
+        output("Unaligned_Dengue_1_infoTbl.csv"),
+        output("Unaligned_Dengue_2_infoTbl.csv"),
+        output("Unaligned_Dengue_3_infoTbl.csv"),
+        output("Unaligned_Dengue_4_infoTbl.csv"),

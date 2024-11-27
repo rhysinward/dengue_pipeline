@@ -1,0 +1,42 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+rule mugration:
+    input:
+        tree = input("timetree_{major_lineages}/timetree.nexus", "nexus"),
+        metadata = input("subsampled_{major_lineages}_infoTbl.csv", "metadata"),
+    output:
+        mugration = output("{major_lineages}/annotated_tree.nexus"),
+    conda:
+        env("treetime.yaml")
+    params:
+        attribute = param("Attribute"),
+        outdir = output(),
+    log:
+        log("{major_lineages}.log")
+    message:
+        "Performing mugration analysis for major_lineages {wildcards.major_lineages}"
+    shell:
+        """
+        mkdir -p {params.outdir}/{wildcards.major_lineages}
+        treetime mugration \
+            --tree {input.tree} \
+            --states {input.metadata} \
+            --attribute {params.attribute} \
+            --outdir {params.outdir}/{wildcards.major_lineages} \
+            2>&1 | tee {log}
+        """
+
+rule _test:
+    input:
+        expand(
+            output(
+                "{major_lineages}/annotated_tree.nexus"
+            ),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

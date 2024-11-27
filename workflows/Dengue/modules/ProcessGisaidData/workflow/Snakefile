@@ -1,0 +1,60 @@
+"""Process data from GISAID
+
+Params:
+
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+# Determine tsv/fasta filenames
+filestem = param("Filename")
+if filestem.endswith(".tsv"):
+    filestem = filestem[:-4]
+elif filestem.endswith(".fasta"):
+    filestem = filestem[:-6]
+tsv_file = f"{filestem}.tsv"
+fasta_file = f"{filestem}.fasta"
+
+
+rule process_data_GISAID:
+    input:
+        script=script("clean_metadata_and_fasta_GISAID.R"),
+        metadata=input(tsv_file),
+        fasta=input(fasta_file),
+    output:
+        fasta_files = output("Unaligned_gisaid.fasta"),
+        info_tables_txt = output("infoTbl_gisaid.txt"),
+        info_tables_csv = output("infoTbl_gisaid.csv"),
+    params:
+        start_date = param('Start date'),
+        end_date = param('End date'),
+        host = param('Host'),
+    conda:
+        env("r_env.yaml"),
+    log:
+        log("process_genomic_data_gisaid.log")
+    message:
+        "Processing and cleaning data downloaded from GISAID"
+    shell:
+        """
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --start_date {params.start_date} \
+            --end_date {params.end_date} \
+            --host "{params.host}" \
+            --outfile_fasta {output.fasta_files} \
+            --outfile_csv {output.info_tables_csv} \
+            --outfile_tsv {output.info_tables_txt} \
+            > {log} 2>&1
+        """
+
+rule _test:
+    input:
+        fasta_files = output("clean_metadata_and_fasta_gisaid/Unaligned_gisaid.fasta"),
+        info_tables_txt = output("clean_metadata_and_fasta_gisaid/infoTbl_gisaid.txt"),
+        info_tables_csv = output("clean_metadata_and_fasta_gisaid/infoTbl_gisaid.csv"),

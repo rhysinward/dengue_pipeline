@@ -1,0 +1,4 @@
+input_namespace:
+  genbank: genbank
+  gisaid: gisaid
+output_namespace: out

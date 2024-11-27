@@ -1,0 +1,7 @@
+input_namespace:
+  fasta: fasta
+  metadata: metadata
+output_namespace: out
+params:
+  "Clock rate": 0.0008
+  "Clock rate (SD)": 0.0004

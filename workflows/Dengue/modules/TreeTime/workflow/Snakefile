@@ -12,8 +12,8 @@ globals().update(vars(grapevne))
 
 rule treetime:
     input:
+        ml_tree=input("subsampled_{serotype}.treefile", "fasta"),
         aln=input("subsampled_{serotype}.fasta", "metadata"),
-        ml_tree=input("subsampled_{serotype}.fasta.treefile", "fasta"),
         metadata=input("subsampled_{serotype}_infoTbl.csv", "metadata"),
     output:
         tree=output("timetree_{serotype}.tree"),
@@ -39,7 +39,7 @@ rule treetime:
             --date-confidence \
             --clock-filter-iqd {params.clock_filter} \
             --root best \
-            > {log} 2>&1
+            2>&1 | tee {log}
         """
 
 

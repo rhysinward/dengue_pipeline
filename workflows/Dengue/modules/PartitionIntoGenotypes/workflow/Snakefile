@@ -1,0 +1,106 @@
+"""Partition into Genotypes
+"""
+configfile: "config/config.yaml"
+import os, shutil
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+# Utility function to provide a workspace path
+def workspace(file: str | None = None, space: str | None = None):
+    namespace = os.path.basename(output())
+    if file is None:
+        file = ""
+    if space is None:
+        return f"workspace/{namespace}/{file}"
+    return f"workspace/{namespace}/{space}/{file}"
+
+
+# Main process to split genotypes into lineages
+rule split_genotype:
+    input:
+        metadata=input("Unaligned_{serotype}_infoTbl.csv", "metadata"),
+        fasta=input("{serotype}_EG.fasta", "fasta"),
+        script=script("split_genotype.r"),
+    output:
+        outdir = directory(workspace("{serotype}", space = "serotype")),
+    conda:
+        env("r_env.yaml")
+    log:
+        log("split_genotype_{serotype}.log")
+    shell:
+        """
+        mkdir -p {output.outdir}
+        echo {input.metadata}
+        echo {input.fasta}
+        echo {input.script}
+        echo {output.outdir}
+        echo {log}
+        Rscript {input.script} \
+          --metadata "{input.metadata}" \
+          --fasta "{input.fasta}" \
+          --outfile "{output.outdir}/" \
+          2>&1 | tee {log}
+        echo "List of output for outdir: {output.outdir}"
+        ls -l {output.outdir}
+        """
+
+# Collate the output files
+#
+# To use checkpoints:
+# 1. Specify the target files as inputs to a rule, where files are read from a function
+# 2. Provide a function that reads the folder contents; this must depend on a CHECKPOINT,
+#    or else it will execute at when the original DAG is generated.
+# 3. Provide a rule that tells snakemake how to generate those files
+
+checkpoint dengue:
+    input:
+        expand(
+            workspace("{serotype}", space = "serotype"),
+            serotype=param('Serotypes'),
+        ),
+    output:
+        outdir = directory(workspace(None, space = "lineage")),
+    shell:
+        """
+        mkdir -p {output.outdir}
+        """
+
+def files_in_folder(wc):
+    files = []
+    lineage_folder = checkpoints.dengue.get().output.outdir
+    serotype_folder = os.path.join(os.path.dirname(lineage_folder), "serotype")
+    for serotype in os.listdir(serotype_folder):
+        for f in os.listdir(os.path.join(serotype_folder, serotype)):
+            if f.endswith(".fasta") or f.endswith(".csv") or f.endswith(".tsv"):
+                # Copy file to the lineage folder
+                shutil.copy(os.path.join(serotype_folder, serotype, f), os.path.join(lineage_folder, f))
+                files.append(os.path.join(lineage_folder, f))
+    return files
+
+rule collate_output:
+    input:
+        lineages = expand(
+            "{file}",
+            file=files_in_folder,
+        ),
+    output:
+        touch(output("mark"))
+    params:
+        outdir = output(),
+    run:
+        for infile in input.lineages:
+            shutil.copy(infile, os.path.join(params.outdir, os.path.basename(infile)))
+        # Remove workspaces
+        # shutil.rmtree("workspace")
+
+# Target rule
+rule target:
+    input:
+        output("mark")
+
+# Test rule
+rule _test:
+    input:
+        output("mark")

@@ -1,0 +1,9 @@
+input_namespace:
+  generator: generator
+  target: target
+output_namespace: out
+params:
+  "Input Pattern": "{sample}.fasta"
+  "Output Pattern": "{sample}.csv"
+  "Triggers":
+    "Parse inputs": "mark"

@@ -1,0 +1,57 @@
+"""Remove small serotypes, genotypes, major or minor lineages based on target country
+"""
+configfile: "config/config.yaml"
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule filter_genotypes_data:
+    input:
+        metadata=input("Unaligned_{serotype}_infoTbl.csv", "metadata"),
+        fasta=input("{serotype}_EG.fasta", "fasta"),
+        script=script("filter_classification.R"),
+    output:
+        fasta = output("{serotype}_EG.fasta"),
+        csv = output("Unaligned_{serotype}_infoTbl.csv"),
+    params:
+        min_count = param('Min count'),
+        target = param('Target'),
+        classification = param('Classification'),
+        outdir = output(),
+    conda:
+        env("r_env.yaml")
+    log:
+        log("filter_genotype_data_{serotype}.log")
+    message:
+        "Filtering small genotypes {wildcards.serotype}"
+    shell:
+        """
+        mkdir -p "{params.outdir}"
+        Rscript "{input.script}" \
+            --metadata "{input.metadata}" \
+            --fasta "{input.fasta}" \
+            --fasta_outfile "{output.fasta}" \
+            --min_count {params.min_count} \
+            --target "{params.target}" \
+            --classification "{params.classification}" \
+            --csv_outfile "{output.csv}"
+        #    > {log} 2>&1
+        """
+
+# Set up a rule if concrete targets are specified
+try:
+    if param('Serotype targets'):
+        rule target:
+            input:
+                expand(
+                    output("{serotype}_EG.fasta"),
+                    serotype=param('Serotype targets'),
+                ),
+                expand(
+                    output("Unaligned_{serotype}_infoTbl.csv"),
+                    serotype=param('Serotype targets'),
+                ),
+except NameError:
+    pass

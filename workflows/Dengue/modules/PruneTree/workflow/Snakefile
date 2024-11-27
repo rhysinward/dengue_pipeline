@@ -1,0 +1,33 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule prune_tree:
+    input:
+        outliers = input("timetree_{major_lineages}/outliers.tsv"),
+        tree = input("timetree_{major_lineages}/timetree.nexus"),
+    output:
+        pruned_tree = output("timetree_{major_lineages}/timetree.nexus"),
+    log:
+        log("prune_{major_lineages}_tree.log")
+    conda:
+        env("gotree.yaml")
+    shell:
+        """
+        gotree prune \
+            -f {input.outliers} \
+            -i {input.tree} \
+            --format nexus 1> {output.pruned_tree} 2> {log}
+        """
+
+rule _test:
+    input:
+        expand(
+            output("timetree_{major_lineages}/timetree.nexus"),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

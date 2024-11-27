@@ -1,0 +1,23 @@
+name: r_env_maps
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  - r-base=4.3.3
+  - r-optparse
+  - r-dplyr
+  - r-lubridate
+  - r-tidyr
+  - r-readr
+  - r-ape
+  - r-countrycode
+  - r-ggplot2
+  - r-maps
+  - r-geosphere
+  - r-png
+  - r-cowplot
+  - r-rnaturalearthdata
+  - r-sf
+  - r-rnaturalearth    

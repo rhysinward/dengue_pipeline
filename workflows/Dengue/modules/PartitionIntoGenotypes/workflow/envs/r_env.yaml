@@ -1,0 +1,31 @@
+name: r_env
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - r-base=4.3.3
+  - r-optparse
+  - r-dplyr
+  - r-lubridate
+  - r-pak
+  - r-rcpp
+  - r-wrswor             
+  - bioconductor-biostrings=2.70.1
+  - bioconductor-biocgenerics=0.48.1
+  - libxml2
+  - libcurl
+  - r-countrycode
+  - r-ggplot2
+  - r-seqinr
+  - r-zoo
+  - r-biocmanager
+  - r-tidyr
+  - r-stringr
+  - r-readr
+  - r-ape
+  - r-rcurl
+  - r-rlang
+  - r-vctrs
+  - r-tidyselect
+  - r-purrr

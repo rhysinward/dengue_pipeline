@@ -1,0 +1,4 @@
+input_namespace:
+  fasta: fasta
+  metadata: metadata
+output_namespace: out

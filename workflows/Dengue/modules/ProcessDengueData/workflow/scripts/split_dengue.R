@@ -40,10 +40,10 @@ if (!is.null(opt$metadata)) {
 #merge different serotype naming schemes
 metadata.df <- metadata.df %>%
   mutate(serotype = case_when(
-    grepl("dengue_virus_2|Dengue_virus_2|dengue_virus_type_2", Virus_name, ignore.case = TRUE) ~ "Dengue_2",
-    grepl("dengue_virus_3|Dengue_virus_3|dengue_virus_type_3", Virus_name, ignore.case = TRUE) ~ "Dengue_3",
-    grepl("dengue_virus_4|Dengue_virus_4|dengue_virus_type_4", Virus_name, ignore.case = TRUE) ~ "Dengue_4",
-    grepl("dengue_virus_1|Dengue_virus_1|dengue_virus_type_1|dengue_virus_type_I|Dengue_virus", Virus_name, ignore.case = TRUE) ~ "Dengue_1"))
+    grepl("dengue_virus_2|Dengue_virus_2|dengue_virus_type_2|DENV2", Virus_name, ignore.case = TRUE) ~ "Dengue_2",
+    grepl("dengue_virus_3|Dengue_virus_3|dengue_virus_type_3|DENV3", Virus_name, ignore.case = TRUE) ~ "Dengue_3",
+    grepl("dengue_virus_4|Dengue_virus_4|dengue_virus_type_4|DENV4", Virus_name, ignore.case = TRUE) ~ "Dengue_4",
+    grepl("dengue_virus_1|Dengue_virus_1|dengue_virus_type_1|dengue_virus_type_I|Dengue_virus|DENV1", Virus_name, ignore.case = TRUE) ~ "Dengue_1"))
 
 table(metadata.df$serotype)
 

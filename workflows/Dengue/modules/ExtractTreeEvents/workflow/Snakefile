@@ -1,0 +1,40 @@
+# Step 8: Translate sequences
+configfile: "config/config.yaml"
+import os
+from grapevne_helper import import_grapevne
+
+grapevne = import_grapevne(workflow)
+globals().update(vars(grapevne))
+
+
+rule extract_tree_events:
+    input:
+        tree_file=input("{major_lineages}/annotated_tree.nexus", "nexus"),
+        metadata=input("subsampled_{major_lineages}_infoTbl.csv", "metadata"),
+        script=script("AncestralChanges.py")
+    output:
+        events_file=output("{major_lineages}/annotated_tree_events.csv")
+    conda:
+        env("python.yaml")
+    log:
+        log("{major_lineages}.log")
+    params:
+        trait=param("Trait"),
+    shell:
+        """
+        python {input.script} \
+            --input {input.tree_file} \
+            --metadata {input.metadata} \
+            --output {output.events_file} \
+            --trait {params.trait} \
+            2>&1 | tee {log}
+        """
+
+rule _test:
+    input:
+        expand(
+            output(
+                "{major_lineages}/annotated_tree_events.csv"
+            ),
+            major_lineages=["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"],
+        ),

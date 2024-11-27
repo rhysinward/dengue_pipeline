@@ -1,0 +1,10 @@
+input_namespace:
+  fasta: fasta
+  metadata: metadata
+output_namespace: out
+params:
+  "Serotypes":
+    - "Dengue_1"
+    - "Dengue_2"
+    - "Dengue_3"
+    - "Dengue_4"
