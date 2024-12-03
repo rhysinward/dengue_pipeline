@@ -2,12 +2,27 @@
 serotype = ["Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4"]
 
 # Sequence sampling sizes
-number_sequences_local = 100
-number_sequences_background = {
-    "Dengue_1" : 2000,
-    "Dengue_2" : 2000,
-    "Dengue_3" : 2000,
-    "Dengue_4" : 1500,
+subsampling_counts = {
+    "Dengue_1": {
+        "local": 100,
+        "background": 2000,
+        "background_method": "even"
+    },
+    "Dengue_2": {
+        "local": "all",
+        "background": 2000,
+        "background_method": "even"
+    },
+    "Dengue_3": {
+        "local": "all",
+        "background": 2000,
+        "background_method": "even"
+    },
+    "Dengue_4": {
+        "local": "all",
+        "background": 1500,
+        "background_method": "even"
+    }
 }
 
 
@@ -162,104 +177,42 @@ rule split_genome_and_QC:
             > {log} 2>&1
         """
 
-# Step 6a: Subsampler DENV1
-rule subsample_denv1:
+# Step 6: Subsampling DENVs
+rule subsample_denv:
     input:
-        fasta_file = "results/Dengue_1_EG.fasta",
-        metadata_file = "results/Unaligned_output/Unaligned_Dengue_1_infoTbl.csv",
+        metadata_file = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
+        fasta_file = "results/{serotype}_EG.fasta",
         location_local = "data/number_of_sequences.csv"
     output:
-        subsample_fasta = "results/subsampled_Dengue_1.fasta",
-        subsample_csv = "results/subsampled_Dengue_1_infoTbl.csv",
-        subsample_txt = "results/subsampled_Dengue_1_infoTbl.tsv"
+        subsample_fasta = "results/subsampled_{serotype}.fasta",
+        subsample_csv = "results/subsampled_{serotype}_infoTbl.csv",
+        subsample_txt = "results/subsampled_{serotype}_infoTbl.tsv"
     params:
-        number_sequences_local = number_sequences_local,
-        number_sequences_background = number_sequences_background["Dengue_1"],
+        number_sequences_local = lambda wc: subsampling_counts[wc.serotype]["local"],
+        number_sequences_background = lambda wc: subsampling_counts[wc.serotype]["background"],
+        sampling_method = lambda wc: subsampling_counts[wc.serotype]["background_method"],
         time_interval = "Year",
-        sampling_method = "Even",
-        serotype = "denv1"
+        serotype = "{serotype}",
+        out_prefix = "results/subsampled_{serotype}",
+        out_dir = "_results/subsampling_plots/"
     log:
-        "logs/subsample_denv1.log"
+        "logs/subsample_{serotype}.log"
     message:
-        "Subsampling Dengue 1 virus E gene sequences based on specified criteria."
+        "Subsampling {wildcards.serotype} virus E gene sequences based on specified criteria."
     shell:
         """
-        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_1 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
-        """
-
-# Step 6b: Subsampler DENV2
-rule subsample_denv2:
-    input:
-        fasta_file = "results/Dengue_2_EG.fasta",
-        metadata_file = "results/Unaligned_output/Unaligned_Dengue_2_infoTbl.csv",
-        location_local = "data/number_of_sequences.csv"
-    output:
-        subsample_fasta = "results/subsampled_Dengue_2.fasta",
-        subsample_csv = "results/subsampled_Dengue_2_infoTbl.csv",
-        subsample_txt = "results/subsampled_Dengue_2_infoTbl.tsv"
-    params:
-        number_sequences_local = number_sequences_local,
-        number_sequences_background = number_sequences_background["Dengue_2"],
-        time_interval = "Year",
-        sampling_method = "Even",
-        serotype = "denv2"
-    log:
-        "logs/subsample_denv2.log"
-    message:
-        "Subsampling Dengue 2 virus E gene sequences based on specified criteria."
-    shell:
-        """
-        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_2 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
-        """
-
-# Step 6c: Subsampler DENV3
-rule subsample_denv3:
-    input:
-        fasta_file = "results/Dengue_3_EG.fasta",
-        metadata_file = "results/Unaligned_output/Unaligned_Dengue_3_infoTbl.csv",
-        location_local = "data/number_of_sequences.csv"
-    output:
-        subsample_fasta = "results/subsampled_Dengue_3.fasta",
-        subsample_csv = "results/subsampled_Dengue_3_infoTbl.csv",
-        subsample_txt = "results/subsampled_Dengue_3_infoTbl.tsv"
-    params:
-        number_sequences_local = number_sequences_local,
-        number_sequences_background = number_sequences_background["Dengue_3"],
-        time_interval = "Year",
-        sampling_method = "Even",
-        serotype = "denv3"
-    log:
-        "logs/subsample_denv3.log"
-    message:
-        "Subsampling Dengue 3 virus E gene sequences based on specified criteria."
-    shell:
-        """
-        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local} --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_3 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
-        """
-
-# Step 6d: Subsampler DENV4
-rule subsample_denv4:
-    input:
-        fasta_file = "results/Dengue_4_EG.fasta",
-        metadata_file = "results/Unaligned_output/Unaligned_Dengue_4_infoTbl.csv",
-        location_local = "data/number_of_sequences.csv"
-    output:
-        subsample_fasta = "results/subsampled_Dengue_4.fasta",
-        subsample_csv = "results/subsampled_Dengue_4_infoTbl.csv",
-        subsample_txt = "results/subsampled_Dengue_4_infoTbl.tsv"
-    params:
-        number_sequences_local = number_sequences_local,
-        number_sequences_background = number_sequences_background["Dengue_4"],
-        time_interval = "Year",
-        sampling_method = "Even",
-        serotype = "denv4"
-    log:
-        "logs/subsample_denv4.log"
-    message:
-        "Subsampling Dengue 4 virus E gene sequences based on specified criteria."
-    shell:
-        """
-        Rscript code/subsampler.R --metadata {input.metadata_file} --fasta {input.fasta_file} --time_interval {params.time_interval} --location_local {input.location_local} --number_sequences_local {params.number_sequences_local}  --number_sequences_background {params.number_sequences_background} --sampling_method {params.sampling_method} --outfile results/subsampled_Dengue_4 --output_dir results/ --serotype {params.serotype}  > {log} 2>&1
+        Rscript code/subsampler.R \
+            --metadata {input.metadata_file} \
+            --fasta {input.fasta_file} \
+            --location_local {input.location_local} \
+            --time_interval {params.time_interval} \
+            --number_sequences_local {params.number_sequences_local} \
+            --number_sequences_background {params.number_sequences_background} \
+            --sampling_method {params.sampling_method} \
+            --serotype {params.serotype} \
+            --out_prefix {params.out_prefix} \
+            --output_dir {params.out_dir} \
+            > {log} 2>&1
         """
 
 # Step 7: Correct metadata and fasta files into the correct format for iqtree and treetime  
