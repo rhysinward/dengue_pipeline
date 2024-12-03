@@ -37,7 +37,7 @@ opt <- parse_args(opt_parser)
 # Deconstructed ph# Deconstructed ph# Deconstructed phylogenetic trees as data frames
 # Generated through custom Python scripts (by Joseph Tsui) from phylogenetic
 # pipeline (by Rhys Inward).
-metadata_df <- safe_read_file_param(opt[["metadata"]], read_delim, delim = "\t", show_col_types = FALSE, required = TRUE)
+metadata_df <- safe_read_file_param(opt$metadata, read_delim, delim = "\t", show_col_types = FALSE, required = TRUE)
 
 ####################### Cross-border viral movements ###########################
 ## Generate data frame counting viral movements between neighbours ####

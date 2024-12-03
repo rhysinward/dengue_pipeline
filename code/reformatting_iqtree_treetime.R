@@ -24,10 +24,10 @@ opt <- parse_args(opt_parser)
 ## read in input metadata file
 ##########################################################
 
-metadata_df <- safe_read_file_param(opt[["metadata"]], read_csv, show_col_types = FALSE, required = TRUE)
+metadata_df <- safe_read_file_param(opt$metadata, read_csv, show_col_types = FALSE, required = TRUE)
 
 ## read in input fasta file
-seqs <- safe_read_file_param(opt[["fasta"]], read.fasta, required = TRUE)
+seqs <- safe_read_file_param(opt$fasta, read.fasta, required = TRUE)
 
 names(seqs) <- gsub("(", "_", names(seqs), fixed = TRUE)
 names(seqs) <- gsub(")", "_", names(seqs), fixed = TRUE)

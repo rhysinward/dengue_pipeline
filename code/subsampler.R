@@ -40,13 +40,13 @@ set.seed(123)
 ##########################################################
 
 ## read in input metadata file
-metadata_df <- safe_read_file_param(opt[["metadata"]], read_csv, show_col_types = FALSE, required = TRUE)
+metadata_df <- safe_read_file_param(opt$metadata, read_csv, show_col_types = FALSE, required = TRUE)
 
 ## read in input fasta file
-seqs <- safe_read_file_param(opt[["fasta"]], read.fasta, required = TRUE)
+seqs <- safe_read_file_param(opt$fasta, read.fasta, required = TRUE)
 
-if (!is.null(opt[["location_background"]])) {
-  proportional_variable <- read.csv(opt[["location_background"]])
+if (!is.null(opt$location_background)) {
+  proportional_variable <- read.csv(opt$location_background)
 }
 
 ##########################################################
@@ -98,18 +98,18 @@ metadata_df$Continent <- countrycode(metadata_df$Country, origin = "country.name
 metadata_df$Continent <- ifelse(metadata_df$Country == "Saint_Martin", "Americas", metadata_df$Continent)
 
 # Add csv containing the column (which can be country, continent etc) and the value of interest (e.g. Australia, Asia etc)
-location_of_interest <- safe_read_file_param(opt[["location_local"]], read_csv, show_col_types = FALSE, required = TRUE)
+location_of_interest <- safe_read_file_param(opt$location_local, read_csv, show_col_types = FALSE, required = TRUE)
 
 # Get the column name and value of interest
 column_of_interest <- colnames(location_of_interest)[1] %>% sym()
 values_of_interest <- location_of_interest %>% pull({{ column_of_interest }})
 
 # Add time interval
-time_interval <- opt[["time_interval"]] %>% sym()
+time_interval <- opt$time_interval %>% sym()
 
 # Add serotype
-if (!is.null(opt[["serotype"]])) {
-  Serotype <- opt[["serotype"]]
+if (!is.null(opt$serotype)) {
+  Serotype <- opt$serotype
 }
 
 # Filter metadata_df where the dynamic column equals the value of interest
@@ -142,12 +142,12 @@ plot_1 <- ggplot(metadata_countries_of_interest_plot, aes(x = {{ time_interval }
 ggsave(filename = paste0(opt$output_dir,"metadata_countries_of_interest_plot_", Serotype, ".pdf"), plot = plot_1)
 
 # Local sequences sampling
-no_seq_local <- opt[["number_sequences_local"]]
+no_seq_local <- opt$number_sequences_local
 df_sample <- if (no_seq_local == "all" || is.null(no_seq_local)) {
   # No sampling for local sequences
   info_msg(sprintf(
     "All local sequences are used; %d sequences of `%s`.",
-    nrow(metadata_countries_of_interest), opt[["serotype"]]
+    nrow(metadata_countries_of_interest), opt$serotype
   ))
 
   seq(1, nrow(metadata_countries_of_interest))
@@ -155,7 +155,7 @@ df_sample <- if (no_seq_local == "all" || is.null(no_seq_local)) {
   # Even weighted sampling method for local sequences
   info_msg(sprintf(
     "Number of local sequences to be sampled: %s, out of %d `%s` sequences",
-    no_seq_local, nrow(metadata_countries_of_interest), opt[["serotype"]]
+    no_seq_local, nrow(metadata_countries_of_interest), opt$serotype
   ))
 
   # Conduct sampling
@@ -228,7 +228,7 @@ if (opt$sampling_method == 'Even') {
   
   # Conduct random weighted sampling
   df_sample <- sample_int_crank(
-    n = nrow(background_metadata_even), opt[["number_sequences_background"]],
+    n = nrow(background_metadata_even), opt$number_sequences_background,
     background_metadata_even$weights
   )
 
@@ -300,7 +300,7 @@ if (opt$sampling_method == 'Even') {
   ggsave(filename = paste0(opt$output_dir,"background_metadata_plot_proportional_", Serotype, ".pdf"), plot = plot_5)
   
   df_sample <- sample_int_crank(
-    n = nrow(background_metadata_proportional_with_variable), opt[["number_sequences_background"]],
+    n = nrow(background_metadata_proportional_with_variable), opt$number_sequences_background,
     background_metadata_proportional_with_variable$weights
   )
 
@@ -360,15 +360,15 @@ vec.tokeep <- which(vec.names %in% species.to.keep)
 # Write the sequences to a new FASTA file
 write.fasta(
   sequences = seqs[vec.tokeep], names = names(seqs)[vec.tokeep],
-  file.out = paste0(opt[["out_prefix"]], ".fasta")
+  file.out = paste0(opt$out_prefix, ".fasta")
 )
 
 write.csv(final_sample,
-  file = paste0(opt[["out_prefix"]], "_infoTbl.tsv"),
+  file = paste0(opt$out_prefix, "_infoTbl.tsv"),
   row.names = FALSE, quote = FALSE
 )
 
 write.csv(final_sample,
-  file = paste0(opt[["out_prefix"]], "_infoTbl.csv"),
+  file = paste0(opt$out_prefix, "_infoTbl.csv"),
   row.names = FALSE, quote = FALSE
 )
