@@ -21,12 +21,7 @@ opt = parse_args(opt_parser)
 ########################################################################
 
 ## read in input cleaned metadata file
-if (!is.null(opt$metadata)) {
-  metadata.df <- read.csv(opt$metadata)
-} else {
-  cat("Input metadata file. Exiting now...")
-  quit()
-}
+metadata_df <- safe_read_file_param(opt$metadata, read_csv, show_col_types = FALSE, required = TRUE)
 
 #merge different serotype naming schemes
 metadata.df <- metadata.df %>%
@@ -36,9 +31,9 @@ metadata.df <- metadata.df %>%
     grepl("dengue_virus_4|Dengue_virus_4|dengue_virus_type_4", Virus_name, ignore.case = TRUE) ~ "Dengue_4",
     grepl("dengue_virus_1|Dengue_virus_1|dengue_virus_type_1|dengue_virus_type_I|Dengue_virus", Virus_name, ignore.case = TRUE) ~ "Dengue_1"))
 
-table(metadata.df$serotype)
 
-## read in input fasta file
+info_msg("Serotype table:")
+table(metadata_df$serotype)
 
 if (!is.null(opt$fasta)) {
   seqs <- read.fasta(opt$fasta)

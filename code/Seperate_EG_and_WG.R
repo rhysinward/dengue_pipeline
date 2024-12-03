@@ -18,9 +18,11 @@ opt = parse_args(opt_parser)
 ## main
 ########################################################################
 
-## Define the array of serotype FASTA files
-fasta_files <- c("results/Aligned_Dengue_1/nextalign.aligned.fasta", "results/Aligned_Dengue_2/nextalign.aligned.fasta", 
-                 "results/Aligned_Dengue_3/nextalign.aligned.fasta", "results/Aligned_Dengue_4/nextalign.aligned.fasta")
+info_msg("Running with `WG_threshold`=", opt[["WG_threshold"]], " and `EG_threshold`=", opt[["EG_threshold"]])
+
+## read in input fasta file
+fasta_df <- safe_read_file_param(opt[["fasta"]], read.fasta, required = TRUE)
+
 
 ## Loop over the FASTA files
 for (fasta_file in fasta_files) {

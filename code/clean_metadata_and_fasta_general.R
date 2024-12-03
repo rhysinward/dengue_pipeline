@@ -28,25 +28,18 @@ opt = parse_args(opt_parser)
 ########################################################################
 
 ## read in input metadata file from GenBank
-if (!is.null(opt$metadata)) {
-  metadata.df <- read_tsv(opt$metadata)
-  } else {
-  cat("Input metadata file. Exiting now...")
-  quit()
-}
+metadata_df <- safe_read_file_param(opt$metadata, read_tsv, show_col_types = FALSE, required = TRUE) %>%
+  select(-`Geographic State`)
 
 ## read in and combine extra metadata from sequencing
 ## Nb will need to be in a specific format to match GenBank metadata
 ## See Github for specific formatting requirements
-
-if (!is.null(opt$extra_metadata)) {
-  metadata.extra <- read_tsv(opt$extra_metadata, show_col_types = FALSE)
-  if (nrow(metadata.extra) == 0 || ncol(metadata.extra) == 0) {
-    warning("Extra metadata NOT included")
-  } else {
-    metadata.df <- rbind(metadata.df, metadata.extra)
-    print("Extra metadata included")
-  }
+extra_metadata <- safe_read_file_param(opt$extra_metadata, read_tsv, show_col_types = FALSE)
+if (nrow(extra_metadata) == 0 || ncol(extra_metadata) == 0) {
+  warn_msg("Extra metadata NOT included")
+} else {
+  metadata_df <- rbind(metadata_df, extra_metadata)
+  info_msg("Extra metadata included")
 }
 
 #Process dates
