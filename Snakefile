@@ -70,7 +70,18 @@ rule process_genbank_data:
         "Processing and cleaning data downloaded from NCBI"
     shell:
         """
-        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --extra_metadata {input.extra_metadata} --extra_fasta {input.extra_fasta} --start_date {params.start_date} --end_date {params.end_date} --host "{params.host}" --outfile_fasta {output.fasta_files} --outfile_csv {output.info_tables_csv} --outfile_tsv {output.info_tables_txt} > {log} 2>&1
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --extra_metadata {input.extra_metadata} \
+            --extra_fasta {input.extra_fasta} \
+            --start_date {params.start_date} \
+            --end_date {params.end_date} \
+            --host "{params.host}" \
+            --outfile_fasta {output.fasta_files} \
+            --outfile_csv {output.info_tables_csv} \
+            --outfile_tsv {output.info_tables_txt} \
+            > {log} 2>&1
         """
 
 # Step 3: Split into serotype, add serotypes to sequence name and generate sequence specific metadata
