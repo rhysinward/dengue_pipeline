@@ -1,24 +1,21 @@
-## load packages
-required_packages <- c("optparse", "dplyr","lubridate","tidyr",
-                       "readr","ape","seqinr","countrycode",
-                       "ggplot2","purrr","zoo","rlang","wrswoR")
-suppressMessages(
-  for (package in required_packages) {
-    if (!require(package, character.only = TRUE)) {
-      install.packages(package, repos = "http://cran.us.r-project.org")
-    }
-    library(package, character.only = TRUE)
-  }
+# List of required packages
+required_packages <- c(
+  "optparse", "dplyr", "lubridate", "tidyr",
+  "readr", "ape", "seqinr", "countrycode",
+  "ggplot2", "purrr", "zoo", "rlang", "wrswoR", "readr"
 )
+
+# Function to check and install packages
+# and load necessary utility functions
+source("code/_headers.R")
 
 # Define and parse command-line options
 opt_parser <- OptionParser(
   option_list = list(
-    make_option(c("-m", "--metadata"), type="character", help="Input tsv file containing metadata from GenBank, with sequence identifiers matching those in the input fasta file."),
-    make_option(c("-f", "--fasta"), type="character", help="Input fasta file, with sequence identifiers matching those in the metadata file."),
-    make_option(c("-o", "--output_dir_fasta"), type="character", default="subsampled", help="Output directory for subsampled sequences and metadata"),
-    make_option(c("-a", "--output_dir_csv"), type="character", default="subsampled", help="Output directory for subsampled sequences and metadata")
-    
+    make_option(c("-m", "--metadata"), type = "character", help = "Input tsv file containing metadata from GenBank, with sequence identifiers matching those in the input fasta file."),
+    make_option(c("-f", "--fasta"), type = "character", help = "Input fasta file, with sequence identifiers matching those in the metadata file."),
+    make_option(c("-o", "--output_dir_fasta"), type = "character", default = "subsampled", help = "Output directory for subsampled sequences and metadata"),
+    make_option(c("-a", "--output_dir_csv"), type = "character", default = "subsampled", help = "Output directory for subsampled sequences and metadata")
   )
 )
 opt = parse_args(opt_parser)

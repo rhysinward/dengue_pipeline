@@ -1,18 +1,9 @@
 # List of required packages
-required_packages <- c("optparse", "dplyr", "lubridate", "tidyr",
-                       "readr", "ape","seqinr")
-
-options(repos = c(CRAN = "http://cran.us.r-project.org"))
+required_packages <- c("optparse", "dplyr", "lubridate", "tidyr", "readr", "ape", "seqinr", "readr")
 
 # Function to check and install packages
-suppressMessages(
-  for (package in required_packages) {
-    if (!require(package, character.only = TRUE)) {
-      install.packages(package, repos = "http://cran.us.r-project.org")
-    }
-    library(package, character.only = TRUE)
-  }
-)
+# and load necessary utility functions
+source("code/_headers.R")
 
 # Define and parse command-line options
 opt_parser <- OptionParser(
