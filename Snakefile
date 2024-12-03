@@ -94,16 +94,22 @@ rule process_dengue_data:
         fasta = "results/Unaligned_output/Unaligned_{serotype}.fasta",
         csv = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
         tsv = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.txt"
-
-
+    params:
+        out_prefix="_results/s04_process_dengue_data/Unaligned_",
+        serotype = "{serotype}"
     log:
         "logs/process_data_{serotype}.log"
     message:
-        "Split into serotype, add serotypes to sequence name and generate sequence specific metadata"
+        "Split into {wildcards.serotype}, add serotypes to sequence name and generate sequence specific metadata"
     shell:
         """
         mkdir -p results/Unaligned_output/
-        Rscript {input.script} --metadata {input.metadata} --fasta {input.fasta} --outfile results/Unaligned_output/Unaligned_ > {log} 2>&1
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --fasta {input.fasta} \
+            --serotype {params.serotype} \
+            --outfile {params.out_prefix} \
+            > {log} 2>&1
         """
 
 # Step 4: Sequence alignment

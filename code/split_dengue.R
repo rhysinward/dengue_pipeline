@@ -41,53 +41,58 @@ seqs <- safe_read_file_param(opt$fasta, read.fasta, required = TRUE)
 
 taxa <- as.matrix(attributes(seqs)$names)
 
-#loop through each serotype to match, rename, and write to separate files
-for (serotype in c("Dengue_1", "Dengue_2", "Dengue_3", "Dengue_4")) {
-  # Subset the metadata for the current serotype
-  serotype_metadata <- metadata.df %>% filter(serotype == !!serotype)
-  minds  <- match(taxa, serotype_metadata$Sequence_name)
-  genbank_ID <- as.matrix(serotype_metadata$GenBank_ID[minds])
-  dateTxt <- as.matrix(as.character(serotype_metadata$Date[minds]))
-  Virus <- serotype
-  decDate <- as.numeric(apply(as.matrix(dateTxt), 1, calcDecimalDate_fromTxt, dayFirst=FALSE, namedMonth=FALSE, sep="-"))
-  country <- as.matrix(serotype_metadata$Country[minds])
-  state   <- as.matrix(serotype_metadata$State[minds])
-  city   <- as.matrix(serotype_metadata$City[minds])
-  
-  newTaxa <- paste(genbank_ID,country,state,city,Virus,dateTxt,decDate,sep="|")
-  newTaxa <- gsub(" ","_",newTaxa)
-  newTaxa <- gsub("\\(", "", newTaxa) 
-  newTaxa <- gsub("\\)", "", newTaxa)  
-  attributes(seqs)$names <- newTaxa
-  
-  seq_name <- as.data.frame(as.matrix(attributes(seqs)$names))
-  remove <- filter(seq_name,grepl('NA|NA|NA',V1,fixed = TRUE))
-  species.to.remove <- remove$V1
-  vec.names<-unlist(lapply(strsplit(names(seqs), ";"), function(x)x[length(x)]))
-  vec.tokeep <-which(! vec.names %in%  species.to.remove)
-  
-  # Write the sequences to a new FASTA file
-  
-  write.fasta(sequences=seqs[vec.tokeep], names=names(seqs)[vec.tokeep],
-              file.out=paste0(opt$outfile,serotype,".fasta"))
+# go through each serotype to match, rename, and write to separate files
+serotype <- opt$serotype
 
-  # Prepare and write the metadata information table
-  
-  seq_name_kept <- as.data.frame(as.matrix(attributes(seqs[vec.tokeep])$names))
-  taxa_split <- data.frame(do.call('rbind',strsplit(as.character(seq_name_kept$V1),'|',fixed = TRUE)))
-  taxa_split$name <- seq_name_kept$V1
-  colnames(taxa_split) <- c('GenBank_ID', "Country", "State",
-                            "City", "Serotype", "Date","Decimal_Date","Sequence_name")
-  
-  write.table(taxa_split,
-              file = paste0(opt$outfile,serotype,"_infoTbl.txt"),
-              sep = "\t", 
-              col.names = TRUE, 
-              row.names = FALSE, 
-              quote = FALSE)
-  
-  write.csv(taxa_split,
-            file = paste0(opt$outfile,serotype,"_infoTbl.csv"),
-            row.names = FALSE)
-  cat(paste0("Processing completed for ", serotype, "\n"))
-}
+# Subset the metadata for the current serotype
+serotype_metadata <- metadata_df %>% filter(serotype == !!serotype)
+minds <- match(taxa, serotype_metadata$Sequence_name)
+genbank_ID <- as.matrix(serotype_metadata$GenBank_ID[minds])
+dateTxt <- as.matrix(as.character(serotype_metadata$Date[minds]))
+Virus <- serotype
+decDate <- as.numeric(apply(as.matrix(dateTxt), 1, calcDecimalDate_fromTxt, dayFirst = FALSE, namedMonth = FALSE, sep = "-"))
+country <- as.matrix(serotype_metadata$Country[minds])
+state <- as.matrix(serotype_metadata$State[minds])
+city <- as.matrix(serotype_metadata$City[minds])
+
+newTaxa <- paste(genbank_ID, country, state, city, Virus, dateTxt, decDate, sep = "|")
+newTaxa <- gsub(" ", "_", newTaxa)
+newTaxa <- gsub("\\(", "", newTaxa)
+newTaxa <- gsub("\\)", "", newTaxa)
+attributes(seqs)$names <- newTaxa
+
+seq_name <- as.data.frame(as.matrix(attributes(seqs)$names))
+remove <- filter(seq_name, grepl("NA|NA|NA", V1, fixed = TRUE))
+species.to.remove <- remove$V1
+vec.names <- unlist(lapply(strsplit(names(seqs), ";"), function(x) x[length(x)]))
+vec.tokeep <- which(!vec.names %in% species.to.remove)
+
+# Write the sequences to a new FASTA file
+write.fasta(
+  sequences = seqs[vec.tokeep], names = names(seqs)[vec.tokeep],
+  file.out = paste0(opt$outfile, serotype, ".fasta")
+)
+
+# Prepare and write the metadata information table
+seq_name_kept <- as.data.frame(as.matrix(attributes(seqs[vec.tokeep])$names))
+taxa_split <- data.frame(do.call("rbind", strsplit(as.character(seq_name_kept$V1), "|", fixed = TRUE)))
+taxa_split$name <- seq_name_kept$V1
+colnames(taxa_split) <- c(
+  "GenBank_ID", "Country", "State",
+  "City", "Serotype", "Date", "Decimal_Date", "Sequence_name"
+)
+
+write.table(taxa_split,
+  file = paste0(opt$outfile, serotype, "_infoTbl.txt"),
+  sep = "\t",
+  col.names = TRUE,
+  row.names = FALSE,
+  quote = FALSE
+)
+
+write.csv(taxa_split,
+  file = paste0(opt$outfile, serotype, "_infoTbl.csv"),
+  row.names = FALSE
+)
+
+info_msg("Processing completed for ", serotype)
