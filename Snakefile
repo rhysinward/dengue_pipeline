@@ -140,10 +140,10 @@ rule sequence_alignment:
 # Step 5: Segregating E gene and Whole Genomes and performing quaility control
 rule split_genome_and_QC:
     input:
-        fasta_files = expand("results/Aligned_{serotype}/nextalign.aligned.fasta", serotype=serotype)
+        fasta = "results/Aligned_{serotype}/nextalign.aligned.fasta"
     output:
-        E_gene_dir = expand("results/{serotype}_EG.fasta", serotype=serotype),
-        WG_gene_dir = expand("results/{serotype}_WG.fasta", serotype=serotype)
+        E_gene_dir = "results/{serotype}_EG.fasta",
+        WG_gene_dir = "results/{serotype}_WG.fasta"
     params:
         wg_threshold = 0.29,
         eg_threshold = 0.29
@@ -153,7 +153,13 @@ rule split_genome_and_QC:
         "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
     shell:
         """
-        Rscript code/Seperate_EG_and_WG.R --WG_threshold {params.wg_threshold} --EG_threshold {params.eg_threshold}  > {log} 2>&1
+        Rscript code/Seperate_EG_and_WG.R \
+            --fasta {input.fasta} \
+            --WG_threshold {params.wg_threshold} \
+            --EG_threshold {params.eg_threshold} \
+            --outfile_fasta_eg {output.E_gene_dir} \
+            --outfile_fasta_wg {output.WG_gene_dir} \
+            > {log} 2>&1
         """
 
 # Step 6a: Subsampler DENV1
