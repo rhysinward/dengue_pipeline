@@ -18,7 +18,7 @@ opt_parser <- OptionParser(
     make_option(c("-a", "--output_dir_csv"), type = "character", default = "subsampled", help = "Output directory for subsampled sequences and metadata")
   )
 )
-opt = parse_args(opt_parser)
+opt <- parse_args(opt_parser)
 
 ##########################################################
 ## read in input metadata file
@@ -35,23 +35,23 @@ names(seqs) <- gsub(",", "_", names(seqs), fixed = TRUE)
 names(seqs) <- gsub("*", "_", names(seqs), fixed = TRUE)
 names(seqs) <- gsub("'", "_", names(seqs), fixed = TRUE)
 
-metadata.df$Sequence_name <- gsub("(", "_", metadata.df$Sequence_name, fixed = TRUE)
-metadata.df$Sequence_name <- gsub(")", "_", metadata.df$Sequence_name, fixed = TRUE)
-metadata.df$Sequence_name <- gsub(",", "_", metadata.df$Sequence_name, fixed = TRUE)
-metadata.df$Sequence_name <- gsub("*", "_", metadata.df$Sequence_name, fixed = TRUE)
-metadata.df$Sequence_name <- gsub("'", "_", metadata.df$Sequence_name, fixed = TRUE)
+metadata_df$Sequence_name <- gsub("(", "_", metadata_df$Sequence_name, fixed = TRUE)
+metadata_df$Sequence_name <- gsub(")", "_", metadata_df$Sequence_name, fixed = TRUE)
+metadata_df$Sequence_name <- gsub(",", "_", metadata_df$Sequence_name, fixed = TRUE)
+metadata_df$Sequence_name <- gsub("*", "_", metadata_df$Sequence_name, fixed = TRUE)
+metadata_df$Sequence_name <- gsub("'", "_", metadata_df$Sequence_name, fixed = TRUE)
 
-metadata.df <- metadata.df %>% rename(date = Decimal_Date)
-metadata.df <- metadata.df %>% rename(name = Sequence_name)
+metadata_df <- metadata_df %>% rename(date = Decimal_Date)
+metadata_df <- metadata_df %>% rename(name = Sequence_name)
 
-metadata.df$Country <- gsub("Viet_Nam", "Vietnam", metadata.df$Country)
+metadata_df$Country <- gsub("Viet_Nam", "Vietnam", metadata_df$Country)
 
 
-Serotype <- unique(metadata.df$Serotype)
+Serotype <- unique(metadata_df$Serotype)
 
 write.fasta(sequences=seqs, names=names(seqs),
             file.out=paste0(opt$output_dir_fasta))
 
-write.csv(metadata.df,
+write.csv(metadata_df,
                     file = paste0(opt$output_dir_csv),
                     row.names = FALSE,quote=FALSE)

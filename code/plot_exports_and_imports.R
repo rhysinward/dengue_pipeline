@@ -30,7 +30,7 @@ opt_parser <- OptionParser(
   )
 )
 
-opt = parse_args(opt_parser)
+opt <- parse_args(opt_parser)
 
 
 ############################## Data wrangling ##################################
@@ -43,7 +43,7 @@ metadata_df <- safe_read_file_param(opt[["metadata"]], read_delim, delim = "\t",
 ## Generate data frame counting viral movements between neighbours ####
 
 # Remove branches with two nodes in the same country
-metadata.df_intl <- metadata.df |> filter(head_country != tail_country)
+metadata_df_intl <- metadata_df |> filter(head_country != tail_country)
 
 # Plot numbers of international imports into specific countries
 country <- opt$country
@@ -51,9 +51,9 @@ serotype <- opt$serotype
 
 #add serotype 
 
-metadata.df_intl$serotype <- serotype
+metadata_df_intl$serotype <- serotype
 
-plot_data_2 <- metadata.df_intl |>
+plot_data_2 <- metadata_df_intl |>
   filter(tail_country == country) |>
   group_by(serotype, head_country) |>
   summarise(count = n())
@@ -77,7 +77,7 @@ ggsave(filename = paste0(opt$output_dir, "total_imports_", serotype, ".pdf"), pl
 
 #imports over time 
 
-plot_data_over_time <- metadata.df_intl |>
+plot_data_over_time <- metadata_df_intl |>
   filter(tail_country == country) |>
   mutate(Year = year(tail_date)) %>%  
   group_by(serotype,Year) |>
@@ -94,7 +94,7 @@ ggsave(filename = paste0(opt$output_dir, "total_imports_over_time", serotype, ".
 
 # Plot numbers of international export from specific countries
 
-plot_data_3 <- metadata.df_intl |>
+plot_data_3 <- metadata_df_intl |>
   filter(head_country == country) |>
   group_by(serotype, tail_country) |>
   summarise(count = n())
@@ -115,7 +115,7 @@ ggsave(filename = paste0(opt$output_dir,"total_export_", serotype, ".pdf"), plot
 
 #export over time 
 
-plot_data_over_time_exports <- metadata.df_intl |>
+plot_data_over_time_exports <- metadata_df_intl |>
   filter(head_country == country) |>
   mutate(Year = year(tail_date)) %>%  
   group_by(serotype,Year) |>

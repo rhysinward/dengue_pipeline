@@ -13,14 +13,15 @@ opt_parser <- OptionParser(
   )
 )
 
-opt = parse_args(opt_parser)
+opt <- parse_args(opt_parser)
+
 ########################################################################
 ## main
 ########################################################################
 
 info_msg("Running with `WG_threshold`=", opt[["WG_threshold"]], " and `EG_threshold`=", opt[["EG_threshold"]])
 
-## read in input fasta file
+# Read in input fasta file
 fasta_df <- safe_read_file_param(opt[["fasta"]], read.fasta, required = TRUE)
 
 
