@@ -155,6 +155,7 @@ rule sequence_alignment:
 # Step 5: Segregating E gene and Whole Genomes and performing quaility control
 rule split_genome_and_QC:
     input:
+        script="code/Seperate_EG_and_WG.R",
         fasta = "results/Aligned_{serotype}/nextalign.aligned.fasta"
     output:
         E_gene_dir = "results/{serotype}_EG.fasta",
@@ -168,7 +169,7 @@ rule split_genome_and_QC:
         "Segregating E gene and whole genomes from aligned Dengue virus sequences and performing quality control."
     shell:
         """
-        Rscript code/Seperate_EG_and_WG.R \
+        Rscript {input.script} \
             --fasta {input.fasta} \
             --WG_threshold {params.wg_threshold} \
             --EG_threshold {params.eg_threshold} \
@@ -180,6 +181,7 @@ rule split_genome_and_QC:
 # Step 6: Subsampling DENVs
 rule subsample_denv:
     input:
+        script = "code/subsampler.R",
         metadata_file = "results/Unaligned_output/Unaligned_{serotype}_infoTbl.csv",
         fasta_file = "results/{serotype}_EG.fasta",
         location_local = "data/number_of_sequences.csv"
@@ -201,7 +203,7 @@ rule subsample_denv:
         "Subsampling {wildcards.serotype} virus E gene sequences based on specified criteria."
     shell:
         """
-        Rscript code/subsampler.R \
+        Rscript {input.script} \
             --metadata {input.metadata_file} \
             --fasta {input.fasta_file} \
             --location_local {input.location_local} \
@@ -218,6 +220,7 @@ rule subsample_denv:
 # Step 7: Correct metadata and fasta files into the correct format for iqtree and treetime  
 rule reformatting:
     input:
+        script = "code/reformatting_iqtree_treetime.R",
         fasta_file = "results/subsampled_{serotype}.fasta",
         metadata_file = "results/subsampled_{serotype}_infoTbl.csv",
     output:
@@ -229,7 +232,12 @@ rule reformatting:
         "Correct metadata and fasta files into the correct format for iqtree and treetime"
     shell:
         """
-        Rscript code/reformatting_iqtree_treetime.R --metadata {input.metadata_file} --fasta {input.fasta_file} --output_dir_fasta {output.cleaned_fasta} --output_dir_csv {output.cleaned_metadata}
+        Rscript {input.script} \
+            --metadata {input.metadata_file} \
+            --fasta {input.fasta_file} \
+            --output_dir_fasta {output.cleaned_fasta} \
+            --output_dir_csv {output.cleaned_metadata} \
+            > {log} 2>&1
         """
 
 # Step 8: Treebuilding
@@ -389,6 +397,7 @@ rule export:
 
 rule extract_phylogenetic_tree:
     input:
+        script = "code/extract_tree_from_json.py",
         json_file = "auspice/dengue_{serotype}.json"
     output:
         nexus_file = "results/dengue_{serotype}_timetree.nexus"
@@ -400,13 +409,17 @@ rule extract_phylogenetic_tree:
         "Extract annotated tree from nextstrain JSON format "
     shell:
         """
-        python code/extract_tree_from_json.py {input.json_file} {output.nexus_file}
+        python {input.script} \
+            {input.json_file} \
+            {output.nexus_file} \
+            > {log} 2>&1
         """
 
 # Step 15: Extract information from tree 
 
 rule extract_information_from_phylogenetic_tree:
     input:
+        script = "code/DENV_tree_breakdown.py",
         tree_file = "results/dengue_{serotype}_timetree.nexus"
     output:
         tsv_file = "results/dengue_{serotype}_timetree_extracted.tsv"
@@ -418,13 +431,17 @@ rule extract_information_from_phylogenetic_tree:
         "Extract information from annotated tree"
     shell:
         """
-        python code/DENV_tree_breakdown.py {input.tree_file} {output.tsv_file}
+        python {input.script} \
+            {input.tree_file} \
+            {output.tsv_file} \
+            > {log} 2>&1
         """
 
 # Step 16: Quantify number of exports and imports from desired country
 
 rule plot_exports_and_imports:
     input:
+        script = "code/plot_exports_and_imports.R",
         metadata = "results/dengue_{serotype}_timetree_extracted.tsv"
     output:
         imports = "results/imports_{serotype}.csv",
@@ -438,7 +455,14 @@ rule plot_exports_and_imports:
         "Quantify number of exports and imports from desired country"
     shell:
         """
-        Rscript code/plot_exports_and_imports.R --metadata {input.metadata} --output_dir results/  --output_dir_export {output.exports} --output_dir_import {output.imports} --country {params.country} --serotype {params.serotype}
+        Rscript {input.script} \
+            --metadata {input.metadata} \
+            --output_dir results/  \
+            --output_dir_export {output.exports} \
+            --output_dir_import {output.imports} \
+            --country {params.country} \
+            --serotype {params.serotype} \
+            > {log} 2>&1
         """
 
 # Step 17: Create updated metadata and fasta file based of prunning from treetime
