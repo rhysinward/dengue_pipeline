@@ -25,19 +25,33 @@ subsampling_counts = {
     }
 }
 
+# Include hyphy branch rules
+include: "Snakefile_hyphy_branch"
 
 rule all:
     input:
-        expand("results/imports_{serotype}.csv", serotype=serotype)
+        expand("results/imports_{serotype}.csv", serotype=serotype),
+        ## Select which HYPHY selection pressure method by uncommenting the lines below, e.g. MEME is being selected
+        ## more information: http://www.hyphy.org/methods/selection-methods/
+        ## requires including `Snakefile_hyphy_branch` subworkflow
+        expand("results/hyphy/meme_{serotype}.json", serotype=serotype)
+        # expand("results/hyphy/fubar_{serotype}.json", serotype=serotype),
+        # expand("results/hyphy/slac_{serotype}.json", serotype=serotype),
+        # expand("results/hyphy/fel_{serotype}.json", serotype=serotype),
+        # expand("results/hyphy/contrast_fel_{serotype}.json", serotype=serotype)
 
 # Rule for creating necessary directories
 rule create_directories:
     output:
         directory("logs"),
         directory("data"),
-        directory("results")
+        directory("results"),
+        directory("results/hyphy")
     shell:
-        "mkdir -p logs data results"
+        """
+        mkdir -p logs data results
+        mkdir -p results/hyphy
+        """
 
 # Step 1: Acquisition of Genomic Data and Metadata from GenBank
 rule acquire_data:
@@ -218,10 +232,12 @@ rule subsample_denv:
         """
 
 # Step 7: Correct metadata and fasta files into the correct format for iqtree and treetime  
+# use `results/subsampled_{serotype}_hyphy_clned.fasta` for HYPHY analyses
 rule reformatting:
     input:
         script = "code/reformatting_iqtree_treetime.R",
-        fasta_file = "results/subsampled_{serotype}.fasta",
+        # fasta_file = "results/subsampled_{serotype}.fasta",
+        fasta_file = "results/subsampled_{serotype}_hyphy_clned.fasta",
         metadata_file = "results/subsampled_{serotype}_infoTbl.csv",
     output:
         cleaned_fasta = "results/subsampled_{serotype}_cleaned.fasta",

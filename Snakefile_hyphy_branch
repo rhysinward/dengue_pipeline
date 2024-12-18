@@ -1,0 +1,219 @@
+# Step 6b: Remove sequences with stop codons with `hyphy cln`
+rule hyphy_cln:
+    input:
+        fasta_file = "results/subsampled_{serotype}.fasta"
+    output:
+        cleaned_fasta = "results/subsampled_{serotype}_hyphy_clned.fasta",
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_cln_{serotype}.log"    
+    shell:
+        """
+        hyphy cln \
+            Universal \
+            {input.fasta_file} \
+            "Yes/Yes" \
+            {output.cleaned_fasta} \
+            > {log} 2>&1
+        """
+
+## Branching from step 8 of original pipeline
+# Step 9: Remove duplicates with hyphy analyses
+rule hyphy_remove_dupes:
+    input:
+        fasta_file = "results/subsampled_{serotype}_cleaned.fasta",
+        tree_file = "results/subsampled_{serotype}_cleaned.fasta.treefile"
+    output:
+        outfile = "results/subsampled_{serotype}_deduped_tree.fasta"
+    params:
+        workdir = "results/hyphy_remove_dupes_temp/"
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_remove_dupes_{serotype}.log"
+    shell:
+        """
+        mkdir -p {params.workdir}
+        cp {input.fasta_file} {params.workdir}
+        cp {input.tree_file} {params.workdir}
+        cp hyphy-analyses/remove-duplicates/remove-duplicates.bf {params.workdir}
+
+        (cd {params.workdir};
+        hyphy remove-duplicates.bf \
+            --msa $(basename {input.fasta_file}) \
+            --tree $(basename {input.tree_file}) \
+            --output ../$(basename {output.outfile}) \
+            ENV="DATA_FILE_PRINT_FORMAT=9" \
+        ) > {log} 2>&1
+        """
+
+# Step 10: Filter strains from VN only
+rule filter_vn_strains:
+    input:
+        script = "code/filter_country_strains.R",
+        csv_file = "results/subsampled_{serotype}_cleaned_infoTbl.csv"
+    output:
+        outfile = "results/subsampled_{serotype}_filtered_vn_strains.txt"
+    params:
+        country = "Vietnam"
+    log:
+        "logs/filter_vn_strains_{serotype}.log"
+    shell:
+        """
+        Rscript {input.script} \
+            --csv {input.csv_file} \
+            --country {params.country} \
+            --outfile {output.outfile} \
+            > {log} 2>&1
+        """
+
+# Step 11: Label tree with hyphy analyses
+rule hyphy_label_trees:
+    input:
+        treefile = "results/subsampled_{serotype}_deduped_tree.fasta",
+        filtered_strains = "results/subsampled_{serotype}_filtered_vn_strains.txt"
+    output:
+        labelled_tree = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    params:
+        workdir = "results/hyphy_label_trees_temp/",
+        fasta_dat = "results/hyphy_label_trees_temp/fasta_seq_{serotype}.temp",
+        temp_file = "results/hyphy_label_trees_temp/tree_{serotype}.temp"
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_label_trees_{serotype}.log"
+    shell:
+        """
+        mkdir -p {params.workdir}
+        cp {input.filtered_strains} {params.workdir}
+        cp hyphy-analyses/LabelTrees/label-tree.bf {params.workdir}
+        head -n -1 {input.treefile} > {params.workdir}$(basename {params.fasta_dat})
+        tail -1 {input.treefile} > {params.workdir}$(basename {input.treefile})
+        
+        (cd {params.workdir};
+        hyphy label-tree.bf \
+            --tree $(basename {input.treefile}) \
+            --list $(basename {input.filtered_strains}) \
+            --output $(basename {params.temp_file}) \
+            --internal-nodes None;
+        echo "Finished labelling. Adding labelled nwk to fasta.";
+        cat $(basename {params.fasta_dat}) > ../$(basename {output.labelled_tree});
+        cat $(basename {params.temp_file}) >> ../$(basename {output.labelled_tree});
+        ) > {log} 2>&1
+        """
+
+
+# Step 12a: HyPhy selection pressure w/ MEME
+rule hyphy_meme:
+    input:
+        alignment_file = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    output:
+        outfile = "results/hyphy/meme_{serotype}.json"
+    params:
+        branches = "Foreground"
+    threads:
+        os.cpu_count() * (1/len(serotype))
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_meme_{serotype}.log"
+    shell:
+        """
+        mpirun -np {threads} \
+            HYPHYMPI meme \
+            --alignment {input.alignment_file} \
+            --branches {params.branches} \
+            --output {output.outfile} \
+            > {log} 2>&1
+        """
+
+# Step 12b: HyPhy selection pressure w/ FUBAR
+rule hyphy_fubar:
+    input:
+        alignment_file = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    output:
+        outfile = "results/hyphy/fubar_{serotype}.json",
+        cache = "results/hyphy/fubar_{serotype}.cache"
+    threads:
+        os.cpu_count() * (1/len(serotype))
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_fubar_{serotype}.log"
+    shell:
+        """
+        mpirun -np {threads} \
+            HYPHYMPI fubar \
+            --alignment {input.alignment_file} \
+            > {log} 2>&1
+        
+        mv {input.alignment_file}.FUBAR.json {output.outfile}
+        mv {input.alignment_file}.FUBAR.cache {output.cache}
+        """
+
+# Step 12c: HyPhy selection pressure w/ SLAC
+rule hyphy_slac:
+    input:
+        alignment_file = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    output:
+        outfile = "results/hyphy/slac_{serotype}.json",
+    threads:
+        os.cpu_count() * (1/len(serotype))
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_slac_{serotype}.log"
+    shell:
+        """
+        mpirun -np {threads} \
+            HYPHYMPI slac \
+            --alignment {input.alignment_file} \
+            --output {output.outfile} \
+            > {log} 2>&1
+        """
+
+# Step 12d: HyPhy selection pressure w/ FEL
+rule hyphy_fel:
+    input:
+        alignment_file = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    output:
+        outfile = "results/hyphy/fel_{serotype}.json",
+    threads:
+        os.cpu_count() * (1/len(serotype))
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_fel_{serotype}.log"
+    shell:
+        """
+        mpirun -np {threads} \
+            HYPHYMPI fel \
+            --alignment {input.alignment_file} \
+            --output {output.outfile} \
+            > {log} 2>&1
+        """
+
+# Step 12e: HyPhy selection pressure w/ Constrast-FEL
+rule hyphy_contrast_fel:
+    input:
+        alignment_file = "results/subsampled_{serotype}_deduped_labelled_tree.fasta"
+    output:
+        outfile = "results/hyphy/contrast_fel_{serotype}.json"
+    params:
+        branch_set = "Foreground"
+    threads:
+        os.cpu_count() * (1/len(serotype))
+    conda:
+        "config/hyphy.yaml"
+    log:
+        "logs/hyphy_contrast_fel_{serotype}.log"
+    shell:
+        """
+        mpirun -np {threads} \
+            HYPHYMPI contrast-fel \
+            --alignment {input.alignment_file} \
+            --branch-set {params.branch_set} \
+            --output {output.outfile} \
+            > {log} 2>&1
+        """
