@@ -256,7 +256,12 @@ rule treebuilding:
         "Inferring maximum likelihood phylogenetic trees for {wildcards.serotype} using IQ-TREE."
     shell:
         """
-        iqtree2 -s {input.aln} -m {params.model} -redo > {log} 2>&1
+        iqtree2 \
+            -nt AUTO \
+            -s {input.aln} \
+            -m {params.model} \
+            -redo \
+            > {log} 2>&1
         """
 
 # Step 9: Building Time-Calibrated Trees
