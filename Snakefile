@@ -288,7 +288,8 @@ rule treetime:
             --coalescent opt \
             --date-confidence \
             --clock-filter-iqd {params.clock_filter} \
-            --root best > {log} 2>&1
+            --root best \
+            > {log} 2>&1
         """
 
 
@@ -310,7 +311,8 @@ rule mutations:
         augur ancestral \
             --tree {input.time_tree} \
             --alignment {input.aln} \
-            --inference joint > {log} 2>&1
+            --inference joint \
+            > {log} 2>&1
         """
 
 # Step 11: Translate sequences
@@ -336,7 +338,8 @@ rule translation:
             --ancestral-sequences {input.mutations} \
             --reference-sequence {input.ref_genomes} \
             --genes {params.genes} \
-            --output {output.amino} > {log} 2>&1
+            --output {output.amino} \
+            > {log} 2>&1
         """
 
 # Step 12: Discrete trait reconstruction
@@ -359,7 +362,8 @@ rule mugration:
             --metadata {input.metadata} \
             --columns Country State \
             --confidence \
-            --output {output.traits} > {log} 2>&1
+            --output {output.traits} \
+            > {log} 2>&1
         """
 
 # Step 13: Export for visualisation in Auspice
@@ -390,7 +394,8 @@ rule export:
             --metadata {input.metadata} \
             --node-data {input.branch_lengths} {input.traits} {input.nt_muts} {input.aa_muts} \
             --auspice-config {input.auspice_config} \
-            --output {output.auspice_json} > {log} 2>&1
+            --output {output.auspice_json} \
+            > {log} 2>&1
         """
 
 # Step 14: Extract annotated tree from nextstrain JSON format 
